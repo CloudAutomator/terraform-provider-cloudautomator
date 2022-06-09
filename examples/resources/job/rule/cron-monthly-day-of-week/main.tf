@@ -1,12 +1,3 @@
-variable "group_id" {
-  default = 123
-}
-
-data "cloudautomator_aws_account" "production" {
-  group_id = var.group_id
-  id = 456
-}
-
 # ----------------------------------------------------------
 # - タイマートリガー
 #   - 毎月(曜日指定)
@@ -23,8 +14,8 @@ data "cloudautomator_aws_account" "production" {
 # ----------------------------------------------------------
 resource "cloudautomator_job" "cron-monthly-day-of-week-schedule-start-instances" {
   name = "example-cron-job"
-  group_id = var.group_id
-  aws_account_id = data.cloudautomator_aws_account.production.id
+  group_id = 10
+  aws_account_id = 20
 
   rule_type = "cron"
   cron_rule_value {
@@ -44,8 +35,8 @@ resource "cloudautomator_job" "cron-monthly-day-of-week-schedule-start-instances
     time_zone = "Tokyo"
   }
 
-	action_type = "delay"
-	delay_action_value {
-		delay_minutes = 1
-	}
+  action_type = "delay"
+  delay_action_value {
+    delay_minutes = 1
+  }
 }

@@ -1,12 +1,3 @@
-variable "group_id" {
-  default = 123
-}
-
-data "cloudautomator_aws_account" "production" {
-  group_id = var.group_id
-  id = 456
-}
-
 # ----------------------------------------------------------
 # - アクション
 #   - EC2: インスタンスを停止アクション
@@ -21,8 +12,8 @@ data "cloudautomator_aws_account" "production" {
 # ----------------------------------------------------------
 resource "cloudautomator_job" "example-stop-instances-job" {
   name = "example-stop-instances-job"
-  group_id = var.group_id
-  aws_account_id = data.cloudautomator_aws_account.production.id
+  group_id = 10
+  aws_account_id = 20
 
   rule_type = "immediate_execution"
 

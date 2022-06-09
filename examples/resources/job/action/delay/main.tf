@@ -1,8 +1,12 @@
 # ----------------------------------------------------------
-# - HTTPトリガー
+# - アクション
+#   - Other: 指定時間待機
+# - アクションの設定
+#   - 待機する時間
+#     - 30分
 # ----------------------------------------------------------
-resource "cloudautomator_job" "webhook-start-instances" {
-  name = "example-webhook-job"
+resource "cloudautomator_job" "example-delay-job" {
+  name = "example-delay-job"
   group_id = 10
   aws_account_id = 20
 
@@ -10,6 +14,6 @@ resource "cloudautomator_job" "webhook-start-instances" {
 
   action_type = "delay"
   delay_action_value {
-    delay_minutes = 1
+    delay_minutes = 30
   }
 }

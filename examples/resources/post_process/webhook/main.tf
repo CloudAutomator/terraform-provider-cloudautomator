@@ -1,7 +1,3 @@
-variable "group_id" {
-  default = 123
-}
-
 # ----------------------------------------------------------
 # - Webhook後処理
 #   - グループID
@@ -13,7 +9,7 @@ variable "group_id" {
 # ----------------------------------------------------------
 resource "cloudautomator_post_process" "webhook" {
   name = "webhook"
-  group_id = var.group_id
+  group_id = 10
   service = "webhook"
 
   webhook_parameters {

@@ -1,12 +1,3 @@
-variable "group_id" {
-  default = 123
-}
-
-data "cloudautomator_aws_account" "production" {
-  group_id = var.group_id
-  id = 456
-}
-
 # ----------------------------------------------------------
 # - アクション
 #   - EC2: EBSスナップショットをリージョン間でコピー
@@ -26,18 +17,18 @@ data "cloudautomator_aws_account" "production" {
 # ----------------------------------------------------------
 resource "cloudautomator_job" "example-change-rds-instance-class-job" {
   name = "example-change-rds-instance-class-job"
-  group_id = var.group_id
-  aws_account_id = data.cloudautomator_aws_account.production.id
+  group_id = 10
+  aws_account_id = 20
 
   rule_type = "immediate_execution"
 
-	action_type = "copy_ebs_snapshot"
-	copy_ebs_snapshot_action_value {
-		source_region = "ap-northeast-1"
-		destination_region = "us-east-1"
-		specify_ebs_snapshot = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		trace_status = "true"
-	}
+  action_type = "copy_ebs_snapshot"
+  copy_ebs_snapshot_action_value {
+    source_region = "ap-northeast-1"
+    destination_region = "us-east-1"
+    specify_ebs_snapshot = "tag"
+    tag_key = "env"
+    tag_value = "develop"
+    trace_status = "true"
+  }
 }

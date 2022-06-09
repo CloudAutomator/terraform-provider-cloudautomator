@@ -1,3 +1,3 @@
 data "cloudautomator_job" "example-job" {
-	id = 123
+  id = 123
 }

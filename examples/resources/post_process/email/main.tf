@@ -1,7 +1,3 @@
-variable "group_id" {
-  default = 123
-}
-
 # ----------------------------------------------------------
 # - メール後処理
 #   - グループID
@@ -11,7 +7,7 @@ variable "group_id" {
 # ----------------------------------------------------------
 resource "cloudautomator_post_process" "email" {
   name = "email"
-  group_id = var.group_id
+  group_id = 10
   service = "email"
 
   email_parameters {

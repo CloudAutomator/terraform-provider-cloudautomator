@@ -1,7 +1,3 @@
-variable "group_id" {
-  default = 123
-}
-
 # ----------------------------------------------------------
 # - Slack後処理
 #   - グループID
@@ -15,7 +11,7 @@ variable "group_id" {
 # ----------------------------------------------------------
 resource "cloudautomator_post_process" "slack" {
   name = "slack"
-  group_id = var.group_id
+  group_id = 10
   service = "slack"
 
   slack_parameters {

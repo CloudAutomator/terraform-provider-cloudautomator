@@ -1,7 +1,3 @@
-variable "group_id" {
-  default = 123
-}
-
 # ----------------------------------------------------------
 # - SQS後処理
 #   - グループID
@@ -15,7 +11,7 @@ variable "group_id" {
 # ----------------------------------------------------------
 resource "cloudautomator_post_process" "sqs" {
   name = "sqs"
-  group_id = var.group_id
+  group_id = 10
   service = "sqs"
 
   sqs_parameters {

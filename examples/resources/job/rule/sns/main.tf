@@ -1,12 +1,3 @@
-variable "group_id" {
-  default = 123
-}
-
-data "cloudautomator_aws_account" "production" {
-  group_id = var.group_id
-  id = 456
-}
-
 # ----------------------------------------------------------
 # - SNSトリガー
 #   - 実行予定日時
@@ -15,13 +6,13 @@ data "cloudautomator_aws_account" "production" {
 # ----------------------------------------------------------
 resource "cloudautomator_job" "sns-start-instances" {
   name = "example-sns-job"
-  group_id = var.group_id
-  aws_account_id = data.cloudautomator_aws_account.production.id
+  group_id = 10
+  aws_account_id = 20
 
   rule_type = "amazon_sns"
 
-	action_type = "delay"
-	delay_action_value {
-		delay_minutes = 1
-	}
+  action_type = "delay"
+  delay_action_value {
+    delay_minutes = 1
+  }
 }
