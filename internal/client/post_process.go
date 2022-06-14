@@ -90,7 +90,7 @@ func (c *Client) CreatePostProcess(postProcess *PostProcess) (*PostProcess, *htt
 
 	p := new(PostProcess)
 	if err := json.Unmarshal(postResponse.Data, &p); err != nil {
-		return nil, nil, errors.New("unmarshall failed")
+		return nil, nil, errors.New("unmarshal failed")
 	}
 
 	return p, resp, nil
@@ -111,7 +111,7 @@ func (c *Client) UpdatePostProcess(postProcess *PostProcess) (*PostProcess, *htt
 
 	p := new(PostProcess)
 	if err := json.Unmarshal(patchResponse.Data, &p); err != nil {
-		return nil, resp, errors.New("unmarshall failed")
+		return nil, resp, errors.New("unmarshal failed")
 	}
 
 	return p, resp, nil
@@ -170,7 +170,7 @@ func readParameters(rawPostProcess *PostProcessAttributes) map[string]interface{
 func (p *PostProcess) UnmarshalJSON(data []byte) error {
 	rp := RawPostProcessData{}
 	if err := json.Unmarshal(data, &rp); err != nil {
-		return errors.New("unmarshall failed")
+		return errors.New("unmarshal failed")
 	}
 
 	p.Id = rp.Id

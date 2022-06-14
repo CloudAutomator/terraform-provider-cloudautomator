@@ -48,7 +48,7 @@ func (c *Client) GetAwsAccount(group_id, awsAccountId string) (*AwsAccount, *htt
 func (a *AwsAccount) UnmarshalJSON(data []byte) error {
 	ra := RawAwsAccountData{}
 	if err := json.Unmarshal(data, &ra); err != nil {
-		return errors.New("unmarshall failed")
+		return errors.New("unmarshal failed")
 	}
 
 	a.Id = ra.Id

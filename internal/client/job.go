@@ -141,7 +141,7 @@ func (c *Client) GetJobs() (*[]Job, *http.Response, error) {
 		for _, r := range listResponse.Data {
 			job := new(Job)
 			if err := json.Unmarshal(r, &job); err != nil {
-				return nil, nil, errors.New("unmarshall failed")
+				return nil, nil, errors.New("unmarshal failed")
 			}
 			jobs = append(jobs, *job)
 		}
@@ -167,7 +167,7 @@ func (c *Client) CreateJob(job *Job) (*Job, *http.Response, error) {
 
 	j := new(Job)
 	if err := json.Unmarshal(postResponse.Data, &j); err != nil {
-		return nil, nil, errors.New("unmarshall failed")
+		return nil, nil, errors.New("unmarshal failed")
 	}
 
 	return j, resp, nil
@@ -188,7 +188,7 @@ func (c *Client) UpdateJob(job *Job) (*Job, *http.Response, error) {
 
 	j := new(Job)
 	if err := json.Unmarshal(patchResponse.Data, &j); err != nil {
-		return nil, resp, errors.New("unmarshall failed")
+		return nil, resp, errors.New("unmarshal failed")
 	}
 
 	return j, resp, nil
@@ -268,7 +268,7 @@ func deleteTraceStatus(rawJob *JobAttributes) {
 func (j *Job) UnmarshalJSON(data []byte) error {
 	rj := RawJobData{}
 	if err := json.Unmarshal(data, &rj); err != nil {
-		return errors.New("unmarshall failed")
+		return errors.New("unmarshal failed")
 	}
 
 	j.Id = rj.Id
