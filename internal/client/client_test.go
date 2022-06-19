@@ -2,37 +2,11 @@ package client
 
 import (
 	"net/http"
-	"net/http/httptest"
 	"testing"
 )
 
 type TestStruct struct {
 	Name string `json:"name"`
-}
-
-func testErrCheck(t *testing.T, name string, errorMessage string, err error) bool {
-	t.Helper()
-
-	if len(errorMessage) > 0 {
-		if err == nil {
-			t.Fatalf("%s error = <nil>, should contain %q", name, errorMessage)
-			return false
-		}
-
-		if errStr := err.Error(); !(errStr == errorMessage) {
-			t.Fatalf("%s error = %q, should contain %q", name, errStr, errorMessage)
-			return false
-		}
-
-		return false
-	}
-
-	if err != nil && len(errorMessage) == 0 {
-		t.Fatalf("%s unexpected error: %v", name, err)
-		return false
-	}
-
-	return true
 }
 
 func clientDoHandler(t *testing.T, json []byte) func(w http.ResponseWriter, r *http.Request) {
@@ -120,9 +94,7 @@ func TestClient_Do(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mux := http.NewServeMux()
-			server := httptest.NewServer(mux)
-
+			setup()
 			defer server.Close()
 
 			ts := new(TestStruct)
