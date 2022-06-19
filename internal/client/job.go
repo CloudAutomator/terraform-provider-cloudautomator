@@ -108,7 +108,9 @@ func (c *Client) GetJob(jobId string) (*Job, *http.Response, error) {
 	}
 
 	job := new(Job)
-	json.Unmarshal(getResponse.Data, &job)
+	if err := json.Unmarshal(getResponse.Data, &job); err != nil {
+		return nil, nil, errors.New("unmarshal failed")
+	}
 
 	return job, resp, nil
 }
