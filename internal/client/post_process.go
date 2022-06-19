@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 )
 
 type PostProcess struct {
@@ -16,19 +17,19 @@ type PostProcess struct {
 	Parameters    map[string]interface{} `json:"parameters"`
 }
 
-type PostProcessGetResponse struct {
+type GetPostProcessResponse struct {
 	Data json.RawMessage `json:"data"`
 }
 
-type PostProcessPostResponse struct {
+type PostPostProcessResponse struct {
 	Data json.RawMessage `json:"data"`
 }
 
-type PostProcessPatchResponse struct {
+type PatchPostProcessResponse struct {
 	Data json.RawMessage `json:"data"`
 }
 
-type PostProcessListResponse struct {
+type ListPostProcessResponse struct {
 	Data  []json.RawMessage `json:"data"`
 	Links struct {
 		Self  string `json:"self"`
@@ -63,7 +64,7 @@ func (c *Client) GetPostProcess(postProcessId string) (*PostProcess, *http.Respo
 		return nil, nil, err
 	}
 
-	getResponse := new(PostProcessGetResponse)
+	getResponse := new(GetPostProcessResponse)
 	resp, err := c.Do(req, &getResponse)
 	if err != nil {
 		return nil, resp, err
@@ -75,6 +76,45 @@ func (c *Client) GetPostProcess(postProcessId string) (*PostProcess, *http.Respo
 	return postProcess, resp, nil
 }
 
+func (c *Client) GetPostProcesses() (*[]PostProcess, *http.Response, error) {
+	postProcesses := []PostProcess{}
+	requestUrl := "post_processes"
+
+	for len(requestUrl) > 0 {
+		rel, err := url.Parse(requestUrl)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		q := rel.Query()
+		q.Set("page[size]", "100")
+		rel.RawQuery = q.Encode()
+
+		req, err := c.NewRequest("GET", rel.String(), nil)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		listResponse := new(ListPostProcessResponse)
+		resp, err := c.Do(req, listResponse)
+		if err != nil {
+			return nil, resp, err
+		}
+
+		for _, r := range listResponse.Data {
+			postProcess := new(PostProcess)
+			if err := json.Unmarshal(r, &postProcess); err != nil {
+				return nil, nil, errors.New("unmarshal failed")
+			}
+			postProcesses = append(postProcesses, *postProcess)
+		}
+
+		requestUrl = listResponse.Links.Next
+	}
+
+	return &postProcesses, nil, nil
+}
+
 func (c *Client) CreatePostProcess(postProcess *PostProcess) (*PostProcess, *http.Response, error) {
 	requestUrl := "post_processes"
 	req, err := c.NewRequest("POST", requestUrl, postProcess)
@@ -82,7 +122,7 @@ func (c *Client) CreatePostProcess(postProcess *PostProcess) (*PostProcess, *htt
 		return nil, nil, err
 	}
 
-	postResponse := new(PostProcessPostResponse)
+	postResponse := new(PostPostProcessResponse)
 	resp, err := c.Do(req, &postResponse)
 	if err != nil {
 		return nil, resp, err
@@ -103,7 +143,7 @@ func (c *Client) UpdatePostProcess(postProcess *PostProcess) (*PostProcess, *htt
 		return nil, nil, err
 	}
 
-	patchResponse := new(PostProcessPatchResponse)
+	patchResponse := new(PatchPostProcessResponse)
 	resp, err := c.Do(req, &patchResponse)
 	if err != nil {
 		return nil, resp, err
