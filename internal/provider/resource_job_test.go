@@ -16,6 +16,7 @@ import (
 func TestAccCloudAutomatorJob_CronRuleOneTime(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -40,6 +41,10 @@ func TestAccCloudAutomatorJob_CronRuleOneTime(t *testing.T) {
 						resourceName, "cron_rule_value.0.one_time_schedule", "2099/01/01"),
 					resource.TestCheckResourceAttr(
 						resourceName, "cron_rule_value.0.time_zone", "Tokyo"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -49,6 +54,7 @@ func TestAccCloudAutomatorJob_CronRuleOneTime(t *testing.T) {
 func TestAccCloudAutomatorJob_CronRuleWeekly(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -81,6 +87,10 @@ func TestAccCloudAutomatorJob_CronRuleWeekly(t *testing.T) {
 						resourceName, "cron_rule_value.0.dates_to_skip.0", "2099-12-31"),
 					resource.TestCheckResourceAttr(
 						resourceName, "cron_rule_value.0.national_holiday_schedule", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -90,6 +100,7 @@ func TestAccCloudAutomatorJob_CronRuleWeekly(t *testing.T) {
 func TestAccCloudAutomatorJob_CronRuleMonthlyDayOfWeek(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -118,6 +129,10 @@ func TestAccCloudAutomatorJob_CronRuleMonthlyDayOfWeek(t *testing.T) {
 						resourceName, "cron_rule_value.0.dates_to_skip.0", "2099-12-31"),
 					resource.TestCheckResourceAttr(
 						resourceName, "cron_rule_value.0.national_holiday_schedule", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -127,6 +142,7 @@ func TestAccCloudAutomatorJob_CronRuleMonthlyDayOfWeek(t *testing.T) {
 func TestAccCloudAutomatorJob_WebhookRule(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -141,6 +157,10 @@ func TestAccCloudAutomatorJob_WebhookRule(t *testing.T) {
 						resourceName, "name", jobName),
 					resource.TestCheckResourceAttr(
 						resourceName, "rule_type", "webhook"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -150,6 +170,7 @@ func TestAccCloudAutomatorJob_WebhookRule(t *testing.T) {
 func TestAccCloudAutomatorJob_ScheduleRule(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -168,6 +189,10 @@ func TestAccCloudAutomatorJob_ScheduleRule(t *testing.T) {
 						resourceName, "schedule_rule_value.0.schedule", "2099-12-31 10:10:00\n2099-01-01 22:40:00"),
 					resource.TestCheckResourceAttr(
 						resourceName, "schedule_rule_value.0.time_zone", "Tokyo"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -180,6 +205,7 @@ func TestAccCloudAutomatorJob_SqsV2Rule(t *testing.T) {
 	sqsAwsAccountId := acctest.TestSqsAwsAccountId()
 	sqsRegion := acctest.TestSqsRegion()
 	sqsQueue := acctest.TestSqsQueue()
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -200,6 +226,10 @@ func TestAccCloudAutomatorJob_SqsV2Rule(t *testing.T) {
 						resourceName, "sqs_v2_rule_value.0.sqs_region", sqsRegion),
 					resource.TestCheckResourceAttr(
 						resourceName, "sqs_v2_rule_value.0.queue", sqsQueue),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -209,6 +239,7 @@ func TestAccCloudAutomatorJob_SqsV2Rule(t *testing.T) {
 func TestAccCloudAutomatorJob_AmazonSnsRule(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -223,6 +254,10 @@ func TestAccCloudAutomatorJob_AmazonSnsRule(t *testing.T) {
 						resourceName, "name", jobName),
 					resource.TestCheckResourceAttr(
 						resourceName, "rule_type", "amazon_sns"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -232,6 +267,7 @@ func TestAccCloudAutomatorJob_AmazonSnsRule(t *testing.T) {
 func TestAccCloudAutomatorJob_AuthorizeSecurityGroupIngressAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -260,6 +296,10 @@ func TestAccCloudAutomatorJob_AuthorizeSecurityGroupIngressAction(t *testing.T) 
 						resourceName, "authorize_security_group_ingress_action_value.0.to_port", "80"),
 					resource.TestCheckResourceAttr(
 						resourceName, "authorize_security_group_ingress_action_value.0.cidr_ip", "172.31.0.0/16"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -269,6 +309,7 @@ func TestAccCloudAutomatorJob_AuthorizeSecurityGroupIngressAction(t *testing.T) 
 func TestAccCloudAutomatorJob_ChangeRdsClusterInstanceClassAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -293,6 +334,10 @@ func TestAccCloudAutomatorJob_ChangeRdsClusterInstanceClassAction(t *testing.T) 
 						resourceName, "change_rds_cluster_instance_class_action_value.0.tag_value", "develop"),
 					resource.TestCheckResourceAttr(
 						resourceName, "change_rds_cluster_instance_class_action_value.0.db_instance_class", "db.t3.micro"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -302,6 +347,7 @@ func TestAccCloudAutomatorJob_ChangeRdsClusterInstanceClassAction(t *testing.T) 
 func TestAccCloudAutomatorJob_ChangeRdsInstanceClassAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -326,6 +372,10 @@ func TestAccCloudAutomatorJob_ChangeRdsInstanceClassAction(t *testing.T) {
 						resourceName, "change_rds_instance_class_action_value.0.tag_value", "develop"),
 					resource.TestCheckResourceAttr(
 						resourceName, "change_rds_instance_class_action_value.0.db_instance_class", "db.t3.micro"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -335,6 +385,7 @@ func TestAccCloudAutomatorJob_ChangeRdsInstanceClassAction(t *testing.T) {
 func TestAccCloudAutomatorJob_ChangeInstanceTypeAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -359,6 +410,10 @@ func TestAccCloudAutomatorJob_ChangeInstanceTypeAction(t *testing.T) {
 						resourceName, "change_instance_type_action_value.0.tag_value", "develop"),
 					resource.TestCheckResourceAttr(
 						resourceName, "change_instance_type_action_value.0.instance_type", "t2.medium"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -368,6 +423,7 @@ func TestAccCloudAutomatorJob_ChangeInstanceTypeAction(t *testing.T) {
 func TestAccCloudAutomatorJob_CopyEbsSnapshotAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -394,6 +450,10 @@ func TestAccCloudAutomatorJob_CopyEbsSnapshotAction(t *testing.T) {
 						resourceName, "copy_ebs_snapshot_action_value.0.tag_value", "develop"),
 					resource.TestCheckResourceAttr(
 						resourceName, "copy_ebs_snapshot_action_value.0.trace_status", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -403,6 +463,7 @@ func TestAccCloudAutomatorJob_CopyEbsSnapshotAction(t *testing.T) {
 func TestAccCloudAutomatorJob_CopyImageAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -429,6 +490,10 @@ func TestAccCloudAutomatorJob_CopyImageAction(t *testing.T) {
 						resourceName, "copy_image_action_value.0.tag_value", "develop"),
 					resource.TestCheckResourceAttr(
 						resourceName, "copy_image_action_value.0.trace_status", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -438,6 +503,7 @@ func TestAccCloudAutomatorJob_CopyImageAction(t *testing.T) {
 func TestAccCloudAutomatorJob_CopyRdsSnapshotAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -464,6 +530,10 @@ func TestAccCloudAutomatorJob_CopyRdsSnapshotAction(t *testing.T) {
 						resourceName, "copy_rds_snapshot_action_value.0.option_group_name", "default:mysql-5-6"),
 					resource.TestCheckResourceAttr(
 						resourceName, "copy_rds_snapshot_action_value.0.trace_status", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -473,6 +543,7 @@ func TestAccCloudAutomatorJob_CopyRdsSnapshotAction(t *testing.T) {
 func TestAccCloudAutomatorJob_CreateEbsSnapshotAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -505,6 +576,10 @@ func TestAccCloudAutomatorJob_CreateEbsSnapshotAction(t *testing.T) {
 						resourceName, "create_ebs_snapshot_action_value.0.additional_tag_value", "example-value"),
 					resource.TestCheckResourceAttr(
 						resourceName, "create_ebs_snapshot_action_value.0.trace_status", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -514,6 +589,7 @@ func TestAccCloudAutomatorJob_CreateEbsSnapshotAction(t *testing.T) {
 func TestAccCloudAutomatorJob_CreateImageAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -558,6 +634,10 @@ func TestAccCloudAutomatorJob_CreateImageAction(t *testing.T) {
 						resourceName, "create_image_action_value.0.trace_status", "true"),
 					resource.TestCheckResourceAttr(
 						resourceName, "create_image_action_value.0.recreate_image_if_ami_status_failed", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -567,6 +647,7 @@ func TestAccCloudAutomatorJob_CreateImageAction(t *testing.T) {
 func TestAccCloudAutomatorJob_CreateRdsClusterSnapshotAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -595,6 +676,10 @@ func TestAccCloudAutomatorJob_CreateRdsClusterSnapshotAction(t *testing.T) {
 						resourceName, "create_rds_cluster_snapshot_action_value.0.db_cluster_snapshot_identifier", "test"),
 					resource.TestCheckResourceAttr(
 						resourceName, "create_rds_cluster_snapshot_action_value.0.trace_status", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -604,6 +689,7 @@ func TestAccCloudAutomatorJob_CreateRdsClusterSnapshotAction(t *testing.T) {
 func TestAccCloudAutomatorJob_CreateRdsSnapshotAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -632,6 +718,10 @@ func TestAccCloudAutomatorJob_CreateRdsSnapshotAction(t *testing.T) {
 						resourceName, "create_rds_snapshot_action_value.0.rds_snapshot_id", "test"),
 					resource.TestCheckResourceAttr(
 						resourceName, "create_rds_snapshot_action_value.0.trace_status", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -641,6 +731,7 @@ func TestAccCloudAutomatorJob_CreateRdsSnapshotAction(t *testing.T) {
 func TestAccCloudAutomatorJob_CreateRedshiftSnapshotAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -669,6 +760,10 @@ func TestAccCloudAutomatorJob_CreateRedshiftSnapshotAction(t *testing.T) {
 						resourceName, "create_redshift_snapshot_action_value.0.cluster_snapshot_identifier", "test"),
 					resource.TestCheckResourceAttr(
 						resourceName, "create_redshift_snapshot_action_value.0.trace_status", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -678,6 +773,7 @@ func TestAccCloudAutomatorJob_CreateRedshiftSnapshotAction(t *testing.T) {
 func TestAccCloudAutomatorJob_DelayAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -694,6 +790,10 @@ func TestAccCloudAutomatorJob_DelayAction(t *testing.T) {
 						resourceName, "action_type", "delay"),
 					resource.TestCheckResourceAttr(
 						resourceName, "delay_action_value.0.delay_minutes", "30"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -703,6 +803,7 @@ func TestAccCloudAutomatorJob_DelayAction(t *testing.T) {
 func TestAccCloudAutomatorJob_DeleteClusterAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -727,6 +828,10 @@ func TestAccCloudAutomatorJob_DeleteClusterAction(t *testing.T) {
 						resourceName, "delete_cluster_action_value.0.skip_final_cluster_snapshot", "false"),
 					resource.TestCheckResourceAttr(
 						resourceName, "delete_cluster_action_value.0.trace_status", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -736,6 +841,7 @@ func TestAccCloudAutomatorJob_DeleteClusterAction(t *testing.T) {
 func TestAccCloudAutomatorJob_DeleteRdsClusterAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -764,6 +870,10 @@ func TestAccCloudAutomatorJob_DeleteRdsClusterAction(t *testing.T) {
 						resourceName, "delete_rds_cluster_action_value.0.skip_final_snapshot", "false"),
 					resource.TestCheckResourceAttr(
 						resourceName, "delete_rds_cluster_action_value.0.trace_status", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -773,6 +883,7 @@ func TestAccCloudAutomatorJob_DeleteRdsClusterAction(t *testing.T) {
 func TestAccCloudAutomatorJob_DeleteRdsInstanceAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -801,6 +912,10 @@ func TestAccCloudAutomatorJob_DeleteRdsInstanceAction(t *testing.T) {
 						resourceName, "delete_rds_instance_action_value.0.skip_final_rds_snapshot", "false"),
 					resource.TestCheckResourceAttr(
 						resourceName, "delete_rds_instance_action_value.0.trace_status", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -810,6 +925,7 @@ func TestAccCloudAutomatorJob_DeleteRdsInstanceAction(t *testing.T) {
 func TestAccCloudAutomatorJob_DeregisterInstancesAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -834,6 +950,10 @@ func TestAccCloudAutomatorJob_DeregisterInstancesAction(t *testing.T) {
 						resourceName, "deregister_instances_action_value.0.tag_value", "develop"),
 					resource.TestCheckResourceAttr(
 						resourceName, "deregister_instances_action_value.0.load_balancer_name", "test"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -843,6 +963,7 @@ func TestAccCloudAutomatorJob_DeregisterInstancesAction(t *testing.T) {
 func TestAccCloudAutomatorJob_DeregisterTargetInstancesAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -865,6 +986,10 @@ func TestAccCloudAutomatorJob_DeregisterTargetInstancesAction(t *testing.T) {
 						resourceName, "deregister_target_instances_action_value.0.tag_key", "env"),
 					resource.TestCheckResourceAttr(
 						resourceName, "deregister_target_instances_action_value.0.tag_value", "develop"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -874,6 +999,7 @@ func TestAccCloudAutomatorJob_DeregisterTargetInstancesAction(t *testing.T) {
 func TestAccCloudAutomatorJob_RebootRdsInstancesAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -896,6 +1022,10 @@ func TestAccCloudAutomatorJob_RebootRdsInstancesAction(t *testing.T) {
 						resourceName, "reboot_rds_instances_action_value.0.tag_key", "env"),
 					resource.TestCheckResourceAttr(
 						resourceName, "reboot_rds_instances_action_value.0.tag_value", "develop"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -905,6 +1035,7 @@ func TestAccCloudAutomatorJob_RebootRdsInstancesAction(t *testing.T) {
 func TestAccCloudAutomatorJob_RebootWorkspacesAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -925,6 +1056,10 @@ func TestAccCloudAutomatorJob_RebootWorkspacesAction(t *testing.T) {
 						resourceName, "reboot_workspaces_action_value.0.tag_key", "env"),
 					resource.TestCheckResourceAttr(
 						resourceName, "reboot_workspaces_action_value.0.tag_value", "develop"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -934,6 +1069,7 @@ func TestAccCloudAutomatorJob_RebootWorkspacesAction(t *testing.T) {
 func TestAccCloudAutomatorJob_RegisterInstancesAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -958,6 +1094,10 @@ func TestAccCloudAutomatorJob_RegisterInstancesAction(t *testing.T) {
 						resourceName, "register_instances_action_value.0.tag_value", "develop"),
 					resource.TestCheckResourceAttr(
 						resourceName, "register_instances_action_value.0.load_balancer_name", "test"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -967,6 +1107,7 @@ func TestAccCloudAutomatorJob_RegisterInstancesAction(t *testing.T) {
 func TestAccCloudAutomatorJob_RegisterTargetInstancesAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -989,6 +1130,10 @@ func TestAccCloudAutomatorJob_RegisterTargetInstancesAction(t *testing.T) {
 						resourceName, "register_target_instances_action_value.0.tag_key", "env"),
 					resource.TestCheckResourceAttr(
 						resourceName, "register_target_instances_action_value.0.tag_value", "develop"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -998,6 +1143,7 @@ func TestAccCloudAutomatorJob_RegisterTargetInstancesAction(t *testing.T) {
 func TestAccCloudAutomatorJob_RestoreFromClusterSnapshotAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -1036,6 +1182,10 @@ func TestAccCloudAutomatorJob_RestoreFromClusterSnapshotAction(t *testing.T) {
 						resourceName, "restore_from_cluster_snapshot_action_value.0.allow_version_upgrade", "true"),
 					resource.TestCheckResourceAttr(
 						resourceName, "restore_from_cluster_snapshot_action_value.0.delete_cluster_snapshot", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -1045,6 +1195,7 @@ func TestAccCloudAutomatorJob_RestoreFromClusterSnapshotAction(t *testing.T) {
 func TestAccCloudAutomatorJob_RestoreRdsClusterAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -1095,6 +1246,10 @@ func TestAccCloudAutomatorJob_RestoreRdsClusterAction(t *testing.T) {
 						resourceName, "restore_rds_cluster_action_value.0.auto_minor_version_upgrade", "true"),
 					resource.TestCheckResourceAttr(
 						resourceName, "restore_rds_cluster_action_value.0.delete_db_cluster_snapshot", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -1104,6 +1259,7 @@ func TestAccCloudAutomatorJob_RestoreRdsClusterAction(t *testing.T) {
 func TestAccCloudAutomatorJob_RestoreRdsInstanceAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -1164,6 +1320,10 @@ func TestAccCloudAutomatorJob_RestoreRdsInstanceAction(t *testing.T) {
 						resourceName, "restore_rds_instance_action_value.0.additional_tag_value", "test-value"),
 					resource.TestCheckResourceAttr(
 						resourceName, "restore_rds_instance_action_value.0.trace_status", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -1173,6 +1333,7 @@ func TestAccCloudAutomatorJob_RestoreRdsInstanceAction(t *testing.T) {
 func TestAccCloudAutomatorJob_RevokeSecurityGroupIngressAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -1201,6 +1362,10 @@ func TestAccCloudAutomatorJob_RevokeSecurityGroupIngressAction(t *testing.T) {
 						resourceName, "revoke_security_group_ingress_action_value.0.to_port", "80"),
 					resource.TestCheckResourceAttr(
 						resourceName, "revoke_security_group_ingress_action_value.0.cidr_ip", "172.31.0.0/16"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -1210,6 +1375,7 @@ func TestAccCloudAutomatorJob_RevokeSecurityGroupIngressAction(t *testing.T) {
 func TestAccCloudAutomatorJob_SendCommandAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -1248,6 +1414,10 @@ func TestAccCloudAutomatorJob_SendCommandAction(t *testing.T) {
 						resourceName, "send_command_action_value.0.timeout_seconds", "60"),
 					resource.TestCheckResourceAttr(
 						resourceName, "send_command_action_value.0.execution_timeout_seconds", "60"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -1257,6 +1427,7 @@ func TestAccCloudAutomatorJob_SendCommandAction(t *testing.T) {
 func TestAccCloudAutomatorJob_StartInstancesAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -1283,6 +1454,10 @@ func TestAccCloudAutomatorJob_StartInstancesAction(t *testing.T) {
 						resourceName, "start_instances_action_value.0.trace_status", "true"),
 					resource.TestCheckResourceAttr(
 						resourceName, "start_instances_action_value.0.status_checks_enable", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -1292,6 +1467,7 @@ func TestAccCloudAutomatorJob_StartInstancesAction(t *testing.T) {
 func TestAccCloudAutomatorJob_StartRdsClustersAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -1316,6 +1492,10 @@ func TestAccCloudAutomatorJob_StartRdsClustersAction(t *testing.T) {
 						resourceName, "start_rds_clusters_action_value.0.tag_value", "develop"),
 					resource.TestCheckResourceAttr(
 						resourceName, "start_rds_clusters_action_value.0.trace_status", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -1325,6 +1505,7 @@ func TestAccCloudAutomatorJob_StartRdsClustersAction(t *testing.T) {
 func TestAccCloudAutomatorJob_StartRdsInstancesAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -1349,6 +1530,10 @@ func TestAccCloudAutomatorJob_StartRdsInstancesAction(t *testing.T) {
 						resourceName, "start_rds_instances_action_value.0.tag_value", "develop"),
 					resource.TestCheckResourceAttr(
 						resourceName, "start_rds_instances_action_value.0.trace_status", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -1358,6 +1543,7 @@ func TestAccCloudAutomatorJob_StartRdsInstancesAction(t *testing.T) {
 func TestAccCloudAutomatorJob_StopInstancesAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -1382,6 +1568,10 @@ func TestAccCloudAutomatorJob_StopInstancesAction(t *testing.T) {
 						resourceName, "stop_instances_action_value.0.tag_value", "develop"),
 					resource.TestCheckResourceAttr(
 						resourceName, "stop_instances_action_value.0.trace_status", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -1391,6 +1581,7 @@ func TestAccCloudAutomatorJob_StopInstancesAction(t *testing.T) {
 func TestAccCloudAutomatorJob_StopRdsClustersAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -1415,6 +1606,10 @@ func TestAccCloudAutomatorJob_StopRdsClustersAction(t *testing.T) {
 						resourceName, "stop_rds_clusters_action_value.0.tag_value", "develop"),
 					resource.TestCheckResourceAttr(
 						resourceName, "stop_rds_clusters_action_value.0.trace_status", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -1424,6 +1619,7 @@ func TestAccCloudAutomatorJob_StopRdsClustersAction(t *testing.T) {
 func TestAccCloudAutomatorJob_StopRdsInstancesAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -1448,6 +1644,10 @@ func TestAccCloudAutomatorJob_StopRdsInstancesAction(t *testing.T) {
 						resourceName, "stop_rds_instances_action_value.0.tag_value", "develop"),
 					resource.TestCheckResourceAttr(
 						resourceName, "stop_rds_instances_action_value.0.trace_status", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -1457,6 +1657,7 @@ func TestAccCloudAutomatorJob_StopRdsInstancesAction(t *testing.T) {
 func TestAccCloudAutomatorJob_StartWorkspacesAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -1477,6 +1678,10 @@ func TestAccCloudAutomatorJob_StartWorkspacesAction(t *testing.T) {
 						resourceName, "start_workspaces_action_value.0.tag_key", "env"),
 					resource.TestCheckResourceAttr(
 						resourceName, "start_workspaces_action_value.0.tag_value", "develop"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -1486,6 +1691,7 @@ func TestAccCloudAutomatorJob_StartWorkspacesAction(t *testing.T) {
 func TestAccCloudAutomatorJob_TerminateWorkspacesAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -1510,6 +1716,10 @@ func TestAccCloudAutomatorJob_TerminateWorkspacesAction(t *testing.T) {
 						resourceName, "terminate_workspaces_action_value.0.tag_value", "develop"),
 					resource.TestCheckResourceAttr(
 						resourceName, "terminate_workspaces_action_value.0.trace_status", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -1519,6 +1729,7 @@ func TestAccCloudAutomatorJob_TerminateWorkspacesAction(t *testing.T) {
 func TestAccCloudAutomatorJob_UpdateRecordSetAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -1541,6 +1752,10 @@ func TestAccCloudAutomatorJob_UpdateRecordSetAction(t *testing.T) {
 						resourceName, "update_record_set_action_value.0.record_set_type", "A"),
 					resource.TestCheckResourceAttr(
 						resourceName, "update_record_set_action_value.0.record_set_value", "1.2.3.4"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -1550,6 +1765,7 @@ func TestAccCloudAutomatorJob_UpdateRecordSetAction(t *testing.T) {
 func TestAccCloudAutomatorJob_WindowsUpdateAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -1586,6 +1802,10 @@ func TestAccCloudAutomatorJob_WindowsUpdateAction(t *testing.T) {
 						resourceName, "windows_update_action_value.0.update_level", "All"),
 					resource.TestCheckResourceAttr(
 						resourceName, "windows_update_action_value.0.timeout_seconds", "60"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -1595,6 +1815,7 @@ func TestAccCloudAutomatorJob_WindowsUpdateAction(t *testing.T) {
 func TestAccCloudAutomatorJob_WindowsUpdateV2Action(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -1629,6 +1850,10 @@ func TestAccCloudAutomatorJob_WindowsUpdateV2Action(t *testing.T) {
 						resourceName, "windows_update_v2_action_value.0.output_s3_key_prefix", "test-key"),
 					resource.TestCheckResourceAttr(
 						resourceName, "windows_update_v2_action_value.0.trace_status", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -1701,7 +1926,9 @@ resource "cloudautomator_job" "test" {
 	delay_action_value {
 		delay_minutes = 1
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigCronRuleWeekly(rName string) string {
@@ -1729,7 +1956,9 @@ resource "cloudautomator_job" "test" {
 	delay_action_value {
 		delay_minutes = 1
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigCronRuleMonthlyDayOfWeek(rName string) string {
@@ -1756,7 +1985,9 @@ resource "cloudautomator_job" "test" {
 	delay_action_value {
 		delay_minutes = 1
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigWebhookRule(rName string) string {
@@ -1772,7 +2003,9 @@ resource "cloudautomator_job" "test" {
 	delay_action_value {
 		delay_minutes = 1
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigScheduleRule(rName string) string {
@@ -1792,7 +2025,9 @@ resource "cloudautomator_job" "test" {
 	delay_action_value {
 		delay_minutes = 1
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigSqsV2Rule(rName string) string {
@@ -1813,7 +2048,9 @@ resource "cloudautomator_job" "test" {
 	delay_action_value {
 		delay_minutes = 1
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestSqsAwsAccountId(), acctest.TestSqsRegion(), acctest.TestSqsQueue())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestSqsAwsAccountId(), acctest.TestSqsRegion(), acctest.TestSqsQueue(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigAmazonSnsRule(rName string) string {
@@ -1829,7 +2066,9 @@ resource "cloudautomator_job" "test" {
 	delay_action_value {
 		delay_minutes = 1
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigAuthorizeSecurityGroupIngressAction(rName string) string {
@@ -1851,7 +2090,9 @@ resource "cloudautomator_job" "test" {
 		to_port = "80"
 		cidr_ip = "172.31.0.0/16"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigChangeRdsClusterInstanceClassAction(rName string) string {
@@ -1871,7 +2112,9 @@ resource "cloudautomator_job" "test" {
 		tag_value = "develop"
 		db_instance_class = "db.t3.micro"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigChangeRdsInstanceClassAction(rName string) string {
@@ -1891,7 +2134,9 @@ resource "cloudautomator_job" "test" {
 		tag_value = "develop"
 		db_instance_class = "db.t3.micro"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigChangeInstanceTypeAction(rName string) string {
@@ -1911,7 +2156,9 @@ resource "cloudautomator_job" "test" {
 		tag_value = "develop"
 		instance_type = "t2.medium"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigCopyEbsSnapshotAction(rName string) string {
@@ -1932,7 +2179,9 @@ resource "cloudautomator_job" "test" {
 		tag_value = "develop"
 		trace_status = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigCopyImageAction(rName string) string {
@@ -1953,7 +2202,9 @@ resource "cloudautomator_job" "test" {
 		tag_value = "develop"
 		trace_status = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigCopyRdsSnapshotAction(rName string) string {
@@ -1974,7 +2225,9 @@ resource "cloudautomator_job" "test" {
 		option_group_name = "default:mysql-5-6"
 		trace_status = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigCreateEbsSnapshotAction(rName string) string {
@@ -1998,7 +2251,9 @@ resource "cloudautomator_job" "test" {
 		additional_tag_value = "example-value"
 		trace_status = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigCreateImageAction(rName string) string {
@@ -2032,7 +2287,9 @@ resource "cloudautomator_job" "test" {
 		trace_status = "true"
 		recreate_image_if_ami_status_failed	 = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigCreateRdsClusterSnapshotAction(rName string) string {
@@ -2054,7 +2311,9 @@ resource "cloudautomator_job" "test" {
 		db_cluster_snapshot_identifier = "test"
 		trace_status = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigCreateRdsSnapshotAction(rName string) string {
@@ -2076,7 +2335,9 @@ resource "cloudautomator_job" "test" {
 		rds_snapshot_id = "test"
 		trace_status = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigCreateRedshiftSnapshotAction(rName string) string {
@@ -2098,7 +2359,9 @@ resource "cloudautomator_job" "test" {
 		cluster_snapshot_identifier = "test"
 		trace_status = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigDelayAction(rName string) string {
@@ -2114,7 +2377,9 @@ resource "cloudautomator_job" "test" {
 	delay_action_value {
 		delay_minutes = 30
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigDeleteClusterAction(rName string) string {
@@ -2134,7 +2399,9 @@ resource "cloudautomator_job" "test" {
 		skip_final_cluster_snapshot = "false"
 		trace_status = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigDeleteRdsClusterAction(rName string) string {
@@ -2156,7 +2423,9 @@ resource "cloudautomator_job" "test" {
 		skip_final_snapshot = "false"
 		trace_status = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigDeleteRdsInstanceAction(rName string) string {
@@ -2178,7 +2447,9 @@ resource "cloudautomator_job" "test" {
 		skip_final_rds_snapshot = "false"
 		trace_status = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigDeregisterInstancesAction(rName string) string {
@@ -2198,7 +2469,9 @@ resource "cloudautomator_job" "test" {
 		tag_value = "develop"
 		load_balancer_name = "test"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigDeregisterTargetInstancesAction(rName string) string {
@@ -2217,7 +2490,9 @@ resource "cloudautomator_job" "test" {
 		tag_key = "env"
 		tag_value = "develop"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigRebootRdsInstancesAction(rName string) string {
@@ -2236,7 +2511,9 @@ resource "cloudautomator_job" "test" {
 		tag_key = "env"
 		tag_value = "develop"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigRebootWorkspacesAction(rName string) string {
@@ -2254,7 +2531,9 @@ resource "cloudautomator_job" "test" {
 		tag_key = "env"
 		tag_value = "develop"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigRegisterInstancesAction(rName string) string {
@@ -2274,7 +2553,9 @@ resource "cloudautomator_job" "test" {
 		tag_value = "develop"
 		load_balancer_name = "test"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigRegisterTargetInstancesAction(rName string) string {
@@ -2293,7 +2574,9 @@ resource "cloudautomator_job" "test" {
 		tag_key = "env"
 		tag_value = "develop"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigRestoreFromClusterSnapshotAction(rName string) string {
@@ -2322,7 +2605,9 @@ resource "cloudautomator_job" "test" {
 		allow_version_upgrade = "true"
 		delete_cluster_snapshot = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigRestoreRdsClusterAction(rName string) string {
@@ -2357,7 +2642,9 @@ resource "cloudautomator_job" "test" {
 		auto_minor_version_upgrade = "true"
 		delete_db_cluster_snapshot = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigRestoreRdsInstanceAction(rName string) string {
@@ -2397,7 +2684,9 @@ resource "cloudautomator_job" "test" {
 		additional_tag_value = "test-value"
 		trace_status = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigRevokeSecurityGroupIngressAction(rName string) string {
@@ -2419,7 +2708,9 @@ resource "cloudautomator_job" "test" {
 		to_port = "80"
 		cidr_ip = "172.31.0.0/16"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigSendCommandAction(rName string) string {
@@ -2446,7 +2737,9 @@ resource "cloudautomator_job" "test" {
 		timeout_seconds = 60
 		execution_timeout_seconds = 60
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigStartInstancesAction(rName string) string {
@@ -2469,7 +2762,10 @@ resource "cloudautomator_job" "test" {
 	}
 
 	allow_runtime_action_values = false
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigStartRdsClustersAction(rName string) string {
@@ -2489,7 +2785,9 @@ resource "cloudautomator_job" "test" {
 		tag_value = "develop"
 		trace_status = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigStartRdsInstancesAction(rName string) string {
@@ -2509,7 +2807,9 @@ resource "cloudautomator_job" "test" {
 		tag_value = "develop"
 		trace_status = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigStopInstancesAction(rName string) string {
@@ -2531,7 +2831,10 @@ resource "cloudautomator_job" "test" {
 	}
 
 	allow_runtime_action_values = false
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigStopRdsClustersAction(rName string) string {
@@ -2551,7 +2854,9 @@ resource "cloudautomator_job" "test" {
 		tag_value = "develop"
 		trace_status = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigStopRdsInstancesAction(rName string) string {
@@ -2571,7 +2876,9 @@ resource "cloudautomator_job" "test" {
 		tag_value = "develop"
 		trace_status = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigStartWorkspacesAction(rName string) string {
@@ -2589,7 +2896,9 @@ resource "cloudautomator_job" "test" {
 		tag_key = "env"
 		tag_value = "develop"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigTerminateWorkspacesAction(rName string) string {
@@ -2609,7 +2918,9 @@ resource "cloudautomator_job" "test" {
 		tag_value = "develop"
 		trace_status = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigUpdateRecordSetAction(rName string) string {
@@ -2628,7 +2939,9 @@ resource "cloudautomator_job" "test" {
 		record_set_type = "A"
 		record_set_value = "1.2.3.4"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigWindowsUpdateAction(rName string) string {
@@ -2654,7 +2967,9 @@ resource "cloudautomator_job" "test" {
 		update_level = "All"
 		timeout_seconds = 60
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigWindowsUpdateV2Action(rName string) string {
@@ -2682,5 +2997,7 @@ resource "cloudautomator_job" "test" {
 		output_s3_key_prefix = "test-key"
 		trace_status = "true"
 	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }

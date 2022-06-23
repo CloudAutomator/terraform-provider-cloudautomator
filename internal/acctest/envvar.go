@@ -23,3 +23,7 @@ func TestSqsRegion() string {
 func TestSqsQueue() string {
 	return os.Getenv("CA_TEST_SQS_QUEUE")
 }
+
+func TestPostProcessId() string {
+	return os.Getenv("CA_TEST_POST_PROCESS_ID")
+}

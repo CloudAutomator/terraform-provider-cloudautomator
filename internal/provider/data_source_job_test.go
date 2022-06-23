@@ -13,6 +13,7 @@ import (
 func TestAccCloudAutomatorDataSourceJob_basic(t *testing.T) {
 	dataSourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -35,6 +36,10 @@ func TestAccCloudAutomatorDataSourceJob_basic(t *testing.T) {
 						dataSourceName, "cron_rule_value.0.one_time_schedule", "2099/01/01"),
 					resource.TestCheckResourceAttr(
 						dataSourceName, "cron_rule_value.0.time_zone", "Tokyo"),
+					resource.TestCheckResourceAttr(
+						dataSourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						dataSourceName, "failed_post_process_id.0", postProcessId),
 				),
 			},
 		},
@@ -61,9 +66,11 @@ resource "cloudautomator_job" "test" {
 	delay_action_value {
 		delay_minutes = 1
 	}
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
 }
 
 data "cloudautomator_job" "test" {
 	id = cloudautomator_job.test.id
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }

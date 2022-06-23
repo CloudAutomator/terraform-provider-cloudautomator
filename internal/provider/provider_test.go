@@ -13,6 +13,7 @@ const testGroupIdEnvName = "CA_TEST_GROUP_ID"
 const testSqsAwsAccountIdEnvName = "CA_TEST_SQS_AWS_ACCOUNT_ID"
 const testSqsRegionEnvName = "CA_TEST_SQS_REGION"
 const testSqsQueueEnvName = "CA_TEST_SQS_QUEUE"
+const testPostProcessIdEnvName = "CA_TEST_POST_PROCESS_ID"
 
 var testAccProviderFactories map[string]func() (*schema.Provider, error)
 var testAccProviders map[string]*schema.Provider
@@ -61,6 +62,10 @@ func testAccPreCheck(t *testing.T) {
 
 	if err := os.Getenv(testSqsQueueEnvName); err == "" {
 		t.Fatalf("%s must be set for acceptance tests", testSqsQueueEnvName)
+	}
+
+	if err := os.Getenv(testPostProcessIdEnvName); err == "" {
+		t.Fatalf("%s must be set for acceptance tests", testPostProcessIdEnvName)
 	}
 
 	if err := os.Getenv(testApiKeyEnvName); err == "" {
