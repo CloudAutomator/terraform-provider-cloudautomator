@@ -1,25 +1,38 @@
 BUILD_DIR ?= $(CURDIR)/bin
-TEST?=$$(go list ./... | grep -v 'vendor')
+
 HOSTNAME=registry.terraform.io
 NAMESPACE=penta515
 NAME=cloudautomator
-VERSION=0.0.1
 BINARY=terraform-provider-${NAME}
+
 GO_OS ?= $(shell go env GOOS)
 GO_ARCH ?= $(shell go env GOARCH)
+GO_PACKAGES := $(shell go list ./... | grep -v vendor)
 
 build:
-	@go build -v -o "${BUILD_DIR}/${BINARY}"
+	@if [ -z "$(VERSION)" ]; \
+	then \
+	  echo "Please provide a version. Example: make build VERSION=0.0.1" && exit 1; \
+ 	fi
+	@go build -v -o "${BUILD_DIR}/${BINARY}_v$(VERSION)"
 
 install: build
 	@mkdir -p "${HOME}/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/$(VERSION)/${GO_OS}_${GO_ARCH}"
-	@mv "${BUILD_DIR}/${BINARY}" "${HOME}/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/$(VERSION)/${GO_OS}_${GO_ARCH}"
+	@mv "${BUILD_DIR}/${BINARY}_v$(VERSION)" "${HOME}/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/$(VERSION)/${GO_OS}_${GO_ARCH}"
 
 clean:
+	@if [ -z "$(VERSION)" ]; \
+    	then \
+    	  echo "Please provide a version. Example: make clean VERSION=0.0.1" && exit 1; \
+     	fi
 	@if [ -d "${HOME}/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/$(VERSION)" ]; \
 	then \
 	  rm -rf "${HOME}/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/$(VERSION)"; \
  	fi
 
-test-acc:
-	TF_ACC=1 go test -v -cover -timeout 60m ${TEST}
+test-unit:
+	@go test ${GO_PACKAGES} || exit 1
+	@echo ${GO_PACKAGES} | xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
+
+test-acc-e2e:
+	TF_ACC=1 go test -v -cover -timeout 60m ./internal/provider

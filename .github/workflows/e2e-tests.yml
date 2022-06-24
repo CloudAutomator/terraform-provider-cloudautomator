@@ -1,0 +1,73 @@
+name: e2e-acc-test
+
+concurrency:
+  group: one-at-time
+  cancel-in-progress: false
+
+on:
+  workflow_dispatch:
+    inputs:
+      ca_test_api_key:
+        description: "CA_TEST_API_KEY"
+        required: true
+      ca_test_aws_account_id:
+        description: "CA_TEST_AWS_ACCOUNT_ID"
+        required: true
+      ca_test_group_id:
+        description: "CA_TEST_GROUP_ID"
+        required: true
+      ca_test_sqs_aws_account_id:
+        description: "CA_TEST_SQS_AWS_ACCOUNT_ID"
+        required: true
+      ca_test_sqs_queue:
+        description: "CA_TEST_SQS_QUEUE"
+        required: true
+      ca_test_sqs_region:
+        description: "CA_TEST_SQS_REGION"
+        required: true
+      ca_test_post_process_id:
+        description: "CA_TEST_POST_PROCESS_ID"
+        required: true
+
+jobs:
+  test:
+    name: e2e-acc-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        terraform:
+          - '0.15.*'
+          - '1.1.*'
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.18"
+        id: go
+
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ matrix.terraform }}
+          terraform_wrapper: false
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v3.0.2
+
+      - name: Get dependencies
+        run: |
+          go mod download
+
+      - name: TF acceptance tests
+        timeout-minutes: 10
+        env:
+          TF_ACC: "1"
+          CA_TEST_API_KEY: ${{github.event.inputs.ca_test_api_key}}
+          CA_TEST_AWS_ACCOUNT_ID: ${{github.event.inputs.ca_test_aws_account_id}}
+          CA_TEST_GROUP_ID: ${{github.event.inputs.ca_test_group_id}}
+          CA_TEST_SQS_AWS_ACCOUNT_ID: ${{github.event.inputs.ca_test_sqs_aws_account_id}}
+          CA_TEST_SQS_QUEUE: ${{github.event.inputs.ca_test_sqs_queue}}
+          CA_TEST_SQS_REGION: ${{github.event.inputs.ca_test_sqs_region}}
+          CA_TEST_POST_PROCESS_ID: ${{github.event.inputs.ca_test_post_process_id}}
+        run: |
+          make test-acc-e2e
