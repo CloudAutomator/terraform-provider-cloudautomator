@@ -39,7 +39,7 @@ jobs:
       matrix:
         terraform:
           - '0.15.*'
-          - '1.1.*'
+          - '1.2.*'
     steps:
       - name: Set up Go
         uses: actions/setup-go@v3
