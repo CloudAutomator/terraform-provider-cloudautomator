@@ -34,8 +34,7 @@ func TestPostProcess_Get(t *testing.T) {
 		}`))
 	})
 
-	token := "token"
-	c, _ := New(&token, WithAPIEndpoint(server.URL))
+	c, _ := New("example-token", WithAPIEndpoint(server.URL))
 
 	postProcess, _, err := c.GetPostProcess("1000")
 	if err != nil {
@@ -130,8 +129,7 @@ func TestPostProcess_List(t *testing.T) {
 
 	})
 
-	token := "token"
-	c, _ := New(&token, WithAPIEndpoint(server.URL))
+	c, _ := New("example-token", WithAPIEndpoint(server.URL))
 
 	postProcesses, _, err := c.GetPostProcesses()
 	if err != nil {
@@ -195,8 +193,7 @@ func TestPostProcess_Create(t *testing.T) {
 		`))
 	})
 
-	token := "token"
-	c, _ := New(&token, WithAPIEndpoint(server.URL))
+	c, _ := New("example-token", WithAPIEndpoint(server.URL))
 
 	postProcess := new(PostProcess)
 	createdPostProcess, _, err := c.CreatePostProcess(postProcess)
@@ -248,8 +245,7 @@ func TestPostProcess_Update(t *testing.T) {
 		`))
 	})
 
-	token := "token"
-	c, _ := New(&token, WithAPIEndpoint(server.URL))
+	c, _ := New("example-token", WithAPIEndpoint(server.URL))
 
 	postProcess := &PostProcess{
 		Id:   "1000",
@@ -283,8 +279,7 @@ func TestPostProcess_Delete(t *testing.T) {
 		testHttpMethod(t, r, "DELETE")
 	})
 
-	token := "token"
-	c, _ := New(&token, WithAPIEndpoint(server.URL))
+	c, _ := New("example-token", WithAPIEndpoint(server.URL))
 
 	_, err := c.DeleteJob("1000")
 	if err != nil {

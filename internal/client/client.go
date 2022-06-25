@@ -28,10 +28,10 @@ var (
 type Client struct {
 	HttpClient  *http.Client
 	ApiEndpoint *url.URL
-	Token       *string
+	Token       string
 }
 
-func New(authToken *string, options ...ClientOptions) (*Client, error) {
+func New(authToken string, options ...ClientOptions) (*Client, error) {
 	parsedApiEndpoint, _ := url.Parse(apiEndpoint)
 
 	c := &Client{
@@ -76,7 +76,7 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *c.Token))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.Token))
 	req.Header.Set("Content-Type", contentTypeHeader)
 	req.Header.Set("User-Agent", userAgentHeader)
 

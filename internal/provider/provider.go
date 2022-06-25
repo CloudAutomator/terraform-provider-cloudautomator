@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-const ApiKeyEnvName = "CA_API_KEY"
+const ApiKeyEnvName = "CLOUD_AUTOMATOR_API_KEY"
 
 func Provider() *schema.Provider {
 	return &schema.Provider{
@@ -43,7 +43,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 		return nil, diag.FromErr(errors.New("api_key must be set"))
 	}
 
-	client, _ := client.New(&apiKey)
+	client, _ := client.New(apiKey)
 
 	return client, diags
 }

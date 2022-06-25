@@ -25,6 +25,31 @@ $ cd $GOPATH/src/github.com/penta515/terraform-provider-cloudautomator
 $ make install
 ```
 
+## Authentication and Configuration
+Configuration for the Cloud Automator Provider can be derived from several sources, which are applied in the following order:
+
+1. Parameters in the provider configuration
+1. Environment variables
+
+### Provider Configuration
+
+```hcl
+provider "cloudautomator" {
+  api_key = "abcdefghijklmnopqrstuvwxyz"
+}
+```
+
+### Environment Variables
+
+```hcl
+provider "cloudautomator" {}
+```
+
+```shell
+$ export CLOUD_AUTOMATOR_API_KEY="abcdefghijklmnopqrstuvwxyz"
+$ terraform plan
+```
+
 ## Usage Example
 
 ```hcl
@@ -33,39 +58,39 @@ terraform {
   required_providers {
     cloudautomator = {
       source = "penta515/cloudautomator"
-
       version = "0.0.1"
     }
   }
 }
 
-provider "cloudautomator" {
-  api_key = "abcdefghijklmnopqrstuvwxyz"
-}
+provider "cloudautomator" {}
 
 resource "cloudautomator_job" "example-job" {
-    name = "example-job"
+  name = "example-job"
 
-    group_id = 10
-    aws_account_id = 20
+  group_id       = 10
+  aws_account_id = 20
 
-    rule_type = "cron"
-    cron_rule_value {
-        hour = "9"
-        minutes = "30"
-        schedule_type = "weekly"
-        weekly_schedule = [
-            "monday",
-            "sunday"
-        ]
-        time_zone = "Tokyo"
-        dates_to_skip = ["2022-12-31"]
-        national_holiday_schedule = "true"
-    }
+  rule_type = "cron"
+  cron_rule_value {
+    hour          = "9"
+    minutes       = "30"
+    schedule_type = "weekly"
+    weekly_schedule = [
+      "monday",
+      "sunday"
+    ]
+    time_zone                 = "Tokyo"
+    dates_to_skip             = ["2022-12-31"]
+    national_holiday_schedule = "true"
+  }
 
-    action_type = "delay"
-    delay_action_value {
-        delay_minutes = 1
-    }
+  action_type = "delay"
+  delay_action_value {
+    delay_minutes = 1
+  }
+
+  completed_post_process_id = [100]
+  failed_post_process_id    = [200]
 }
 ```

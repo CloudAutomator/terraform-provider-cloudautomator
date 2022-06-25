@@ -50,8 +50,7 @@ func TestJob_Get(t *testing.T) {
 		}`))
 	})
 
-	token := "token"
-	c, _ := New(&token, WithAPIEndpoint(server.URL))
+	c, _ := New("example-token", WithAPIEndpoint(server.URL))
 
 	job, _, err := c.GetJob("1000")
 	if err != nil {
@@ -190,8 +189,7 @@ func TestJob_List(t *testing.T) {
 
 	})
 
-	token := "token"
-	c, _ := New(&token, WithAPIEndpoint(server.URL))
+	c, _ := New("example-token", WithAPIEndpoint(server.URL))
 
 	jobs, _, err := c.GetJobs()
 	if err != nil {
@@ -293,8 +291,7 @@ func TestJob_Create(t *testing.T) {
 		`))
 	})
 
-	token := "token"
-	c, _ := New(&token, WithAPIEndpoint(server.URL))
+	c, _ := New("example-token", WithAPIEndpoint(server.URL))
 
 	job := new(Job)
 	createdJob, _, err := c.CreateJob(job)
@@ -372,8 +369,7 @@ func TestJob_Update(t *testing.T) {
 		`))
 	})
 
-	token := "token"
-	c, _ := New(&token, WithAPIEndpoint(server.URL))
+	c, _ := New("example-token", WithAPIEndpoint(server.URL))
 
 	job := &Job{
 		Id: "1000",
@@ -418,8 +414,7 @@ func TestJob_Delete(t *testing.T) {
 		testHttpMethod(t, r, "DELETE")
 	})
 
-	token := "token"
-	c, _ := New(&token, WithAPIEndpoint(server.URL))
+	c, _ := New("example-token", WithAPIEndpoint(server.URL))
 
 	_, err := c.DeleteJob("1")
 	if err != nil {

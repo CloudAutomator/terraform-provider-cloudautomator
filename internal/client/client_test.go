@@ -59,7 +59,7 @@ func TestClient_NewRequest(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			token := "example"
 
-			c, _ := New(&token)
+			c, _ := New(token)
 			_, err := c.NewRequest(tt.method, tt.requestUrl, "")
 
 			testErrCheck(t, "c.NewRequest()", tt.expectErrorMessage, err)
@@ -100,7 +100,7 @@ func TestClient_Do(t *testing.T) {
 			ts := new(TestStruct)
 			mux.HandleFunc("/test", clientDoHandler(t, tt.json))
 
-			c, _ := New(&tt.token, WithAPIEndpoint(server.URL))
+			c, _ := New(tt.token, WithAPIEndpoint(server.URL))
 			req, _ := c.NewRequest(http.MethodPost, server.URL+"/test", "")
 			_, err := c.Do(req, ts)
 
