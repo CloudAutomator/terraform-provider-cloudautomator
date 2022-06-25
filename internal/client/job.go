@@ -28,19 +28,19 @@ type Job struct {
 	FailedPostProcessId      []int                  `json:"failed_post_process_id,omitempty"`
 }
 
-type GetJobResponse struct {
+type JobGetResponse struct {
 	Data json.RawMessage `json:"data"`
 }
 
-type PostJobResponse struct {
+type JobPostResponse struct {
 	Data json.RawMessage `json:"data"`
 }
 
-type PatchJobResponse struct {
+type JobPatchResponse struct {
 	Data json.RawMessage `json:"data"`
 }
 
-type ListJobResponse struct {
+type JobListResponse struct {
 	Data  []json.RawMessage `json:"data"`
 	Links struct {
 		Self  string `json:"self"`
@@ -101,7 +101,7 @@ func (c *Client) GetJob(jobId string) (*Job, *http.Response, error) {
 		return nil, nil, err
 	}
 
-	getResponse := new(GetJobResponse)
+	getResponse := new(JobGetResponse)
 	resp, err := c.Do(req, &getResponse)
 	if err != nil {
 		return nil, resp, err
@@ -134,7 +134,7 @@ func (c *Client) GetJobs() (*[]Job, *http.Response, error) {
 			return nil, nil, err
 		}
 
-		listResponse := new(ListJobResponse)
+		listResponse := new(JobListResponse)
 		resp, err := c.Do(req, listResponse)
 		if err != nil {
 			return nil, resp, err
@@ -161,7 +161,7 @@ func (c *Client) CreateJob(job *Job) (*Job, *http.Response, error) {
 		return nil, nil, err
 	}
 
-	postResponse := new(PostJobResponse)
+	postResponse := new(JobPostResponse)
 	resp, err := c.Do(req, &postResponse)
 	if err != nil {
 		return nil, resp, err
@@ -182,7 +182,7 @@ func (c *Client) UpdateJob(job *Job) (*Job, *http.Response, error) {
 		return nil, nil, err
 	}
 
-	patchResponse := new(PatchJobResponse)
+	patchResponse := new(JobPatchResponse)
 	resp, err := c.Do(req, &patchResponse)
 	if err != nil {
 		return nil, resp, err

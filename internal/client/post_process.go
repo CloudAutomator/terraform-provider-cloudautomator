@@ -17,19 +17,19 @@ type PostProcess struct {
 	Parameters    map[string]interface{} `json:"parameters"`
 }
 
-type GetPostProcessResponse struct {
+type PostProcessGetResponse struct {
 	Data json.RawMessage `json:"data"`
 }
 
-type PostPostProcessResponse struct {
+type PostProcessPostResponse struct {
 	Data json.RawMessage `json:"data"`
 }
 
-type PatchPostProcessResponse struct {
+type PostProcessPatchResponse struct {
 	Data json.RawMessage `json:"data"`
 }
 
-type ListPostProcessResponse struct {
+type PostProcessListResponse struct {
 	Data  []json.RawMessage `json:"data"`
 	Links struct {
 		Self  string `json:"self"`
@@ -64,7 +64,7 @@ func (c *Client) GetPostProcess(postProcessId string) (*PostProcess, *http.Respo
 		return nil, nil, err
 	}
 
-	getResponse := new(GetPostProcessResponse)
+	getResponse := new(PostProcessGetResponse)
 	resp, err := c.Do(req, &getResponse)
 	if err != nil {
 		return nil, resp, err
@@ -95,7 +95,7 @@ func (c *Client) GetPostProcesses() (*[]PostProcess, *http.Response, error) {
 			return nil, nil, err
 		}
 
-		listResponse := new(ListPostProcessResponse)
+		listResponse := new(PostProcessListResponse)
 		resp, err := c.Do(req, listResponse)
 		if err != nil {
 			return nil, resp, err
@@ -122,7 +122,7 @@ func (c *Client) CreatePostProcess(postProcess *PostProcess) (*PostProcess, *htt
 		return nil, nil, err
 	}
 
-	postResponse := new(PostPostProcessResponse)
+	postResponse := new(PostProcessPostResponse)
 	resp, err := c.Do(req, &postResponse)
 	if err != nil {
 		return nil, resp, err
@@ -143,7 +143,7 @@ func (c *Client) UpdatePostProcess(postProcess *PostProcess) (*PostProcess, *htt
 		return nil, nil, err
 	}
 
-	patchResponse := new(PatchPostProcessResponse)
+	patchResponse := new(PostProcessPatchResponse)
 	resp, err := c.Do(req, &patchResponse)
 	if err != nil {
 		return nil, resp, err

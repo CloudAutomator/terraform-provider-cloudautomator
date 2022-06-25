@@ -13,11 +13,11 @@ type AwsAccount struct {
 	Name string `json:"name"`
 }
 
-type GetAwsAccountResponse struct {
+type AwsAccountGetResponse struct {
 	Data json.RawMessage `json:"data"`
 }
 
-type ListAwsAccountResponse struct {
+type AwsAccountListResponse struct {
 	Data  []json.RawMessage `json:"data"`
 	Links struct {
 		Self  string `json:"self"`
@@ -48,7 +48,7 @@ func (c *Client) GetAwsAccount(group_id, awsAccountId string) (*AwsAccount, *htt
 		return nil, nil, err
 	}
 
-	getResponse := new(GetAwsAccountResponse)
+	getResponse := new(AwsAccountGetResponse)
 	resp, err := c.Do(req, &getResponse)
 	if err != nil {
 		return nil, resp, err
@@ -79,7 +79,7 @@ func (c *Client) GetAwsAccounts(group_id string) (*[]AwsAccount, *http.Response,
 			return nil, nil, err
 		}
 
-		listResponse := new(ListAwsAccountResponse)
+		listResponse := new(AwsAccountListResponse)
 		resp, err := c.Do(req, listResponse)
 		if err != nil {
 			return nil, resp, err
