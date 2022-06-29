@@ -12,41 +12,41 @@ import (
 
 func resourcePostProcess() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Cloud Automatorの後処理リソースを管理します。",
+		Description:   "Manage Cloud Automator post-process resources",
 		CreateContext: resourcePostProcessCreate,
 		ReadContext:   resourcePostProcessRead,
 		UpdateContext: resourcePostProcessUpdate,
 		DeleteContext: resourcePostProcessDelete,
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Description: "後処理ID",
+				Description: "Post-process ID",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
 			"name": {
-				Description: "後処理名",
+				Description: "Post-process name",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"service": {
-				Description: "サービス名",
+				Description: "Post-process service name",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"group_id": {
-				Description: "グループID",
+				Description: "Group ID",
 				Type:        schema.TypeInt,
 				Optional:    true,
 				ForceNew:    true,
 			},
 			"shared_by_group": {
-				Description: "共通後処理にするかどうか",
+				Description: "Whether shared by groups",
 				Type:        schema.TypeBool,
 				Optional:    true,
 				ForceNew:    true,
 			},
 			"email_parameters": {
-				Description: "メールの設定値",
+				Description: "\"email\" parameter value",
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Optional:    true,
@@ -55,7 +55,7 @@ func resourcePostProcess() *schema.Resource {
 				},
 			},
 			"slack_parameters": {
-				Description: "メールの設定値",
+				Description: "slack parameter value",
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Optional:    true,
@@ -64,7 +64,7 @@ func resourcePostProcess() *schema.Resource {
 				},
 			},
 			"sqs_parameters": {
-				Description: "メールの設定値",
+				Description: "SQS parameter value",
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Optional:    true,
@@ -73,7 +73,7 @@ func resourcePostProcess() *schema.Resource {
 				},
 			},
 			"webhook_parameters": {
-				Description: "メールの設定値",
+				Description: "webhook parameter value",
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Optional:    true,

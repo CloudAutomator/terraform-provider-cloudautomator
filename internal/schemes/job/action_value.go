@@ -7,42 +7,42 @@ import (
 func AuthorizeSecurityGroupIngressyActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_security_group": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"security_group_id": {
-			Description: "対象のセキュリティグループID",
+			Description: "Target security group ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"ip_protocol": {
-			Description: "通信プロトコル",
+			Description: "IP protocol",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"to_port": {
-			Description: "ポート番号",
+			Description: "port",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"cidr_ip": {
-			Description: "送信元IPのCIDRアドレス",
+			Description: "CIDR IP",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -52,32 +52,32 @@ func AuthorizeSecurityGroupIngressyActionValueFields() map[string]*schema.Schema
 func ChangeRdsClusterInstanceClassActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_rds_instance": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"rds_instance_id": {
-			Description: "対象のDBインスタンスID",
+			Description: "Target DB instance ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"db_instance_class": {
-			Description: "変更後のDBインスタンスクラス",
+			Description: "DB instance class after modification",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -87,32 +87,32 @@ func ChangeRdsClusterInstanceClassActionValueFields() map[string]*schema.Schema 
 func ChangeRdsInstanceClassActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_rds_instance": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"rds_instance_id": {
-			Description: "対象のDBインスタンスID",
+			Description: "Target DB instance ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"db_instance_class": {
-			Description: "変更後のDBインスタンスクラス",
+			Description: "DB instance class after modification",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -122,32 +122,32 @@ func ChangeRdsInstanceClassActionValueFields() map[string]*schema.Schema {
 func ChangeInstanceTypeActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_instance": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"instance_id": {
-			Description: "対象のEC2インスタンスID",
+			Description: "Target EC2 instance ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"instance_type": {
-			Description: "変更後のインスタンスタイプ",
+			Description: "Changed instance type",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -157,37 +157,37 @@ func ChangeInstanceTypeActionValueFields() map[string]*schema.Schema {
 func CopyEbsSnapshotActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"source_region": {
-			Description: "コピー元のAWSリージョン",
+			Description: "AWS Region from which the copy was made",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"destination_region": {
-			Description: "コピー先のAWSリージョン",
+			Description: "AWS Region to copy to",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_ebs_snapshot": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"snapshot_id": {
-			Description: "対象のEBSスナップショットID",
+			Description: "Target EBS snapshot ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"trace_status": {
-			Description: "EBSスナップショットのコピー完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -197,17 +197,17 @@ func CopyEbsSnapshotActionValueFields() map[string]*schema.Schema {
 func CopyImageActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"source_region": {
-			Description: "コピー元のAWSリージョン",
+			Description: "AWS Region from which the copy was made",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"destination_region": {
-			Description: "コピー先のAWSリージョン",
+			Description: "AWS Region to copy to",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_image": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -217,17 +217,17 @@ func CopyImageActionValueFields() map[string]*schema.Schema {
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"trace_status": {
-			Description: "AMIのコピー完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -237,37 +237,37 @@ func CopyImageActionValueFields() map[string]*schema.Schema {
 func CopyRdsSnapshotActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"source_region": {
-			Description: "コピー元のAWSリージョン",
+			Description: "AWS Region from which the copy was made",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"destination_region": {
-			Description: "コピー先のAWSリージョン",
+			Description: "AWS Region to copy to",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_rds_snapshot": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"rds_snapshot_id": {
-			Description: "対象のDBスナップショットID",
+			Description: "Target DB snapshot ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"source_rds_instance_id": {
-			Description: "対象のRDSインスタンスID",
+			Description: "Target RDS instance ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"option_group_name": {
-			Description: "コピー先リージョンに設定するオプショングループ名",
+			Description: "Option group name to be set for the destination region",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"trace_status": {
-			Description: "DBスナップショットのコピー完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -277,12 +277,12 @@ func CopyRdsSnapshotActionValueFields() map[string]*schema.Schema {
 func CreateEbsSnapshotActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_volume": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -292,37 +292,37 @@ func CreateEbsSnapshotActionValueFields() map[string]*schema.Schema {
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"generation": {
-			Description: "EBSボリュームの世代管理を行う数",
+			Description: "Number of EBS volumes to manage generation",
 			Type:        schema.TypeInt,
 			Required:    true,
 		},
 		"description": {
-			Description: "EBSボリュームに設定する説明",
+			Description: "Description to be set for EBS volume",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"additional_tag_key": {
-			Description: "作成したEBSボリュームに割り当てるタグのキー",
+			Description: "Tag key to assign to the created EBS volume",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"additional_tag_value": {
-			Description: "作成したEBSボリュームに割り当てるタグの値",
+			Description: "Tag key to assign to the created EBS volume Tag value to assign to the created EBS volume",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"trace_status": {
-			Description: "EBSボリュームの作成完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -332,52 +332,52 @@ func CreateEbsSnapshotActionValueFields() map[string]*schema.Schema {
 func CreateImageActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_image_instance": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"instance_id": {
-			Description: "対象のEC2インスタンスID",
+			Description: "Target EC2 instance ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"generation": {
-			Description: "AMIの世代管理を行う数",
+			Description: "Number of AMI generations to be managed",
 			Type:        schema.TypeInt,
 			Required:    true,
 		},
 		"image_name": {
-			Description: "AMIに設定するイメージ名",
+			Description: "Image name to set for AMI",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"description": {
-			Description: "AMIに設定する説明",
+			Description: "Description to be set in AMI",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"reboot_instance": {
-			Description: "AMI作成時にインスタンスを再起動するか否かのフラグ",
+			Description: "Flag whether or not to restart the instance when creating an AMI",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"additional_tags": {
-			Description: "作成したAMIに割り当てるタグの配列",
+			Description: "Array of tags to assign to the created AMI",
 			Type:        schema.TypeSet,
 			Optional:    true,
 			Elem: &schema.Resource{
@@ -394,27 +394,27 @@ func CreateImageActionValueFields() map[string]*schema.Schema {
 			},
 		},
 		"additional_tag_key": {
-			Description: "作成したAMIに割り当てるタグのキー",
+			Description: "Tag key to assign to the created AMI",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"additional_tag_value": {
-			Description: "作成したAMIに割り当てるタグの値",
+			Description: "Tag value to assign to the created AMI",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"add_same_tag_to_snapshot": {
-			Description: "AMIに割り当てたタグをEBSスナップショットにも追加するか否かのフラグ",
+			Description: "Whether to add the tags assigned to the AMI to the EBS snapshot as well",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"trace_status": {
-			Description: "AMIの作成完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"recreate_image_if_ami_status_failed": {
-			Description: "ジョブ失敗時にリトライを行うか否かのフラグ",
+			Description: "Whether or not to retry when a job fails",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -424,42 +424,42 @@ func CreateImageActionValueFields() map[string]*schema.Schema {
 func CreateRdsClusterSnapshotActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_rds_cluster": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"db_cluster_identifier": {
-			Description: "DBクラスターの特定に利用するID",
+			Description: "Target DB Cluster ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"db_cluster_snapshot_identifier": {
-			Description: "作成するDBクラスタースナップショットのプレフィックス",
+			Description: "Prefix for DB cluster snapshot to be created",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"generation": {
-			Description: "DBクラスタースナップショットの世代管理を行う数",
+			Description: "Number of DB cluster snapshots to manage generations",
 			Type:        schema.TypeInt,
 			Required:    true,
 		},
 		"trace_status": {
-			Description: "DBクラスタースナップショットの作成完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -469,42 +469,42 @@ func CreateRdsClusterSnapshotActionValueFields() map[string]*schema.Schema {
 func CreateRdsSnapshotActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_rds_instance": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"rds_snapshot_id": {
-			Description: "対象のDBスナップショットID",
+			Description: "Target DB snapshot ID",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"rds_instance_id": {
-			Description: "対象のDBインスタンスID",
+			Description: "Target DB instance ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"generation": {
-			Description: "DBスナップショットの世代管理を行う数",
+			Description: "Number of DB snapshots generation management",
 			Type:        schema.TypeInt,
 			Required:    true,
 		},
 		"trace_status": {
-			Description: "DBスナップショットの作成完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -514,42 +514,42 @@ func CreateRdsSnapshotActionValueFields() map[string]*schema.Schema {
 func CreateRedshiftSnapshotActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_cluster": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"cluster_snapshot_identifier": {
-			Description: "スナップショットに設定する名前",
+			Description: "Name to be set for the snapshot",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"cluster_identifier": {
-			Description: "対象のクラスターID",
+			Description: "Target Cluster ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"generation": {
-			Description: "スナップショットの世代管理を行う数",
+			Description: "Number of snapshots to be managed for generation",
 			Type:        schema.TypeInt,
 			Required:    true,
 		},
 		"trace_status": {
-			Description: "スナップショットの作成完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -568,27 +568,27 @@ func DelayActionValueFields() map[string]*schema.Schema {
 func DeleteClusterActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"cluster_identifier": {
-			Description: "対象のRedshiftクラスターのidentifier",
+			Description: "Target Redshift cluster ID",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"final_cluster_snapshot_identifier": {
-			Description: "Redshiftクラスター削除時に取得するRedshiftクラスタースナップショット名",
+			Description: "Snapshot name to be taken when deleting Redshift cluster",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"skip_final_cluster_snapshot": {
-			Description: "Redshiftクラスター削除時のRedshiftクラスタースナップショット取得をスキップするか",
+			Description: "Whether to skip taking snapshots when deleting Redshift clusters",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"trace_status": {
-			Description: "Redshiftクラスターの削除完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -598,42 +598,42 @@ func DeleteClusterActionValueFields() map[string]*schema.Schema {
 func DeleteRdsClusterActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_rds_cluster": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"db_cluster_identifier": {
-			Description: "DBクラスターの特定に利用するID",
+			Description: "Target DB Cluster ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"final_db_snapshot_identifier": {
-			Description: "DBクラスター削除時に取得するDBクラスタースナップショット名",
+			Description: "Snapshot name to be taken when deleting DB cluster",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"skip_final_snapshot": {
-			Description: "DBクラスター削除時のDBクラスタースナップショット取得をスキップするか",
+			Description: "Whether to skip taking snapshots when deleting DB clusters",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"trace_status": {
-			Description: "DBクラスターの削除完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -643,42 +643,42 @@ func DeleteRdsClusterActionValueFields() map[string]*schema.Schema {
 func DeleteRdsInstanceActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_rds_instance": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"rds_instance_id": {
-			Description: "対象のDBインスタンスID",
+			Description: "Target DB instance ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"final_rds_snapshot_id": {
-			Description: "RDSインスタンス削除時に取得するDBスナップショット名",
+			Description: "DB snapshot name to be retrieved when deleting RDS instance",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"skip_final_rds_snapshot": {
-			Description: "RDSインスタンス削除時のDBスナップショット取得をスキップするか",
+			Description: "Whether to skip taking DB snapshots when deleting RDS instances",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"trace_status": {
-			Description: "DBスナップショットの作成完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -688,32 +688,32 @@ func DeleteRdsInstanceActionValueFields() map[string]*schema.Schema {
 func DeregisterInstancesActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_instance": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"instance_id": {
-			Description: "対象のEC2インスタンスID",
+			Description: "Target EC2 instance ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"load_balancer_name": {
-			Description: "EC2インスタンスを登録解除するELB(CLB)名",
+			Description: "Name of the ELB (CLB) to unregister the EC2 instance",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -723,22 +723,22 @@ func DeregisterInstancesActionValueFields() map[string]*schema.Schema {
 func DeregisterTargetInstancesActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"target_group_arn": {
-			Description: "対象のターゲットグループのARN",
+			Description: "ARN of the target group",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -748,27 +748,27 @@ func DeregisterTargetInstancesActionValueFields() map[string]*schema.Schema {
 func RebootRdsInstancesActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_rds_instance": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"rds_instance_id": {
-			Description: "対象のDBインスタンスID",
+			Description: "Target DB instance ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -778,17 +778,17 @@ func RebootRdsInstancesActionValueFields() map[string]*schema.Schema {
 func RebootWorkspacesActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -798,32 +798,32 @@ func RebootWorkspacesActionValueFields() map[string]*schema.Schema {
 func RegisterInstancesActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_instance": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"instance_id": {
-			Description: "対象のEC2インスタンスID",
+			Description: "Target EC2 instance ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"load_balancer_name": {
-			Description: "EC2インスタンスを登録するELB(CLB)名",
+			Description: "Name of the ELB (CLB) where the EC2 instance is registered",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -833,22 +833,22 @@ func RegisterInstancesActionValueFields() map[string]*schema.Schema {
 func RegisterTargetInstancesActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"target_group_arn": {
-			Description: "対象のターゲットグループのARN",
+			Description: "ARN of the target group",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -858,47 +858,47 @@ func RegisterTargetInstancesActionValueFields() map[string]*schema.Schema {
 func RestoreFromClusterSnapshotActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"cluster_identifier": {
-			Description: "リストア後のRedshiftクラスターのidentifier",
+			Description: "Redshift cluster ID after restore",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"snapshot_identifier": {
-			Description: "リストアに使用するRedshiftスナップショットID",
+			Description: "Redshift snapshot ID to be used for restore",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"cluster_parameter_group_name": {
-			Description: "リストア後のRedshiftクラスターに設定するパラメータグループ名",
+			Description: "Parameter group name to be set for the restored Redshift cluster",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"cluster_subnet_group_name": {
-			Description: "リストア後のRedshiftクラスターを配置するサブネットグループ名",
+			Description: "Name of the subnet group where the restored Redshift cluster will be located",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"port": {
-			Description: "リストア後のDBクラスターの接続ポート番号",
+			Description: "Port number of the DB cluster after restoration",
 			Type:        schema.TypeInt,
 			Optional:    true,
 		},
 		"publicly_accessible": {
-			Description: "リストア後のRedshiftクラスターをパブリックアクセス可能にするか否か",
+			Description: "Whether to make the restored Redshift cluster publicly accessible or not",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"availability_zone": {
-			Description: "リストア後のRedshiftクラスターのAvailabilityZone",
+			Description: "AvailabilityZone of the Redshift cluster after restore",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"vpc_security_group_ids": {
-			Description: "リストア後のRedshiftクラスターに設定するセキュリティグループIDが含まれる配列",
+			Description: "Array containing the security group IDs to be set for the restored Redshift cluster",
 			Type:        schema.TypeList,
 			Optional:    true,
 			Elem: &schema.Schema{
@@ -906,12 +906,12 @@ func RestoreFromClusterSnapshotActionValueFields() map[string]*schema.Schema {
 			},
 		},
 		"allow_version_upgrade": {
-			Description: "リストア後のRedshiftクラスターで自動マイナーバージョンアップグレードを有効にするかどうか",
+			Description: "Whether to enable automatic minor version upgrades on the Redshift cluster after restore",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"delete_cluster_snapshot": {
-			Description: "リストアに利用したRedshiftスナップショットを削除するかどうか",
+			Description: "Whether to delete Redshift snapshots used for restore",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -921,57 +921,57 @@ func RestoreFromClusterSnapshotActionValueFields() map[string]*schema.Schema {
 func RestoreRdsClusterActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"db_instance_identifier": {
-			Description: "リストア後のDBインスタンスのidentifier",
+			Description: "ID of DB instance after restoration",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"db_cluster_identifier": {
-			Description: "リストア後のDBクラスターのidentifier",
+			Description: "ID of DB cluster after restore",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"snapshot_identifier": {
-			Description: "リストアに使用するDBスナップショットID",
+			Description: "DB snapshot ID to be used for restore",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"engine": {
-			Description: "リストア後のDBクラスターのDBエンジン",
+			Description: "DB engine of DB cluster after restore",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"engine_version": {
-			Description: "リストア後のDBクラスターのDBエンジンのバージョン",
+			Description: "DB engine version of the DB cluster after restore",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"db_instance_class": {
-			Description: "リストア後のDBインスタンスクラス",
+			Description: "DB instance class after restore",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"db_subnet_group_name": {
-			Description: "リストア後のDBクラスターを配置するDBサブネットグループ名",
+			Description: "DB subnet group name where the DB cluster will be located after restoration",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"publicly_accessible": {
-			Description: "リストア後のDBクラスターをパブリックアクセス可能にするか否か",
+			Description: "Whether to make the DB cluster publicly accessible after restore",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"availability_zone": {
-			Description: "リストア後のDBクラスターを配置するAZ",
+			Description: "AZ to deploy DB cluster after restore",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"vpc_security_group_ids": {
-			Description: "リストア後のDBクラスターに設定するセキュリティグループIDが含まれる配列",
+			Description: "Array containing the security group IDs to be set for the restored DB cluster",
 			Type:        schema.TypeList,
 			Optional:    true,
 			Elem: &schema.Schema{
@@ -979,32 +979,32 @@ func RestoreRdsClusterActionValueFields() map[string]*schema.Schema {
 			},
 		},
 		"port": {
-			Description: "リストア後のDBクラスターの接続ポート番号",
+			Description: "Port number of the DB cluster after restoration",
 			Type:        schema.TypeInt,
 			Optional:    true,
 		},
 		"db_cluster_parameter_group_name": {
-			Description: "リストア後のDBクラスターに設定するパラメータグループ名",
+			Description: "Parameter group name to be set for the DB cluster after restoration",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"db_parameter_group_name": {
-			Description: "リストア後のDBインスタンスに設定するパラメータグループ名",
+			Description: "Parameter group name to be set for the DB instance after restoration",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"option_group_name": {
-			Description: "リストア後のDBクラスターに設定するオプショングループ名",
+			Description: "Option group name to be set for the DB cluster after restoration",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"auto_minor_version_upgrade": {
-			Description: "リストア後のDBクラスターで自動マイナーバージョンアップグレードを有効にするかどうか",
+			Description: "Whether to enable automatic minor version upgrades on the DB cluster after restore",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"delete_db_cluster_snapshot": {
-			Description: "リストアに利用したDBスナップショットを削除するかどうか",
+			Description: "Whether to delete DB snapshots used for restore",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -1014,62 +1014,62 @@ func RestoreRdsClusterActionValueFields() map[string]*schema.Schema {
 func RestoreRdsInstanceActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"rds_instance_id": {
-			Description: "対象のDBインスタンスID",
+			Description: "Target DB instance ID",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"rds_snapshot_id": {
-			Description: "対象のDBスナップショットID",
+			Description: "Target DB snapshot ID",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"db_engine": {
-			Description: "リストア後のRDSインスタンスのDBエンジン",
+			Description: "DB engine of the RDS instance after restore",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"license_model": {
-			Description: "リストア後のRDSインスタンスのライセンスモデル",
+			Description: "Licensing model of the RDS instance after restore",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"db_instance_class": {
-			Description: "リストア後のDBインスタンスクラス",
+			Description: "DB instance class after restore",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"multi_az": {
-			Description: "リストア後のRDSインスタンスをMulti-AZ構成にするか否か",
+			Description: "Whether or not to configure the RDS instance in a Multi-AZ configuration after restoration",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"storage_type": {
-			Description: "リストア後のRDSインスタンスのストレージタイプ",
+			Description: "Storage type of the RDS instance after restore",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"iops": {
-			Description: "リストア後のRDSインスタンスのIOPS値",
+			Description: "IOPS value of RDS instance after restore",
 			Type:        schema.TypeInt,
 			Optional:    true,
 		},
 		"vpc": {
-			Description: "リストア後のRDSインスタンスを配置するVPCのID",
+			Description: "ID of the VPC where the RDS instance will be placed after restoration",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"subnet_group": {
-			Description: "リストア後のRDSインスタンスを配置するDBサブネットグループ名",
+			Description: "DB subnet group name where the restored RDS instance will be located",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"publicly_accessible": {
-			Description: "リストア後のRDSインスタンスをパブリックアクセス可能にするか否か",
+			Description: "Whether to make the restored RDS instance publicly accessible or not",
 			Type:        schema.TypeString,
 			Optional:    true,
 			Elem: &schema.Schema{
@@ -1077,12 +1077,12 @@ func RestoreRdsInstanceActionValueFields() map[string]*schema.Schema {
 			},
 		},
 		"availability_zone": {
-			Description: "リストア後のRDSインスタンスを配置するAZ",
+			Description: "AZ to deploy RDS instance after restore",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"vpc_security_group_ids": {
-			Description: "リストア後のRDSインスタンスに設定するセキュリティグループIDが含まれる配列",
+			Description: "Array containing the security group IDs to be set for the restored RDS instance",
 			Type:        schema.TypeList,
 			Optional:    true,
 			Elem: &schema.Schema{
@@ -1090,47 +1090,47 @@ func RestoreRdsInstanceActionValueFields() map[string]*schema.Schema {
 			},
 		},
 		"db_name": {
-			Description: "リストア後のRDSインスタンスのデータベース名",
+			Description: "Database name of the restored RDS instance",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"port": {
-			Description: "リストア後のRDSインスタンスの接続ポート番号",
+			Description: "Port number of the RDS instance after restoration",
 			Type:        schema.TypeInt,
 			Optional:    true,
 		},
 		"parameter_group": {
-			Description: "リストア後のRDSインスタンスに設定するパラメータグループ名",
+			Description: "Parameter group name to be set for the restored RDS instance",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"option_group": {
-			Description: "リストア後のRDSインスタンスに設定するオプショングループ名",
+			Description: "Option group name to be set for the restored RDS instance",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"auto_minor_version_upgrade": {
-			Description: "リストア後のRDSインスタンスで自動マイナーバージョンアップグレードを有効にするかどうか",
+			Description: "Whether to enable automatic minor version upgrade on the RDS instance after restore",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"delete_rds_snapshot": {
-			Description: "リストアに利用したDBスナップショットを削除するかどうか",
+			Description: "Whether to delete DB snapshots used for restore",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"additional_tag_key": {
-			Description: "リストア後のRDSインスタンスに割り当てるタグのキー",
+			Description: "Tag keys to assign to the restored RDS instance",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"additional_tag_value": {
-			Description: "リストア後のRDSインスタンスの割り当てるタグの値",
+			Description: "Tag value to assign to the RDS instance after restoration",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"trace_status": {
-			Description: "RDSインスタンスの作成完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -1140,42 +1140,42 @@ func RestoreRdsInstanceActionValueFields() map[string]*schema.Schema {
 func RevokeSecurityGroupIngressActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_security_group": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"security_group_id": {
-			Description: "対象のセキュリティグループID",
+			Description: "Target security group ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"ip_protocol": {
-			Description: "通信プロトコル",
+			Description: "IP protocol",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"to_port": {
-			Description: "ポート番号",
+			Description: "port",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"cidr_ip": {
-			Description: "送信元IPのCIDRアドレス",
+			Description: "CIDR IP",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -1185,42 +1185,42 @@ func RevokeSecurityGroupIngressActionValueFields() map[string]*schema.Schema {
 func SendCommandActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_instance": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"instance_id": {
-			Description: "対象のEC2インスタンスID",
+			Description: "Target EC2 instance ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"command": {
-			Description: "実行するコマンド",
+			Description: "Commands to execute",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"comment": {
-			Description: "コマンドに設定するコメント",
+			Description: "Comments to be set for the command",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"document_name": {
-			Description: "コマンドの種類",
+			Description: "Command Type",
 			Type:        schema.TypeString,
 			Required:    true,
 			Elem: &schema.Schema{
@@ -1228,27 +1228,27 @@ func SendCommandActionValueFields() map[string]*schema.Schema {
 			},
 		},
 		"output_s3_bucket_name": {
-			Description: "実行結果を保存するS3のバケット名",
+			Description: "Name of the S3 bucket in which to store the execution results",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"output_s3_key_prefix": {
-			Description: "実行結果を保存するS3のプレフィックス",
+			Description: "S3 prefix to store execution results",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"trace_status": {
-			Description: "実行コマンドの終了ステータスをジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"timeout_seconds": {
-			Description: "インスタンス接続のタイムアウト時間(秒)",
+			Description: "Instance connection timeout time (seconds)",
 			Type:        schema.TypeInt,
 			Optional:    true,
 		},
 		"execution_timeout_seconds": {
-			Description: "コマンド実行のタイムアウト時間(秒)",
+			Description: "Timeout period for command execution (seconds)",
 			Type:        schema.TypeInt,
 			Optional:    true,
 		},
@@ -1258,37 +1258,37 @@ func SendCommandActionValueFields() map[string]*schema.Schema {
 func StartInstancesActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_instance": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"instance_id": {
-			Description: "対象のEC2インスタンスID",
+			Description: "Target EC2 instance ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"trace_status": {
-			Description: "インスタンスの起動完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"status_checks_enable": {
-			Description: "ステータスチェックを行うかどうか。 trace_statusで `true` を指定した場合のみ `true` を指定可能",
+			Description: "Whether status check is performed or not. Can be `true` only if `true` is specified in trace_status",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -1298,32 +1298,32 @@ func StartInstancesActionValueFields() map[string]*schema.Schema {
 func StartRdsClustersActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_rds_cluster": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"db_cluster_identifier": {
-			Description: "対象のDBクラスターID",
+			Description: "Target DB Cluster ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"trace_status": {
-			Description: "DBクラスターの起動完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -1333,32 +1333,32 @@ func StartRdsClustersActionValueFields() map[string]*schema.Schema {
 func StartRdsInstancesActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_rds_instance": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"rds_instance_id": {
-			Description: "対象のDBインスタンスID",
+			Description: "Target DB instance ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"trace_status": {
-			Description: "RDSインスタンスの起動完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -1368,32 +1368,32 @@ func StartRdsInstancesActionValueFields() map[string]*schema.Schema {
 func StopInstancesActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_instance": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"instance_id": {
-			Description: "対象のEC2インスタンスID",
+			Description: "Target EC2 instance ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"trace_status": {
-			Description: "インスタンスの停止完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -1403,32 +1403,32 @@ func StopInstancesActionValueFields() map[string]*schema.Schema {
 func StopRdsClustersActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_rds_cluster": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"db_cluster_identifier": {
-			Description: "対象のDBクラスターID",
+			Description: "Target DB Cluster ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"trace_status": {
-			Description: "DBクラスターの停止完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -1438,32 +1438,32 @@ func StopRdsClustersActionValueFields() map[string]*schema.Schema {
 func StopRdsInstancesActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_rds_instance": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"rds_instance_id": {
-			Description: "対象のDBインスタンスID",
+			Description: "Target DB instance ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"trace_status": {
-			Description: "RDSインスタンスの停止完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -1473,17 +1473,17 @@ func StopRdsInstancesActionValueFields() map[string]*schema.Schema {
 func StartWorkspacesActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -1493,27 +1493,27 @@ func StartWorkspacesActionValueFields() map[string]*schema.Schema {
 func TerminateWorkspacesActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_workspace": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"trace_status": {
-			Description: "WorkSpaceの作成完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -1523,22 +1523,22 @@ func TerminateWorkspacesActionValueFields() map[string]*schema.Schema {
 func UpdateRecordSetActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"zone_name": {
-			Description: "リソースレコードセットを更新するホストゾーン",
+			Description: "Host zone for updating the resource record set",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"record_set_name": {
-			Description: "更新対象のリソースレコードセット",
+			Description: "Resource record set to be updated",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"record_set_type": {
-			Description: "リソースレコードタイプ",
+			Description: "Resource record type",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"record_set_value": {
-			Description: "リソースレコードセットの値",
+			Description: "Resource Record Set Value",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -1548,32 +1548,32 @@ func UpdateRecordSetActionValueFields() map[string]*schema.Schema {
 func WindowsUpdateActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_instance": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"instance_id": {
-			Description: "対象のEC2インスタンスID",
+			Description: "Target EC2 instance ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"comment": {
-			Description: "コマンドに設定するコメント",
+			Description: "Comments to be set for the command",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -1583,27 +1583,27 @@ func WindowsUpdateActionValueFields() map[string]*schema.Schema {
 			Required:    true,
 		},
 		"kb_article_ids": {
-			Description: "除外するKBが含まれた配列",
+			Description: "Array containing KB to be excluded",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"output_s3_bucket_name": {
-			Description: "実行結果を保存するS3のバケット名",
+			Description: "Name of the S3 bucket in which to store the execution results",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"output_s3_key_prefix": {
-			Description: "実行結果を保存するS3のプレフィックス",
+			Description: "S3 prefix to store execution results",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"update_level": {
-			Description: "アップデートレベル",
+			Description: "Update Level",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"timeout_seconds": {
-			Description: "タイムアウト時間(秒)",
+			Description: "Timeout time (sec)",
 			Type:        schema.TypeInt,
 			Optional:    true,
 		},
@@ -1613,42 +1613,42 @@ func WindowsUpdateActionValueFields() map[string]*schema.Schema {
 func WindowsUpdateV2ActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
-			Description: "対象のリソースが存在するAWSリージョン",
+			Description: "AWS Region in which the target resource resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_instance": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"instance_id": {
-			Description: "対象のEC2インスタンスID",
+			Description: "Target EC2 instance ID",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_key": {
-			Description: "対象リソースの特定に利用するタグのキー",
+			Description: "Tag key used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"tag_value": {
-			Description: "対象リソースの特定に利用するタグの値",
+			Description: "Tag value used to identify the target resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"allow_reboot": {
-			Description: "Windows Updateの適用で発生する再起動を許容するか",
+			Description: "Whether to allow reboots caused by applying Windows Update",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"specify_severity": {
-			Description: "対象リソースを特定する方法",
+			Description: "How to identify target resources",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"severity_levels": {
-			Description: "適用するWindows Updateの重要度",
+			Description: "Severity of Windows Update to be applied",
 			Type:        schema.TypeList,
 			Optional:    true,
 			Elem: &schema.Schema{
@@ -1656,17 +1656,17 @@ func WindowsUpdateV2ActionValueFields() map[string]*schema.Schema {
 			},
 		},
 		"output_s3_bucket_name": {
-			Description: "実行結果を保存するS3のバケット名",
+			Description: "Name of the S3 bucket in which to store the execution results",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"output_s3_key_prefix": {
-			Description: "実行結果を保存するS3のバケット名",
+			Description: "S3 prefix to store execution results",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"trace_status": {
-			Description: "Windows Update完了をジョブ完了の判定にするフラグ",
+			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},

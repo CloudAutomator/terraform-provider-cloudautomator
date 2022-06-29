@@ -15,32 +15,32 @@ func dataSourcePostProcess() *schema.Resource {
 		ReadContext: dataSourcePostProcessRead,
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Description: "後処理ID",
+				Description: "Post-process ID",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"name": {
-				Description: "後処理名",
+				Description: "Post-process name",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
 			"service": {
-				Description: "サービス名",
+				Description: "Post-process service name",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
 			"group_id": {
-				Description: "グループID",
+				Description: "Group ID",
 				Type:        schema.TypeInt,
 				Computed:    true,
 			},
 			"shared_by_group": {
-				Description: "共通後処理にするかどうか",
+				Description: "Whether shared by groups",
 				Type:        schema.TypeBool,
 				Computed:    true,
 			},
 			"email_parameters": {
-				Description: "メールの設定値",
+				Description: "\"email\" parameter value",
 				Type:        schema.TypeList,
 				Computed:    true,
 				Elem: &schema.Resource{
@@ -48,7 +48,7 @@ func dataSourcePostProcess() *schema.Resource {
 				},
 			},
 			"slack_parameters": {
-				Description: "メールの設定値",
+				Description: "slack parameter value",
 				Type:        schema.TypeList,
 				Computed:    true,
 				Elem: &schema.Resource{
@@ -56,7 +56,7 @@ func dataSourcePostProcess() *schema.Resource {
 				},
 			},
 			"sqs_parameters": {
-				Description: "メールの設定値",
+				Description: "SQS parameter value",
 				Type:        schema.TypeList,
 				Computed:    true,
 				Elem: &schema.Resource{
@@ -64,7 +64,7 @@ func dataSourcePostProcess() *schema.Resource {
 				},
 			},
 			"webhook_parameters": {
-				Description: "メールの設定値",
+				Description: "webhook parameter value",
 				Type:        schema.TypeList,
 				Computed:    true,
 				Elem: &schema.Resource{

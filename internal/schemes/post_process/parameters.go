@@ -7,7 +7,7 @@ import (
 func EmailParametersFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"email_recipient": {
-			Description: "メールアドレス",
+			Description: "Email Address",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -17,17 +17,17 @@ func EmailParametersFields() map[string]*schema.Schema {
 func SlackParametersFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"slack_channel_name": {
-			Description: "Slackチャンネル名",
+			Description: "Slack Channel Name",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"slack_language": {
-			Description: "通知内容の言語",
+			Description: "Language of notification content",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"slack_time_zone": {
-			Description: "通知内容のタイムゾーン",
+			Description: "Time zone",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -37,17 +37,17 @@ func SlackParametersFields() map[string]*schema.Schema {
 func SqsParametersFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"sqs_aws_account_id": {
-			Description: "SQSのキューを検索する際に利用するAWSアカウントのID",
+			Description: "ID of the AWS account used to search the SQS queue",
 			Type:        schema.TypeInt,
 			Required:    true,
 		},
 		"sqs_queue": {
-			Description: "SQSのキュー名",
+			Description: "SQS queue name",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"sqs_region": {
-			Description: "SQSのキューが存在するリージョン名",
+			Description: "Region name where the SQS queue resides",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
@@ -57,12 +57,12 @@ func SqsParametersFields() map[string]*schema.Schema {
 func WebhookParametersFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"webhook_authorization_header": {
-			Description: "Authorizationヘッダの値",
+			Description: "Authorization header value",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"webhook_url": {
-			Description: "Webhook送信先となるURL",
+			Description: "URL of the Webhook destination",
 			Type:        schema.TypeString,
 			Required:    true,
 		},

@@ -22,9 +22,9 @@ data "cloudautomator_aws_account" "example-aws-account" {
 
 ### Required
 
-- `group_id` (String) グループID
-- `id` (String) AWSアカウントID
+- `group_id` (String) Group ID
+- `id` (String) AWS account ID
 
 ### Read-Only
 
-- `name` (String) AWSアカウント名
+- `name` (String) AWS account name

@@ -8,7 +8,6 @@ description: |-
 
 # cloudautomator_post_process (Data Source)
 
-
 ## Example Usage
 
 ```hcl
@@ -22,18 +21,18 @@ data "cloudautomator_post_process" "example-post-process" {
 
 ### Required
 
-- `id` (String) 後処理ID
+- `id` (String) Post-process ID
 
 ### Read-Only
 
-- `email_parameters` (List of Object) メールの設定値 (see [below for nested schema](#nestedatt--email_parameters))
-- `group_id` (Number) グループID
-- `name` (String) 後処理名
-- `service` (String) サービス名
-- `shared_by_group` (Boolean) 共通後処理にするかどうか
-- `slack_parameters` (List of Object) メールの設定値 (see [below for nested schema](#nestedatt--slack_parameters))
-- `sqs_parameters` (List of Object) メールの設定値 (see [below for nested schema](#nestedatt--sqs_parameters))
-- `webhook_parameters` (List of Object) メールの設定値 (see [below for nested schema](#nestedatt--webhook_parameters))
+- `email_parameters` (List of Object) "email" parameter value (see [below for nested schema](#nestedatt--email_parameters))
+- `group_id` (Number) Group ID
+- `name` (String) Post-process name
+- `service` (String) Post-process service name
+- `shared_by_group` (Boolean) Whether shared by groups
+- `slack_parameters` (List of Object) slack parameter value (see [below for nested schema](#nestedatt--slack_parameters))
+- `sqs_parameters` (List of Object) SQS parameter value (see [below for nested schema](#nestedatt--sqs_parameters))
+- `webhook_parameters` (List of Object) webhook parameter value (see [below for nested schema](#nestedatt--webhook_parameters))
 
 <a id="nestedatt--email_parameters"></a>
 ### Nested Schema for `email_parameters`

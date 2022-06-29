@@ -7,38 +7,38 @@ import (
 func CronRuleValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"hour": {
-			Description: "ジョブを実行するタイミング(時)",
+			Description: "When to execute the job (hour)",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"minutes": {
-			Description: "ジョブを実行するタイミング(分)",
+			Description: "When to execute the job (minutes)",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"schedule_type": {
-			Description: "スケジュールのタイプ (one_time(一度きり) / weekly(毎週) / monthly(毎月の日付) / monthly_day_of_week(毎月の曜日))",
+			Description: "Schedule type (one_time / weekly / monthly / monthly_day_of_week)",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"one_time_schedule": {
-			Description: "ジョブの実行年月日 (yyyy/mm/dd形式) ※`schedule_type` が `one_time` の場合必須",
+			Description: "Job execution date (yyyy/mm/dd format) *required if `schedule_type` is `one_time",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"weekly_schedule": {
-			Description: "ジョブの実行曜日 (sunday〜saturdayまでの文字列を含む配列) ※`schedule_type` が `weekly` の場合必須",
+			Description: "day of the week to run the job (array containing strings from sunday to saturday) *required if `schedule_type` is `weekly",
 			Type:        schema.TypeList,
 			Optional:    true,
 			Elem:        &schema.Schema{Type: schema.TypeString},
 		},
 		"monthly_schedule": {
-			Description: "毎月のジョブの実行日付 (1〜31の日付または月末をあらわす `end_of_month` を文字列で指定する) ※`schedule_type` が `monthly` の場合必須",
+			Description: "date to run the job each month (date between 1 and 31 or `end_of_month` as a string representing the end of the month) *required if `schedule_type` is `monthly`.",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"monthly_day_of_week_schedule": {
-			Description: "毎月のジョブの曜日 ({ friday: [2] } のように曜日名をキー、順序の配列を値として指定する) ※`schedule_type` が `monthly_day_of_week` の場合必須",
+			Description: "day of the week for monthly jobs (key is the name of the day and value is an ordered array, like { friday: [2] }) *required if `schedule_type` is `monthly_day_of_week`.",
 			Type:        schema.TypeList,
 			Optional:    true,
 			Elem: &schema.Resource{
@@ -82,23 +82,23 @@ func CronRuleValueFields() map[string]*schema.Schema {
 			},
 		},
 		"national_holiday_schedule": {
-			Description: "ジョブの実行日と日本の祝日が重なっていた場合にジョブの実行をスキップするか否かのフラグ",
+			Description: "Whether to skip job execution if the job execution date coincides with a Japanese national holiday",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"time_zone": {
-			Description: "`Tokyo`, `Singapore`, `UTC` など、タイムゾーンを表す文字列",
+			Description: "A string representing the time zone, such as `Tokyo`, `Singapore`, `UTC`, etc.",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"dates_to_skip": {
-			Description: "ジョブ実行をスキップする日付を示す YYYY-MM-DD 形式の日付の配列",
+			Description: "An array of dates in YYYYY-MM-DD format indicating the dates to skip job execution",
 			Type:        schema.TypeList,
 			Optional:    true,
 			Elem:        &schema.Schema{Type: schema.TypeString},
 		},
 		"start_timeout_minutes": {
-			Description: "ジョブの開始が遅延した場合にジョブ実行の開始をキャンセルする遅延時間",
+			Description: "Delay time to cancel the start of job execution if the start of the job is delayed",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -108,12 +108,12 @@ func CronRuleValueFields() map[string]*schema.Schema {
 func ScheduleRuleValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"schedule": {
-			Description: "ジョブの実行予定日時 (YYYY-MM-DD HH:MM:SS の形式で `\n` 区切りの文字列)",
+			Description: "The date and time the job is scheduled to run (a `\n` delimited string in the format YYYYY-MM-DD HH:MM:SS).",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"time_zone": {
-			Description: "実行予定日時のタイムゾーン (指定しない場合はジョブ作成ユーザーのタイムゾーンが設定されます)",
+			Description: "Time zone of the scheduled execution date and time (if not specified, the time zone of the user who created the job will be set)",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
@@ -123,17 +123,17 @@ func ScheduleRuleValueFields() map[string]*schema.Schema {
 func SqsV2RuleValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"sqs_aws_account_id": {
-			Description: "SQSキューが存在するAWSアカウントのID (AWSのアカウントIDではなくCloud Automator上のID)",
+			Description: "ID of the AWS account where the SQS queue resides (ID on Cloud Automator, not AWS account ID)",
 			Type:        schema.TypeInt,
 			Required:    true,
 		},
 		"sqs_region": {
-			Description: "SQSキューが存在するリージョン <br>例) “ap-northeast-1”",
+			Description: "Region where SQS queue exists <br> e.g.) \"ap-northeast-1\"",
 			Type:        schema.TypeString,
 			Required:    true,
 		},
 		"queue": {
-			Description: "SQSキュー名 (標準キューのみ対応)",
+			Description: "SQS queue name (only standard queues are supported)",
 			Type:        schema.TypeString,
 			Required:    true,
 		},

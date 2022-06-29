@@ -14,41 +14,41 @@ import (
 
 func resourceJob() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Cloud Automatorのジョブリソースを管理します。",
+		Description:   "Manage Cloud Automator job resources",
 		CreateContext: resourceJobCreate,
 		ReadContext:   resourceJobRead,
 		UpdateContext: resourceJobUpdate,
 		DeleteContext: resourceJobDelete,
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Description: "ジョブID",
+				Description: "Job ID",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
 			"name": {
-				Description: "ジョブ名",
+				Description: "Job Name",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"group_id": {
-				Description: "グループID",
+				Description: "Group ID",
 				Type:        schema.TypeInt,
 				Required:    true,
 				ForceNew:    true,
 			},
 			"aws_account_id": {
-				Description: "AWSアカウントID",
+				Description: "AWS account ID",
 				Type:        schema.TypeInt,
 				Required:    true,
 			},
 			"rule_type": {
-				Description: "トリガーのタイプ",
+				Description: "Trigger type",
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
 			},
 			"cron_rule_value": {
-				Description: "タイマートリガーの設定値",
+				Description: "Timer trigger value",
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Optional:    true,
@@ -57,7 +57,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"schedule_rule_value": {
-				Description: "スケジュールトリガーの設定値",
+				Description: "Schedule trigger value",
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Optional:    true,
@@ -66,7 +66,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"sqs_v2_rule_value": {
-				Description: "SQSトリガーの設定値",
+				Description: "SQS trigger value",
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Optional:    true,
@@ -75,13 +75,13 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"action_type": {
-				Description: "アクションのタイプ",
+				Description: "Action type",
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
 			},
 			"authorize_security_group_ingress_action_value": {
-				Description: "「EC2: セキュリティグループにインバウンドルールを追加」アクションの設定値",
+				Description: "\"EC2: Authorize security group ingress\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -90,7 +90,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"change_rds_cluster_instance_class_action_value": {
-				Description: "「RDS(Aurora): DBインスタンスクラスを変更」アクションの設定値",
+				Description: "\"RDS(Aurora): Change DB instance class\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -99,7 +99,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"change_rds_instance_class_action_value": {
-				Description: "「RDS: DBインスタンスクラスを変更」アクションの設定値",
+				Description: "\"RDS: Change DB instance class\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -108,7 +108,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"change_instance_type_action_value": {
-				Description: "「EC2: インスタンスタイプを変更」アクションの設定値",
+				Description: "\"EC2: Change instance type\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -117,7 +117,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"copy_ebs_snapshot_action_value": {
-				Description: "「EC2: EBSスナップショットをリージョン間でコピー」アクションの設定値",
+				Description: "\"EC2: Copy EBS snapshot\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -126,7 +126,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"copy_image_action_value": {
-				Description: "「EC2: AMIをリージョン間でコピー」アクションの設定値",
+				Description: "\"EC2: Copy AMI\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -135,7 +135,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"copy_rds_snapshot_action_value": {
-				Description: "「RDS: DBスナップショットをリージョン間でコピー」アクションの設定値",
+				Description: "\"RDS: Copy DB snapshot\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -144,7 +144,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"create_ebs_snapshot_action_value": {
-				Description: "「EC2: EBSスナップショットを作成」アクションの設定値",
+				Description: "\"EC2: Create EBS snapshot\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -153,7 +153,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"create_image_action_value": {
-				Description: "「EC2: AMIを作成」アクションの設定値",
+				Description: "\"EC2: Create AMI\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -162,7 +162,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"create_rds_cluster_snapshot_action_value": {
-				Description: "「RDS(Aurora): DBクラスタースナップショットを作成」アクションの設定値",
+				Description: "\"RDS(Aurora): Create DB cluster snapshot\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -171,7 +171,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"create_rds_snapshot_action_value": {
-				Description: "「RDS: DBスナップショットを作成」アクションの設定値",
+				Description: "\"RDS: Create DB snapshot\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -180,7 +180,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"create_redshift_snapshot_action_value": {
-				Description: "「Redshift: クラスタースナップショットを作成」アクションの設定値",
+				Description: "\"Redshift: Create cluster snapshot\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -189,7 +189,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"delay_action_value": {
-				Description: "「Other: 指定時間待機」アクションの設定値",
+				Description: "\"Other: Delay\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -198,7 +198,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"delete_cluster_action_value": {
-				Description: "「Redshift: クラスターを削除」アクションの設定値",
+				Description: "\"Redshift: Delete cluster\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -207,7 +207,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"delete_rds_cluster_action_value": {
-				Description: "「RDS(Aurora): DBクラスターを削除」アクションの設定値",
+				Description: "\"RDS(Aurora): Delete DB cluster\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -216,7 +216,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"delete_rds_instance_action_value": {
-				Description: "「RDS: DBインスタンスを削除」アクションの設定値",
+				Description: "\"RDS: Delete DB instance\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -225,7 +225,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"deregister_instances_action_value": {
-				Description: "「ELB(CLB): EC2インスタンスを登録解除」アクションの設定値",
+				Description: "\"ELB(CLB): De-register EC2 instance\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -234,7 +234,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"deregister_target_instances_action_value": {
-				Description: "「ELB(ALB/NLB): ターゲットグループからEC2インスタンスを登録解除」アクションの設定値",
+				Description: "\"ELB(ALB/NLB): Deregister EC2 instances from target group\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -243,7 +243,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"reboot_rds_instances_action_value": {
-				Description: "「RDS: DBインスタンスを再起動」アクションの設定値",
+				Description: "\"RDS: Reboot DB instance\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -252,7 +252,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"reboot_workspaces_action_value": {
-				Description: "「WorkSpaces: WorkSpaceを再起動」アクションの設定値",
+				Description: "\"WorkSpaces: Reboot WorkSpace\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -261,7 +261,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"register_instances_action_value": {
-				Description: "「ELB(CLB): EC2インスタンスを登録」アクションの設定値",
+				Description: "\"ELB(CLB): Register EC2 instance\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -270,7 +270,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"register_target_instances_action_value": {
-				Description: "「ELB(ALB/NLB): ターゲットグループにEC2インスタンスを登録」アクションの設定値",
+				Description: "\"ELB(ALB/NLB): Register EC2 instances to target group\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -279,7 +279,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"restore_from_cluster_snapshot_action_value": {
-				Description: "「Redshift: スナップショットからリストア」アクションの設定値",
+				Description: "\"Redshift: Restore from snapshot\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -288,7 +288,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"restore_rds_cluster_action_value": {
-				Description: "「RDS(Aurora): DBクラスタースナップショットからリストア」アクションの設定値",
+				Description: "\"RDS(Aurora): Restore DB cluster from DB cluster snapshot\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -297,7 +297,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"restore_rds_instance_action_value": {
-				Description: "「RDS: DBスナップショットからリストア」アクションの設定値",
+				Description: "\"RDS: Restore from DB snapshot\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -306,7 +306,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"revoke_security_group_ingress_action_value": {
-				Description: "「EC2: セキュリティグループからインバウンドルールを削除」アクションの設定値",
+				Description: "\"EC2: Revoke security group ingress\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -315,7 +315,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"send_command_action_value": {
-				Description: "「EC2: インスタンスでコマンドを実行」アクションの設定値",
+				Description: "\"EC2: Send command on instance\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -324,7 +324,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"start_instances_action_value": {
-				Description: "「EC2: インスタンスを起動」アクションの設定値",
+				Description: "\"EC2: Start instance\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -333,7 +333,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"start_rds_clusters_action_value": {
-				Description: "「RDS(Aurora): DBクラスターを起動」アクションの設定値",
+				Description: "\"RDS(Aurora): Start DB cluster\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -342,7 +342,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"start_rds_instances_action_value": {
-				Description: "「RDS: DBインスタンスを起動」アクションの設定値",
+				Description: "\"RDS: Start DB instance\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -351,7 +351,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"stop_instances_action_value": {
-				Description: "「EC2: インスタンスを停止」アクションの設定値",
+				Description: "\"EC2: Stop instance\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -360,7 +360,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"stop_rds_clusters_action_value": {
-				Description: "「RDS(Aurora): DBクラスターを停止」アクションの設定値",
+				Description: "\"RDS(Aurora): Stop DB cluster\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -369,7 +369,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"stop_rds_instances_action_value": {
-				Description: "「RDS: DBインスタンスを停止」アクションの設定値",
+				Description: "\"RDS: Stop DB instance\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -378,7 +378,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"start_workspaces_action_value": {
-				Description: "「WorkSpaces: WorkSpaceを起動」アクションの設定値",
+				Description: "\"WorkSpaces: Start WorkSpace\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -387,7 +387,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"terminate_workspaces_action_value": {
-				Description: "「WorkSpaces: WorkSpaceを削除」アクションの設定値",
+				Description: "\"WorkSpaces: Remove WorkSpace\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -396,7 +396,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"update_record_set_action_value": {
-				Description: "「Route 53: リソースレコードセットを更新」アクションの設定値",
+				Description: "\"Route 53: Update Resource Record Set\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -405,7 +405,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"windows_update_action_value": {
-				Description: "「EC2: インスタンスをWindows Update」アクションの設定値",
+				Description: "\"EC2: Windows Update to instance (Old version)\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -414,7 +414,7 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"windows_update_v2_action_value": {
-				Description: "「EC2: インスタンスをWindows Update (新バージョン)」アクションの設定値",
+				Description: "\"EC2: Windows Update to instance (New version)\" action value",
 				Type:        schema.TypeList,
 				Optional:    true,
 				MaxItems:    1,
@@ -423,29 +423,29 @@ func resourceJob() *schema.Resource {
 				},
 			},
 			"allow_runtime_action_values": {
-				Description: "アクションの設定値を実行時に指定するかどうか",
+				Description: "Whether the value of the action setting is specified at runtime or not",
 				Type:        schema.TypeBool,
 				Optional:    true,
 				ForceNew:    true,
 			},
 			"effective_date": {
-				Description: "ジョブの有効期間の開始日",
+				Description: "Effective date",
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
 			"expiration_date": {
-				Description: "ジョブの有効期間の終了日",
+				Description: "Expiration date",
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
 			"completed_post_process_id": {
-				Description: "ジョブが成功した場合に実行する後処理IDが含まれる配列",
+				Description: "Array containing post-process IDs to be executed if the job is successful",
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeInt},
 			},
 			"failed_post_process_id": {
-				Description: "ジョブが失敗した場合に実行する後処理IDが含まれる配列",
+				Description: "Array containing post-process IDs to be executed if the job fails",
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeInt},

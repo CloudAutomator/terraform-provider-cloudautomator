@@ -13,17 +13,17 @@ func dataSourceAwsAccount() *schema.Resource {
 		ReadContext: dataSourceAwsAccountRead,
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Description: "AWSアカウントID",
+				Description: "AWS account ID",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"group_id": {
-				Description: "グループID",
+				Description: "Group ID",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"name": {
-				Description: "AWSアカウント名",
+				Description: "AWS account name",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},

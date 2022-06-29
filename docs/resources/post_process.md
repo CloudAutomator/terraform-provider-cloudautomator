@@ -3,13 +3,12 @@
 page_title: "cloudautomator_post_process Resource - terraform-provider-cloudautomator"
 subcategory: ""
 description: |-
-  Cloud Automatorの後処理リソースを管理します。
+  Manage Cloud Automator post-process resources
 ---
 
 # cloudautomator_post_process (Resource)
 
-Cloud Automatorの後処理リソースを管理します。
-
+Manage Cloud Automator post-process resources
 
 ## Example Usage
 
@@ -30,28 +29,28 @@ resource "cloudautomator_post_process" "email" {
 
 ### Required
 
-- `name` (String) 後処理名
-- `service` (String) サービス名
+- `name` (String) Post-process name
+- `service` (String) Post-process service name
 
 ### Optional
 
-- `email_parameters` (Block List, Max: 1) メールの設定値 (see [below for nested schema](#nestedblock--email_parameters))
-- `group_id` (Number) グループID
-- `shared_by_group` (Boolean) 共通後処理にするかどうか
-- `slack_parameters` (Block List, Max: 1) メールの設定値 (see [below for nested schema](#nestedblock--slack_parameters))
-- `sqs_parameters` (Block List, Max: 1) メールの設定値 (see [below for nested schema](#nestedblock--sqs_parameters))
-- `webhook_parameters` (Block List, Max: 1) メールの設定値 (see [below for nested schema](#nestedblock--webhook_parameters))
+- `email_parameters` (Block List, Max: 1) "email" parameter value (see [below for nested schema](#nestedblock--email_parameters))
+- `group_id` (Number) Group ID
+- `shared_by_group` (Boolean) Whether shared by groups
+- `slack_parameters` (Block List, Max: 1) slack parameter value (see [below for nested schema](#nestedblock--slack_parameters))
+- `sqs_parameters` (Block List, Max: 1) SQS parameter value (see [below for nested schema](#nestedblock--sqs_parameters))
+- `webhook_parameters` (Block List, Max: 1) webhook parameter value (see [below for nested schema](#nestedblock--webhook_parameters))
 
 ### Read-Only
 
-- `id` (String) 後処理ID
+- `id` (String) Post-process ID
 
 <a id="nestedblock--email_parameters"></a>
 ### Nested Schema for `email_parameters`
 
 Required:
 
-- `email_recipient` (String) メールアドレス
+- `email_recipient` (String) Email Address
 
 
 <a id="nestedblock--slack_parameters"></a>
@@ -59,9 +58,9 @@ Required:
 
 Required:
 
-- `slack_channel_name` (String) Slackチャンネル名
-- `slack_language` (String) 通知内容の言語
-- `slack_time_zone` (String) 通知内容のタイムゾーン
+- `slack_channel_name` (String) Slack Channel Name
+- `slack_language` (String) Language of notification content
+- `slack_time_zone` (String) Time zone
 
 
 <a id="nestedblock--sqs_parameters"></a>
@@ -69,9 +68,9 @@ Required:
 
 Required:
 
-- `sqs_aws_account_id` (Number) SQSのキューを検索する際に利用するAWSアカウントのID
-- `sqs_queue` (String) SQSのキュー名
-- `sqs_region` (String) SQSのキューが存在するリージョン名
+- `sqs_aws_account_id` (Number) ID of the AWS account used to search the SQS queue
+- `sqs_queue` (String) SQS queue name
+- `sqs_region` (String) Region name where the SQS queue resides
 
 
 <a id="nestedblock--webhook_parameters"></a>
@@ -79,5 +78,5 @@ Required:
 
 Required:
 
-- `webhook_authorization_header` (String) Authorizationヘッダの値
-- `webhook_url` (String) Webhook送信先となるURL
+- `webhook_authorization_header` (String) Authorization header value
+- `webhook_url` (String) URL of the Webhook destination

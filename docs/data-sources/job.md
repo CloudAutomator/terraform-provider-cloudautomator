@@ -21,61 +21,61 @@ data "cloudautomator_job" "example-job" {
 
 ### Required
 
-- `id` (String) ジョブID
+- `id` (String) Job ID
 
 ### Read-Only
 
-- `action_type` (String) アクションのタイプ
-- `allow_runtime_action_values` (Boolean) アクションの設定値を実行時に指定するかどうか
-- `authorize_security_group_ingress_action_value` (List of Object) 「EC2: セキュリティグループにインバウンドルールを追加」アクションの設定値 (see [below for nested schema](#nestedatt--authorize_security_group_ingress_action_value))
-- `aws_account_id` (Number) AWSアカウントID
-- `change_instance_type_action_value` (List of Object) 「EC2: インスタンスタイプを変更」アクションの設定値 (see [below for nested schema](#nestedatt--change_instance_type_action_value))
-- `change_rds_cluster_instance_class_action_value` (List of Object) 「RDS(Aurora): DBインスタンスクラスを変更」アクションの設定値 (see [below for nested schema](#nestedatt--change_rds_cluster_instance_class_action_value))
-- `change_rds_instance_class_action_value` (List of Object) 「RDS: DBインスタンスクラスを変更」アクションの設定値 (see [below for nested schema](#nestedatt--change_rds_instance_class_action_value))
-- `completed_post_process_id` (List of Number) ジョブが成功した場合に実行する後処理IDが含まれる配列
-- `copy_ebs_snapshot_action_value` (List of Object) 「EC2: EBSスナップショットをリージョン間でコピー」アクションの設定値 (see [below for nested schema](#nestedatt--copy_ebs_snapshot_action_value))
-- `copy_image_action_value` (List of Object) 「EC2: AMIをリージョン間でコピー」アクションの設定値 (see [below for nested schema](#nestedatt--copy_image_action_value))
-- `copy_rds_snapshot_action_value` (List of Object) 「RDS: DBスナップショットをリージョン間でコピー」アクションの設定値 (see [below for nested schema](#nestedatt--copy_rds_snapshot_action_value))
-- `create_ebs_snapshot_action_value` (List of Object) 「EC2: EBSスナップショットを作成」アクションの設定値 (see [below for nested schema](#nestedatt--create_ebs_snapshot_action_value))
-- `create_image_action_value` (List of Object) 「EC2: AMIを作成」アクションの設定値 (see [below for nested schema](#nestedatt--create_image_action_value))
-- `create_rds_cluster_snapshot_action_value` (List of Object) 「RDS(Aurora): DBクラスタースナップショットを作成」アクションの設定値 (see [below for nested schema](#nestedatt--create_rds_cluster_snapshot_action_value))
-- `create_rds_snapshot_action_value` (List of Object) 「RDS: DBスナップショットを作成」アクションの設定値 (see [below for nested schema](#nestedatt--create_rds_snapshot_action_value))
-- `create_redshift_snapshot_action_value` (List of Object) 「Redshift: クラスタースナップショットを作成」アクションの設定値 (see [below for nested schema](#nestedatt--create_redshift_snapshot_action_value))
-- `cron_rule_value` (List of Object) タイマートリガーの設定値 (see [below for nested schema](#nestedatt--cron_rule_value))
-- `delay_action_value` (List of Object) 「Other: 指定時間待機」アクションの設定値 (see [below for nested schema](#nestedatt--delay_action_value))
-- `delete_cluster_action_value` (List of Object) 「Redshift: クラスターを削除」アクションの設定値 (see [below for nested schema](#nestedatt--delete_cluster_action_value))
-- `delete_rds_cluster_action_value` (List of Object) 「RDS(Aurora): DBクラスターを削除」アクションの設定値 (see [below for nested schema](#nestedatt--delete_rds_cluster_action_value))
-- `delete_rds_instance_action_value` (List of Object) 「RDS: DBインスタンスを削除」アクションの設定値 (see [below for nested schema](#nestedatt--delete_rds_instance_action_value))
-- `deregister_instances_action_value` (List of Object) 「ELB(CLB): EC2インスタンスを登録解除」アクションの設定値 (see [below for nested schema](#nestedatt--deregister_instances_action_value))
-- `deregister_target_instances_action_value` (List of Object) 「ELB(ALB/NLB): ターゲットグループからEC2インスタンスを登録解除」アクションの設定値 (see [below for nested schema](#nestedatt--deregister_target_instances_action_value))
-- `effective_date` (String) ジョブの有効期間の開始日
-- `expiration_date` (String) ジョブの有効期間の終了日
-- `failed_post_process_id` (List of Number) ジョブが失敗した場合に実行する後処理IDが含まれる配列
-- `group_id` (Number) グループID
-- `name` (String) ジョブ名
-- `reboot_rds_instances_action_value` (List of Object) 「RDS: DBインスタンスを再起動」アクションの設定値 (see [below for nested schema](#nestedatt--reboot_rds_instances_action_value))
-- `reboot_workspaces_action_value` (List of Object) 「WorkSpaces: WorkSpaceを再起動」アクションの設定値 (see [below for nested schema](#nestedatt--reboot_workspaces_action_value))
-- `register_instances_action_value` (List of Object) 「ELB(CLB): EC2インスタンスを登録」アクションの設定値 (see [below for nested schema](#nestedatt--register_instances_action_value))
-- `register_target_instances_action_value` (List of Object) 「ELB(ALB/NLB): ターゲットグループにEC2インスタンスを登録」アクションの設定値 (see [below for nested schema](#nestedatt--register_target_instances_action_value))
-- `restore_from_cluster_snapshot_action_value` (List of Object) 「Redshift: スナップショットからリストア」アクションの設定値 (see [below for nested schema](#nestedatt--restore_from_cluster_snapshot_action_value))
-- `restore_rds_cluster_action_value` (List of Object) 「RDS(Aurora): DBクラスタースナップショットからリストア」アクションの設定値 (see [below for nested schema](#nestedatt--restore_rds_cluster_action_value))
-- `restore_rds_instance_action_value` (List of Object) 「RDS: DBスナップショットからリストア」アクションの設定値 (see [below for nested schema](#nestedatt--restore_rds_instance_action_value))
-- `revoke_security_group_ingress_action_value` (List of Object) 「EC2: セキュリティグループからインバウンドルールを削除」アクションの設定値 (see [below for nested schema](#nestedatt--revoke_security_group_ingress_action_value))
-- `rule_type` (String) トリガーのタイプ
-- `schedule_rule_value` (List of Object) スケジュールトリガーの設定値 (see [below for nested schema](#nestedatt--schedule_rule_value))
-- `send_command_action_value` (List of Object) 「EC2: インスタンスでコマンドを実行」アクションの設定値 (see [below for nested schema](#nestedatt--send_command_action_value))
-- `sqs_v2_rule_value` (List of Object) SQSトリガーの設定値 (see [below for nested schema](#nestedatt--sqs_v2_rule_value))
-- `start_instances_action_value` (List of Object) 「EC2: インスタンスを起動」アクションの設定値 (see [below for nested schema](#nestedatt--start_instances_action_value))
-- `start_rds_clusters_action_value` (List of Object) 「RDS(Aurora): DBクラスターを起動」アクションの設定値 (see [below for nested schema](#nestedatt--start_rds_clusters_action_value))
-- `start_rds_instances_action_value` (List of Object) 「RDS: DBインスタンスを起動」アクションの設定値 (see [below for nested schema](#nestedatt--start_rds_instances_action_value))
-- `start_workspaces_action_value` (List of Object) 「WorkSpaces: WorkSpaceを起動」アクションの設定値 (see [below for nested schema](#nestedatt--start_workspaces_action_value))
-- `stop_instances_action_value` (List of Object) 「EC2: インスタンスを停止」アクションの設定値 (see [below for nested schema](#nestedatt--stop_instances_action_value))
-- `stop_rds_clusters_action_value` (List of Object) 「RDS(Aurora): DBクラスターを停止」アクションの設定値 (see [below for nested schema](#nestedatt--stop_rds_clusters_action_value))
-- `stop_rds_instances_action_value` (List of Object) 「RDS: DBインスタンスを停止」アクションの設定値 (see [below for nested schema](#nestedatt--stop_rds_instances_action_value))
-- `terminate_workspaces_action_value` (List of Object) 「WorkSpaces: WorkSpaceを削除」アクションの設定値 (see [below for nested schema](#nestedatt--terminate_workspaces_action_value))
-- `update_record_set_action_value` (List of Object) 「Route 53: リソースレコードセットを更新」アクションの設定値 (see [below for nested schema](#nestedatt--update_record_set_action_value))
-- `windows_update_action_value` (List of Object) 「EC2: インスタンスをWindows Update」アクションの設定値 (see [below for nested schema](#nestedatt--windows_update_action_value))
-- `windows_update_v2_action_value` (List of Object) 「EC2: インスタンスをWindows Update (新バージョン)」アクションの設定値 (see [below for nested schema](#nestedatt--windows_update_v2_action_value))
+- `action_type` (String) Action type
+- `allow_runtime_action_values` (Boolean) Whether the value of the action setting is specified at runtime or not
+- `authorize_security_group_ingress_action_value` (List of Object) "EC2: Authorize security group ingress" action value (see [below for nested schema](#nestedatt--authorize_security_group_ingress_action_value))
+- `aws_account_id` (Number) AWS account ID
+- `change_instance_type_action_value` (List of Object) "EC2: Change instance type" action value (see [below for nested schema](#nestedatt--change_instance_type_action_value))
+- `change_rds_cluster_instance_class_action_value` (List of Object) "RDS(Aurora): Change DB instance class" action value (see [below for nested schema](#nestedatt--change_rds_cluster_instance_class_action_value))
+- `change_rds_instance_class_action_value` (List of Object) "RDS: Change DB instance class" action value (see [below for nested schema](#nestedatt--change_rds_instance_class_action_value))
+- `completed_post_process_id` (List of Number) Array containing post-process IDs to be executed if the job is successful
+- `copy_ebs_snapshot_action_value` (List of Object) "EC2: Copy EBS snapshot" action value (see [below for nested schema](#nestedatt--copy_ebs_snapshot_action_value))
+- `copy_image_action_value` (List of Object) "EC2: Copy AMI" action value (see [below for nested schema](#nestedatt--copy_image_action_value))
+- `copy_rds_snapshot_action_value` (List of Object) "RDS: Copy DB snapshot" action value (see [below for nested schema](#nestedatt--copy_rds_snapshot_action_value))
+- `create_ebs_snapshot_action_value` (List of Object) "EC2: Create EBS snapshot" action value (see [below for nested schema](#nestedatt--create_ebs_snapshot_action_value))
+- `create_image_action_value` (List of Object) "EC2: Create AMI" action value (see [below for nested schema](#nestedatt--create_image_action_value))
+- `create_rds_cluster_snapshot_action_value` (List of Object) "RDS(Aurora): Create DB cluster snapshot" action value (see [below for nested schema](#nestedatt--create_rds_cluster_snapshot_action_value))
+- `create_rds_snapshot_action_value` (List of Object) "RDS: Create DB snapshot" action value (see [below for nested schema](#nestedatt--create_rds_snapshot_action_value))
+- `create_redshift_snapshot_action_value` (List of Object) "Redshift: Create cluster snapshot" action value (see [below for nested schema](#nestedatt--create_redshift_snapshot_action_value))
+- `cron_rule_value` (List of Object) Timer trigger value (see [below for nested schema](#nestedatt--cron_rule_value))
+- `delay_action_value` (List of Object) "Other: Delay" action value (see [below for nested schema](#nestedatt--delay_action_value))
+- `delete_cluster_action_value` (List of Object) "Redshift: Delete cluster" action value (see [below for nested schema](#nestedatt--delete_cluster_action_value))
+- `delete_rds_cluster_action_value` (List of Object) "RDS(Aurora): Delete DB cluster" action value (see [below for nested schema](#nestedatt--delete_rds_cluster_action_value))
+- `delete_rds_instance_action_value` (List of Object) "RDS: Delete DB instance" action value (see [below for nested schema](#nestedatt--delete_rds_instance_action_value))
+- `deregister_instances_action_value` (List of Object) "ELB(CLB): De-register EC2 instance" action value (see [below for nested schema](#nestedatt--deregister_instances_action_value))
+- `deregister_target_instances_action_value` (List of Object) "ELB(ALB/NLB): Deregister EC2 instances from target group" action value (see [below for nested schema](#nestedatt--deregister_target_instances_action_value))
+- `effective_date` (String) Effective date
+- `expiration_date` (String) Expiration date
+- `failed_post_process_id` (List of Number) Array containing post-process IDs to be executed if the job fails
+- `group_id` (Number) Group ID
+- `name` (String) Job Name
+- `reboot_rds_instances_action_value` (List of Object) "RDS: Reboot DB instance" action value (see [below for nested schema](#nestedatt--reboot_rds_instances_action_value))
+- `reboot_workspaces_action_value` (List of Object) "WorkSpaces: Reboot WorkSpace" action value (see [below for nested schema](#nestedatt--reboot_workspaces_action_value))
+- `register_instances_action_value` (List of Object) "ELB(CLB): Register EC2 instance" action value (see [below for nested schema](#nestedatt--register_instances_action_value))
+- `register_target_instances_action_value` (List of Object) "ELB(ALB/NLB): Register EC2 instances to target group" action value (see [below for nested schema](#nestedatt--register_target_instances_action_value))
+- `restore_from_cluster_snapshot_action_value` (List of Object) "Redshift: Restore from snapshot" action value (see [below for nested schema](#nestedatt--restore_from_cluster_snapshot_action_value))
+- `restore_rds_cluster_action_value` (List of Object) "RDS(Aurora): Restore DB cluster from DB cluster snapshot" action value (see [below for nested schema](#nestedatt--restore_rds_cluster_action_value))
+- `restore_rds_instance_action_value` (List of Object) "RDS: Restore from DB snapshot" action value (see [below for nested schema](#nestedatt--restore_rds_instance_action_value))
+- `revoke_security_group_ingress_action_value` (List of Object) "EC2: Revoke security group ingress" action value (see [below for nested schema](#nestedatt--revoke_security_group_ingress_action_value))
+- `rule_type` (String) Trigger type
+- `schedule_rule_value` (List of Object) Schedule trigger value (see [below for nested schema](#nestedatt--schedule_rule_value))
+- `send_command_action_value` (List of Object) "EC2: Send command on instance" action value (see [below for nested schema](#nestedatt--send_command_action_value))
+- `sqs_v2_rule_value` (List of Object) SQS trigger value (see [below for nested schema](#nestedatt--sqs_v2_rule_value))
+- `start_instances_action_value` (List of Object) "EC2: Start instance" action value (see [below for nested schema](#nestedatt--start_instances_action_value))
+- `start_rds_clusters_action_value` (List of Object) "RDS(Aurora): Start DB cluster" action value (see [below for nested schema](#nestedatt--start_rds_clusters_action_value))
+- `start_rds_instances_action_value` (List of Object) "RDS: Start DB instance" action value (see [below for nested schema](#nestedatt--start_rds_instances_action_value))
+- `start_workspaces_action_value` (List of Object) "WorkSpaces: Start WorkSpace" action value (see [below for nested schema](#nestedatt--start_workspaces_action_value))
+- `stop_instances_action_value` (List of Object) "EC2: Stop instance" action value (see [below for nested schema](#nestedatt--stop_instances_action_value))
+- `stop_rds_clusters_action_value` (List of Object) "RDS(Aurora): Stop DB cluster" action value (see [below for nested schema](#nestedatt--stop_rds_clusters_action_value))
+- `stop_rds_instances_action_value` (List of Object) "RDS: Stop DB instance" action value (see [below for nested schema](#nestedatt--stop_rds_instances_action_value))
+- `terminate_workspaces_action_value` (List of Object) "WorkSpaces: Remove WorkSpace" action value (see [below for nested schema](#nestedatt--terminate_workspaces_action_value))
+- `update_record_set_action_value` (List of Object) "Route 53: Update Resource Record Set" action value (see [below for nested schema](#nestedatt--update_record_set_action_value))
+- `windows_update_action_value` (List of Object) "EC2: Windows Update to instance (Old version)" action value (see [below for nested schema](#nestedatt--windows_update_action_value))
+- `windows_update_v2_action_value` (List of Object) "EC2: Windows Update to instance (New version)" action value (see [below for nested schema](#nestedatt--windows_update_v2_action_value))
 
 <a id="nestedatt--authorize_security_group_ingress_action_value"></a>
 ### Nested Schema for `authorize_security_group_ingress_action_value`
