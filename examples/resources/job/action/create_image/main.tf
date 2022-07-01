@@ -35,33 +35,34 @@
 #   - ジョブ失敗時にリトライを行うか
 #     - true
 # ----------------------------------------------------------
+
 resource "cloudautomator_job" "example-create-image-job" {
-  name = "example-create-image-job"
-  group_id = 10
+  name           = "example-create-image-job"
+  group_id       = 10
   aws_account_id = 20
 
   rule_type = "webhook"
 
   action_type = "create_image"
   create_image_action_value {
-    region = "ap-northeast-1"
+    region                 = "ap-northeast-1"
     specify_image_instance = "tag"
-    tag_key = "env"
-    tag_value = "develop"
-    generation = 10
-    image_name = "test-image"
-    description = "test image"
-    reboot_instance = "true"
+    tag_key                = "env"
+    tag_value              = "develop"
+    generation             = 10
+    image_name             = "test-image"
+    description            = "test image"
+    reboot_instance        = "true"
     additional_tags {
-      key = "key-1"
+      key   = "key-1"
       value = "value-1"
     }
     additional_tags {
-      key = "key-2"
+      key   = "key-2"
       value = "value-2"
     }
-    add_same_tag_to_snapshot = "true"
-    trace_status = "true"
-    recreate_image_if_ami_status_failed   = "true"
+    add_same_tag_to_snapshot            = "true"
+    trace_status                        = "true"
+    recreate_image_if_ami_status_failed = "true"
   }
 }

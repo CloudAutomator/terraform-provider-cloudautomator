@@ -5,10 +5,11 @@
 #   - メールの送信先
 #     - test@example.com
 # ----------------------------------------------------------
+
 resource "cloudautomator_post_process" "email" {
-  name = "email"
+  name     = "email"
   group_id = 10
-  service = "email"
+  service  = "email"
 
   email_parameters {
     email_recipient = "test@example.com"

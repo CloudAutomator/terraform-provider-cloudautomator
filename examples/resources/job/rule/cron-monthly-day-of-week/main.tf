@@ -12,15 +12,16 @@
 #   - ジョブの開始が遅延した場合に実行の開始をキャンセルする遅延時間
 #     - 30分
 # ----------------------------------------------------------
+
 resource "cloudautomator_job" "cron-monthly-day-of-week-schedule-start-instances" {
-  name = "example-cron-job"
-  group_id = 10
+  name           = "example-cron-job"
+  group_id       = 10
   aws_account_id = 20
 
   rule_type = "cron"
   cron_rule_value {
-    hour = "9"
-    minutes = "30"
+    hour          = "9"
+    minutes       = "30"
     schedule_type = "monthly_day_of_week"
     monthly_day_of_week_schedule {
       friday = [-1]
@@ -32,7 +33,7 @@ resource "cloudautomator_job" "cron-monthly-day-of-week-schedule-start-instances
       "2023-01-03"
     ]
     start_timeout_minutes = "30"
-    time_zone = "Tokyo"
+    time_zone             = "Tokyo"
   }
 
   action_type = "delay"

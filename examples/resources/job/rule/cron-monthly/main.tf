@@ -12,17 +12,18 @@
 #   - ジョブの開始が遅延した場合に実行の開始をキャンセルする遅延時間
 #     - 30分
 # ----------------------------------------------------------
+
 resource "cloudautomator_job" "cron-monthly-start-instances" {
-  name = "example-cron-job"
-  group_id = 10
+  name           = "example-cron-job"
+  group_id       = 10
   aws_account_id = 20
 
   rule_type = "cron"
   cron_rule_value {
-    hour = "9"
-    minutes = "00"
-    schedule_type = "monthly"
-    monthly_schedule = "1"
+    hour                      = "9"
+    minutes                   = "00"
+    schedule_type             = "monthly"
+    monthly_schedule          = "1"
     national_holiday_schedule = "true"
     dates_to_skip = [
       "2023-01-01",
@@ -30,7 +31,7 @@ resource "cloudautomator_job" "cron-monthly-start-instances" {
       "2023-01-03"
     ]
     start_timeout_minutes = "30"
-    time_zone = "Tokyo"
+    time_zone             = "Tokyo"
   }
 
   action_type = "delay"

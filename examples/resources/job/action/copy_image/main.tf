@@ -12,20 +12,21 @@
 #   - AMIのコピー完了をジョブ完了の判定にする
 #     - true
 # ----------------------------------------------------------
+
 resource "cloudautomator_job" "example-copy-image-job" {
-  name = "example-copy-image-job"
-  group_id = 10
+  name           = "example-copy-image-job"
+  group_id       = 10
   aws_account_id = 20
 
   rule_type = "webhook"
 
   action_type = "copy_image"
   copy_image_action_value {
-    source_region = "ap-northeast-1"
+    source_region      = "ap-northeast-1"
     destination_region = "us-east-1"
-    specify_image = "tag"
-    tag_key = "env"
-    tag_value = "develop"
-    trace_status = "true"
+    specify_image      = "tag"
+    tag_key            = "env"
+    tag_value          = "develop"
+    trace_status       = "true"
   }
 }

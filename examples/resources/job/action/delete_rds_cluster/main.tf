@@ -16,21 +16,22 @@
 #   - DBクラスターの削除完了をジョブ完了の判定にする
 #     - true
 # ----------------------------------------------------------
+
 resource "cloudautomator_job" "example-delete-rds-cluster-job" {
-  name = "example-delete-rds-cluster-job"
-  group_id = 10
+  name           = "example-delete-rds-cluster-job"
+  group_id       = 10
   aws_account_id = 20
 
   rule_type = "webhook"
 
   action_type = "delete_rds_cluster"
   delete_rds_cluster_action_value {
-    region = "ap-northeast-1"
-    specify_rds_cluster = "tag"
-    tag_key = "env"
-    tag_value = "develop"
+    region                       = "ap-northeast-1"
+    specify_rds_cluster          = "tag"
+    tag_key                      = "env"
+    tag_value                    = "develop"
     final_db_snapshot_identifier = "test-snapshot"
-    skip_final_snapshot = "false"
-    trace_status = "true"
+    skip_final_snapshot          = "false"
+    trace_status                 = "true"
   }
 }

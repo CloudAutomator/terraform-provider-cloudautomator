@@ -16,21 +16,22 @@
 #   - DBスナップショットの作成完了をジョブ完了の判定にする
 #     - true
 # ----------------------------------------------------------
+
 resource "cloudautomator_job" "example-create-rds-snapshot-job" {
-  name = "example-create-rds-snapshot-job"
-  group_id = 10
+  name           = "example-create-rds-snapshot-job"
+  group_id       = 10
   aws_account_id = 20
 
   rule_type = "webhook"
 
   action_type = "create_rds_cluster_snapshot"
   create_rds_cluster_snapshot_action_value {
-    region = "ap-northeast-1"
-    specify_rds_cluster = "tag"
-    tag_key = "env"
-    tag_value = "develop"
-    generation = 10
+    region                         = "ap-northeast-1"
+    specify_rds_cluster            = "tag"
+    tag_key                        = "env"
+    tag_value                      = "develop"
+    generation                     = 10
     db_cluster_snapshot_identifier = "test"
-    trace_status = "true"
+    trace_status                   = "true"
   }
 }
