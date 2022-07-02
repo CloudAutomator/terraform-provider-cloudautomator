@@ -795,6 +795,26 @@ func RebootWorkspacesActionValueFields() map[string]*schema.Schema {
 	}
 }
 
+func RebuildWorkspacesActionValueFields() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"region": {
+			Description: "AWS Region in which the target resource resides",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"tag_key": {
+			Description: "Tag key used to identify the target resource",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"tag_value": {
+			Description: "Tag value used to identify the target resource",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+	}
+}
+
 func RegisterInstancesActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {

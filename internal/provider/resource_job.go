@@ -260,6 +260,15 @@ func resourceJob() *schema.Resource {
 					Schema: schemes.RebootWorkspacesActionValueFields(),
 				},
 			},
+			"rebuild_workspaces_action_value": {
+				Description: "\"WorkSpaces: Rebuild WorkSpace\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: schemes.RebuildWorkspacesActionValueFields(),
+				},
+			},
 			"register_instances_action_value": {
 				Description: "\"ELB(CLB): Register EC2 instance\" action value",
 				Type:        schema.TypeList,

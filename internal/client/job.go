@@ -251,6 +251,8 @@ func readActionValues(rawJob *JobAttributes) map[string]interface{} {
 	case "authorize_security_group_ingress", "revoke_security_group_ingress":
 		toPort := rawJob.ActionValue["to_port"].(float64)
 		rawJob.ActionValue["to_port"] = strconv.Itoa(int(toPort))
+	case "rebuild_workspaces":
+		delete(rawJob.ActionValue, "specify_workspace")
 	}
 
 	deleteTraceStatus(rawJob)
