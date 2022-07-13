@@ -22,11 +22,11 @@ Enter the provider directory and build the provider
 
 ```sh
 $ cd $GOPATH/src/github.com/penta515/terraform-provider-cloudautomator
-$ make install
+$ make install VERSION=0.2.0
 ```
 
 ## Authentication and Configuration
-Configuration for the Cloud Automator Provider can be derived from several sources, which are applied in the following order:
+Cloud Automator Provider authentication settings are applied in the following order.
 
 1. Parameters in the provider configuration
 1. Environment variables
@@ -50,6 +50,33 @@ $ export CLOUD_AUTOMATOR_API_KEY="abcdefghijklmnopqrstuvwxyz"
 $ terraform plan
 ```
 
+## Custom Endpoint Configuration
+Cloud Automator Provider can be customized to connect to non-default endpoints and is applied in the following order.
+
+1. Parameters in the provider configuration
+1. Environment variables
+
+### Provider Configuration
+
+```tf
+provider "cloudautomator" {
+  ...
+
+  endpoint = "http://localhost:3000/api/v1"
+}
+```
+
+### Environment Variables
+
+```hcl
+provider "cloudautomator" {}
+```
+
+```shell
+$ export CLOUD_AUTOMATOR_API_ENDPOINT="http://localhost:3000/api/v1"
+$ terraform plan
+```
+
 ## Usage Example
 
 ```hcl
@@ -58,7 +85,7 @@ terraform {
   required_providers {
     cloudautomator = {
       source = "penta515/cloudautomator"
-      version = "0.0.1"
+      version = "0.2.0"
     }
   }
 }
