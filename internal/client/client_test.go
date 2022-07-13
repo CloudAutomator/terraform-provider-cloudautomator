@@ -60,9 +60,9 @@ func TestClient_NewRequest(t *testing.T) {
 			token := "example"
 
 			c, _ := New(token)
-			_, err := c.NewRequest(tt.method, tt.requestUrl, "")
+			_, err := c.newRequest(tt.method, tt.requestUrl, "")
 
-			testErrCheck(t, "c.NewRequest()", tt.expectErrorMessage, err)
+			testErrCheck(t, "c.newRequest()", tt.expectErrorMessage, err)
 		})
 	}
 }
@@ -101,10 +101,10 @@ func TestClient_Do(t *testing.T) {
 			mux.HandleFunc("/test", clientDoHandler(t, tt.json))
 
 			c, _ := New(tt.token, WithAPIEndpoint(server.URL))
-			req, _ := c.NewRequest(http.MethodPost, server.URL+"/test", "")
-			_, err := c.Do(req, ts)
+			req, _ := c.newRequest(http.MethodPost, server.URL+"/test", "")
+			_, err := c.do(req, ts)
 
-			testErrCheck(t, "c.Do()", tt.expectErrorMessage, err)
+			testErrCheck(t, "c.do()", tt.expectErrorMessage, err)
 
 			if len(ts.Name) > 0 && ts.Name != "ok" {
 				t.Fatalf("Name = %s, want ok", ts.Name)

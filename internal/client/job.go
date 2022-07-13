@@ -96,13 +96,13 @@ var TRACE_STATUS_NOT_SUPPORTED_ACTION_TYPES = []string{
 
 func (c *Client) GetJob(jobId string) (*Job, *http.Response, error) {
 	requestUrl := fmt.Sprintf("jobs/%s", jobId)
-	req, err := c.NewRequest("GET", requestUrl, nil)
+	req, err := c.newRequest("GET", requestUrl, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	getResponse := new(JobGetResponse)
-	resp, err := c.Do(req, &getResponse)
+	resp, err := c.do(req, &getResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -129,13 +129,13 @@ func (c *Client) GetJobs() (*[]Job, *http.Response, error) {
 		q.Set("page[size]", "100")
 		rel.RawQuery = q.Encode()
 
-		req, err := c.NewRequest("GET", rel.String(), nil)
+		req, err := c.newRequest("GET", rel.String(), nil)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		listResponse := new(JobListResponse)
-		resp, err := c.Do(req, listResponse)
+		resp, err := c.do(req, listResponse)
 		if err != nil {
 			return nil, resp, err
 		}
@@ -156,13 +156,13 @@ func (c *Client) GetJobs() (*[]Job, *http.Response, error) {
 
 func (c *Client) CreateJob(job *Job) (*Job, *http.Response, error) {
 	requestUrl := "jobs"
-	req, err := c.NewRequest("POST", requestUrl, job)
+	req, err := c.newRequest("POST", requestUrl, job)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	postResponse := new(JobPostResponse)
-	resp, err := c.Do(req, &postResponse)
+	resp, err := c.do(req, &postResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -177,13 +177,13 @@ func (c *Client) CreateJob(job *Job) (*Job, *http.Response, error) {
 
 func (c *Client) UpdateJob(job *Job) (*Job, *http.Response, error) {
 	requestUrl := fmt.Sprintf("jobs/%s", job.Id)
-	req, err := c.NewRequest("PATCH", requestUrl, job)
+	req, err := c.newRequest("PATCH", requestUrl, job)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	patchResponse := new(JobPatchResponse)
-	resp, err := c.Do(req, &patchResponse)
+	resp, err := c.do(req, &patchResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -198,12 +198,12 @@ func (c *Client) UpdateJob(job *Job) (*Job, *http.Response, error) {
 
 func (c *Client) DeleteJob(jobId string) (*http.Response, error) {
 	requestUrl := fmt.Sprintf("jobs/%s", jobId)
-	req, err := c.NewRequest("DELETE", requestUrl, nil)
+	req, err := c.newRequest("DELETE", requestUrl, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.Do(req, nil)
+	resp, err := c.do(req, nil)
 	if err != nil {
 		return resp, err
 	}

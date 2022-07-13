@@ -59,13 +59,13 @@ type PostProcessAttributes struct {
 
 func (c *Client) GetPostProcess(postProcessId string) (*PostProcess, *http.Response, error) {
 	requestUrl := fmt.Sprintf("post_processes/%s", postProcessId)
-	req, err := c.NewRequest("GET", requestUrl, nil)
+	req, err := c.newRequest("GET", requestUrl, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	getResponse := new(PostProcessGetResponse)
-	resp, err := c.Do(req, &getResponse)
+	resp, err := c.do(req, &getResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -90,13 +90,13 @@ func (c *Client) GetPostProcesses() (*[]PostProcess, *http.Response, error) {
 		q.Set("page[size]", "100")
 		rel.RawQuery = q.Encode()
 
-		req, err := c.NewRequest("GET", rel.String(), nil)
+		req, err := c.newRequest("GET", rel.String(), nil)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		listResponse := new(PostProcessListResponse)
-		resp, err := c.Do(req, listResponse)
+		resp, err := c.do(req, listResponse)
 		if err != nil {
 			return nil, resp, err
 		}
@@ -117,13 +117,13 @@ func (c *Client) GetPostProcesses() (*[]PostProcess, *http.Response, error) {
 
 func (c *Client) CreatePostProcess(postProcess *PostProcess) (*PostProcess, *http.Response, error) {
 	requestUrl := "post_processes"
-	req, err := c.NewRequest("POST", requestUrl, postProcess)
+	req, err := c.newRequest("POST", requestUrl, postProcess)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	postResponse := new(PostProcessPostResponse)
-	resp, err := c.Do(req, &postResponse)
+	resp, err := c.do(req, &postResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -138,13 +138,13 @@ func (c *Client) CreatePostProcess(postProcess *PostProcess) (*PostProcess, *htt
 
 func (c *Client) UpdatePostProcess(postProcess *PostProcess) (*PostProcess, *http.Response, error) {
 	requestUrl := fmt.Sprintf("post_processes/%s", postProcess.Id)
-	req, err := c.NewRequest("PATCH", requestUrl, postProcess)
+	req, err := c.newRequest("PATCH", requestUrl, postProcess)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	patchResponse := new(PostProcessPatchResponse)
-	resp, err := c.Do(req, &patchResponse)
+	resp, err := c.do(req, &patchResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -159,12 +159,12 @@ func (c *Client) UpdatePostProcess(postProcess *PostProcess) (*PostProcess, *htt
 
 func (c *Client) DeletePostProcess(postProcessId string) (*http.Response, error) {
 	requestUrl := fmt.Sprintf("post_processes/%s", postProcessId)
-	req, err := c.NewRequest("DELETE", requestUrl, nil)
+	req, err := c.newRequest("DELETE", requestUrl, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.Do(req, nil)
+	resp, err := c.do(req, nil)
 	if err != nil {
 		return resp, err
 	}

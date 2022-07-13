@@ -43,13 +43,13 @@ type AwsAccountAttributes struct {
 
 func (c *Client) GetAwsAccount(group_id, awsAccountId string) (*AwsAccount, *http.Response, error) {
 	requestUrl := fmt.Sprintf("/groups/%s/aws_accounts/%s", group_id, awsAccountId)
-	req, err := c.NewRequest("GET", requestUrl, nil)
+	req, err := c.newRequest("GET", requestUrl, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	getResponse := new(AwsAccountGetResponse)
-	resp, err := c.Do(req, &getResponse)
+	resp, err := c.do(req, &getResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -74,13 +74,13 @@ func (c *Client) GetAwsAccounts(group_id string) (*[]AwsAccount, *http.Response,
 		q.Set("page[size]", "100")
 		rel.RawQuery = q.Encode()
 
-		req, err := c.NewRequest("GET", rel.String(), nil)
+		req, err := c.newRequest("GET", rel.String(), nil)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		listResponse := new(AwsAccountListResponse)
-		resp, err := c.Do(req, listResponse)
+		resp, err := c.do(req, listResponse)
 		if err != nil {
 			return nil, resp, err
 		}

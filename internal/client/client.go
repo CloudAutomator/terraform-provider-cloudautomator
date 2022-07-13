@@ -13,11 +13,14 @@ import (
 	"time"
 )
 
-var (
-	apiEndpoint           = "https://manager.cloudautomator.com/api/v1/"
+const (
+	ApiEndpoint           = "https://manager.cloudautomator.com/api/v1/"
 	contentTypeHeader     = "application/json"
 	defaultTimeoutSeconds = 20 * time.Second
-	userAgentHeader       = fmt.Sprintf(
+)
+
+var (
+	userAgentHeader = fmt.Sprintf(
 		"go-http/v%s (%s/%s; +go-cloudautomator-client)",
 		Version,
 		runtime.GOOS,
@@ -26,18 +29,18 @@ var (
 )
 
 type Client struct {
-	HttpClient  *http.Client
-	ApiEndpoint *url.URL
-	Token       string
+	httpClient  *http.Client
+	apiEndpoint *url.URL
+	token       string
 }
 
 func New(authToken string, options ...ClientOptions) (*Client, error) {
-	parsedApiEndpoint, _ := url.Parse(apiEndpoint)
+	parsedApiEndpoint, _ := url.Parse(ApiEndpoint)
 
 	c := &Client{
-		HttpClient:  &http.Client{Timeout: defaultTimeoutSeconds},
-		ApiEndpoint: parsedApiEndpoint,
-		Token:       authToken,
+		httpClient:  &http.Client{Timeout: defaultTimeoutSeconds},
+		apiEndpoint: parsedApiEndpoint,
+		token:       authToken,
 	}
 
 	for _, opt := range options {
@@ -53,18 +56,18 @@ func WithAPIEndpoint(endpoint string) ClientOptions {
 	apiEndpoint, _ := url.Parse(endpoint)
 
 	return func(c *Client) {
-		c.ApiEndpoint = apiEndpoint
+		c.apiEndpoint = apiEndpoint
 	}
 }
 
-func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Request, error) {
+func (c *Client) newRequest(method, urlStr string, body interface{}) (*http.Request, error) {
 	rel, err := url.Parse(urlStr)
 	if err != nil {
 		return nil, err
 	}
 
 	rel.Path = strings.TrimLeft(rel.Path, "/")
-	u := c.ApiEndpoint.ResolveReference(rel)
+	u := c.apiEndpoint.ResolveReference(rel)
 	buf := new(bytes.Buffer)
 	if body != nil {
 		if err := json.NewEncoder(buf).Encode(body); err != nil {
@@ -76,15 +79,15 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.Token))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.token))
 	req.Header.Set("Content-Type", contentTypeHeader)
 	req.Header.Set("User-Agent", userAgentHeader)
 
 	return req, nil
 }
 
-func (c *Client) Do(req *http.Request, v interface{}) (*http.Response, error) {
-	resp, err := c.HttpClient.Do(req)
+func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
