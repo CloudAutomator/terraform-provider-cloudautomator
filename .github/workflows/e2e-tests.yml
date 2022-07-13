@@ -59,7 +59,7 @@ jobs:
           go mod download
 
       - name: TF acceptance tests
-        timeout-minutes: 10
+        timeout-minutes: 60
         env:
           TF_ACC: "1"
           CA_TEST_API_KEY: ${{github.event.inputs.ca_test_api_key}}
