@@ -12,7 +12,7 @@ GO_PACKAGES := $(shell go list ./... | grep -v vendor)
 build:
 	@if [ -z "$(VERSION)" ]; \
 	then \
-	  echo "Please provide a version. Example: make build VERSION=0.2.0" && exit 1; \
+	  echo "Please provide a version. Example: make build VERSION=0.2.2" && exit 1; \
  	fi
 	@go build -v -o "${BUILD_DIR}/${BINARY}_v$(VERSION)"
 
@@ -23,7 +23,7 @@ install: build
 clean:
 	@if [ -z "$(VERSION)" ]; \
     	then \
-         echo "Please provide a version. Example: make clean VERSION=0.2.0" && exit 1; \
+         echo "Please provide a version. Example: make clean VERSION=0.2.2" && exit 1; \
      	fi
 	@if [ -d "${HOME}/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/$(VERSION)" ]; \
 	then \

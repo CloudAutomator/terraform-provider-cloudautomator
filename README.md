@@ -22,7 +22,7 @@ Enter the provider directory and build the provider
 
 ```sh
 $ cd $GOPATH/src/github.com/penta515/terraform-provider-cloudautomator
-$ make install VERSION=0.2.0
+$ make install VERSION=0.2.2
 ```
 
 ## Authentication and Configuration
@@ -85,7 +85,7 @@ terraform {
   required_providers {
     cloudautomator = {
       source = "penta515/cloudautomator"
-      version = "0.2.0"
+      version = "0.2.2"
     }
   }
 }
