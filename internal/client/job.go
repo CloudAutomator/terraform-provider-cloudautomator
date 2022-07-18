@@ -248,6 +248,12 @@ func readRuleValues(rawJob *JobAttributes) map[string]interface{} {
 
 func readActionValues(rawJob *JobAttributes) map[string]interface{} {
 	switch rawJob.ActionType {
+	case "create_image":
+		switch rawJob.ActionValue["generation"].(type) {
+		case string:
+			generation, _ := strconv.Atoi(rawJob.ActionValue["generation"].(string))
+			rawJob.ActionValue["generation"] = generation
+		}
 	case "authorize_security_group_ingress", "revoke_security_group_ingress":
 		toPort := rawJob.ActionValue["to_port"].(float64)
 		rawJob.ActionValue["to_port"] = strconv.Itoa(int(toPort))
