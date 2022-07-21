@@ -248,7 +248,7 @@ func readRuleValues(rawJob *JobAttributes) map[string]interface{} {
 
 func readActionValues(rawJob *JobAttributes) map[string]interface{} {
 	switch rawJob.ActionType {
-	case "create_image":
+	case "create_ebs_snapshot", "create_image":
 		switch rawJob.ActionValue["generation"].(type) {
 		case string:
 			generation, _ := strconv.Atoi(rawJob.ActionValue["generation"].(string))
