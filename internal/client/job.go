@@ -96,13 +96,9 @@ var TRACE_STATUS_NOT_SUPPORTED_ACTION_TYPES = []string{
 
 func (c *Client) GetJob(jobId string) (*Job, *http.Response, error) {
 	requestUrl := fmt.Sprintf("jobs/%s", jobId)
-	req, err := c.newRequest("GET", requestUrl, nil)
-	if err != nil {
-		return nil, nil, err
-	}
 
 	getResponse := new(JobGetResponse)
-	resp, err := c.do(req, &getResponse)
+	resp, err := c.requestWithRetry("GET", requestUrl, nil, getResponse, 5)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -129,13 +125,9 @@ func (c *Client) GetJobs() (*[]Job, *http.Response, error) {
 		q.Set("page[size]", "100")
 		rel.RawQuery = q.Encode()
 
-		req, err := c.newRequest("GET", rel.String(), nil)
-		if err != nil {
-			return nil, nil, err
-		}
-
 		listResponse := new(JobListResponse)
-		resp, err := c.do(req, listResponse)
+		resp, err := c.requestWithRetry("GET", rel.String(), nil, listResponse, defaultRetryCount)
+
 		if err != nil {
 			return nil, resp, err
 		}
@@ -156,13 +148,8 @@ func (c *Client) GetJobs() (*[]Job, *http.Response, error) {
 
 func (c *Client) CreateJob(job *Job) (*Job, *http.Response, error) {
 	requestUrl := "jobs"
-	req, err := c.newRequest("POST", requestUrl, job)
-	if err != nil {
-		return nil, nil, err
-	}
-
 	postResponse := new(JobPostResponse)
-	resp, err := c.do(req, &postResponse)
+	resp, err := c.requestWithRetry("POST", requestUrl, job, postResponse, defaultRetryCount)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -177,13 +164,8 @@ func (c *Client) CreateJob(job *Job) (*Job, *http.Response, error) {
 
 func (c *Client) UpdateJob(job *Job) (*Job, *http.Response, error) {
 	requestUrl := fmt.Sprintf("jobs/%s", job.Id)
-	req, err := c.newRequest("PATCH", requestUrl, job)
-	if err != nil {
-		return nil, nil, err
-	}
-
 	patchResponse := new(JobPatchResponse)
-	resp, err := c.do(req, &patchResponse)
+	resp, err := c.requestWithRetry("PATCH", requestUrl, job, patchResponse, defaultRetryCount)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -198,12 +180,7 @@ func (c *Client) UpdateJob(job *Job) (*Job, *http.Response, error) {
 
 func (c *Client) DeleteJob(jobId string) (*http.Response, error) {
 	requestUrl := fmt.Sprintf("jobs/%s", jobId)
-	req, err := c.newRequest("DELETE", requestUrl, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.do(req, nil)
+	resp, err := c.requestWithRetry("DELETE", requestUrl, nil, nil, defaultRetryCount)
 	if err != nil {
 		return resp, err
 	}

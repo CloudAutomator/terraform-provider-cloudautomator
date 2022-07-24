@@ -43,13 +43,8 @@ type AwsAccountAttributes struct {
 
 func (c *Client) GetAwsAccount(group_id, awsAccountId string) (*AwsAccount, *http.Response, error) {
 	requestUrl := fmt.Sprintf("/groups/%s/aws_accounts/%s", group_id, awsAccountId)
-	req, err := c.newRequest("GET", requestUrl, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
 	getResponse := new(AwsAccountGetResponse)
-	resp, err := c.do(req, &getResponse)
+	resp, err := c.requestWithRetry("GET", requestUrl, nil, getResponse, defaultRetryCount)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -74,13 +69,8 @@ func (c *Client) GetAwsAccounts(group_id string) (*[]AwsAccount, *http.Response,
 		q.Set("page[size]", "100")
 		rel.RawQuery = q.Encode()
 
-		req, err := c.newRequest("GET", rel.String(), nil)
-		if err != nil {
-			return nil, nil, err
-		}
-
 		listResponse := new(AwsAccountListResponse)
-		resp, err := c.do(req, listResponse)
+		resp, err := c.requestWithRetry("GET", rel.String(), nil, listResponse, defaultRetryCount)
 		if err != nil {
 			return nil, resp, err
 		}

@@ -59,13 +59,8 @@ type PostProcessAttributes struct {
 
 func (c *Client) GetPostProcess(postProcessId string) (*PostProcess, *http.Response, error) {
 	requestUrl := fmt.Sprintf("post_processes/%s", postProcessId)
-	req, err := c.newRequest("GET", requestUrl, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
 	getResponse := new(PostProcessGetResponse)
-	resp, err := c.do(req, &getResponse)
+	resp, err := c.requestWithRetry("GET", requestUrl, nil, getResponse, defaultRetryCount)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -90,13 +85,8 @@ func (c *Client) GetPostProcesses() (*[]PostProcess, *http.Response, error) {
 		q.Set("page[size]", "100")
 		rel.RawQuery = q.Encode()
 
-		req, err := c.newRequest("GET", rel.String(), nil)
-		if err != nil {
-			return nil, nil, err
-		}
-
 		listResponse := new(PostProcessListResponse)
-		resp, err := c.do(req, listResponse)
+		resp, err := c.requestWithRetry("GET", rel.String(), nil, listResponse, defaultRetryCount)
 		if err != nil {
 			return nil, resp, err
 		}
@@ -117,13 +107,8 @@ func (c *Client) GetPostProcesses() (*[]PostProcess, *http.Response, error) {
 
 func (c *Client) CreatePostProcess(postProcess *PostProcess) (*PostProcess, *http.Response, error) {
 	requestUrl := "post_processes"
-	req, err := c.newRequest("POST", requestUrl, postProcess)
-	if err != nil {
-		return nil, nil, err
-	}
-
 	postResponse := new(PostProcessPostResponse)
-	resp, err := c.do(req, &postResponse)
+	resp, err := c.requestWithRetry("POST", requestUrl, postProcess, postResponse, defaultRetryCount)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -138,13 +123,8 @@ func (c *Client) CreatePostProcess(postProcess *PostProcess) (*PostProcess, *htt
 
 func (c *Client) UpdatePostProcess(postProcess *PostProcess) (*PostProcess, *http.Response, error) {
 	requestUrl := fmt.Sprintf("post_processes/%s", postProcess.Id)
-	req, err := c.newRequest("PATCH", requestUrl, postProcess)
-	if err != nil {
-		return nil, nil, err
-	}
-
 	patchResponse := new(PostProcessPatchResponse)
-	resp, err := c.do(req, &patchResponse)
+	resp, err := c.requestWithRetry("PATCH", requestUrl, postProcess, patchResponse, defaultRetryCount)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -159,12 +139,7 @@ func (c *Client) UpdatePostProcess(postProcess *PostProcess) (*PostProcess, *htt
 
 func (c *Client) DeletePostProcess(postProcessId string) (*http.Response, error) {
 	requestUrl := fmt.Sprintf("post_processes/%s", postProcessId)
-	req, err := c.newRequest("DELETE", requestUrl, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.do(req, nil)
+	resp, err := c.requestWithRetry("DELETE", requestUrl, nil, nil, defaultRetryCount)
 	if err != nil {
 		return resp, err
 	}
