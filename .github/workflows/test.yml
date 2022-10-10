@@ -49,7 +49,7 @@ jobs:
           go mod download
 
       - name: unit-test
-        run: make test-unit
+        run: make test
 
   terraform-fmt:
     name: terraform-fmt
