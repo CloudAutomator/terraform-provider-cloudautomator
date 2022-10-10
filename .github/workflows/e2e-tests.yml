@@ -70,4 +70,4 @@ jobs:
           CA_TEST_SQS_REGION: ${{github.event.inputs.ca_test_sqs_region}}
           CA_TEST_POST_PROCESS_ID: ${{github.event.inputs.ca_test_post_process_id}}
         run: |
-          make test-acc-e2e
+          make testacc
