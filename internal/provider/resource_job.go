@@ -39,7 +39,7 @@ func resourceJob() *schema.Resource {
 			"aws_account_id": {
 				Description: "AWS account ID",
 				Type:        schema.TypeInt,
-				Required:    true,
+				Optional:    true,
 			},
 			"rule_type": {
 				Description: "Trigger type",
@@ -132,6 +132,15 @@ func resourceJob() *schema.Resource {
 				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: schemes.CopyImageActionValueFields(),
+				},
+			},
+			"copy_rds_cluster_snapshot_action_value": {
+				Description: "\"RDS(Aurora): Copy DB cluster snapshot\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: schemes.CopyRdsClusterSnapshotActionValueFields(),
 				},
 			},
 			"copy_rds_snapshot_action_value": {

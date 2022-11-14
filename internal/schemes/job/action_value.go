@@ -234,6 +234,41 @@ func CopyImageActionValueFields() map[string]*schema.Schema {
 	}
 }
 
+func CopyRdsClusterSnapshotActionValueFields() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"source_region": {
+			Description: "AWS Region from which the copy was made",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"destination_region": {
+			Description: "AWS Region to copy to",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"specify_rds_cluster_snapshot": {
+			Description: "How to identify target resources",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"rds_cluster_snapshot_id": {
+			Description: "Target DB Cluster snapshot ID",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"source_rds_cluster_id": {
+			Description: "Target DB Cluster ID",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"kms_key_id": {
+			Description: "KMS key ID",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+	}
+}
+
 func CopyRdsSnapshotActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"source_region": {
