@@ -51,7 +51,6 @@ func testAccCloudAutomatorDataSourceJob_basic(rName string) string {
 resource "cloudautomator_job" "test" {
 	name = "%s"
 	group_id = "%s"
-	aws_account_id = "%s"
 
 	rule_type = "cron"
 	cron_rule_value {
@@ -72,5 +71,5 @@ resource "cloudautomator_job" "test" {
 
 data "cloudautomator_job" "test" {
 	id = cloudautomator_job.test.id
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}`, rName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }

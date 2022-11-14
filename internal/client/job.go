@@ -16,7 +16,7 @@ type Job struct {
 	Id                       string                 `json:"id,omitempty"`
 	Name                     string                 `json:"name"`
 	GroupId                  int                    `json:"group_id"`
-	AwsAccountId             int                    `json:"aws_account_id"`
+	AwsAccountId             int                    `json:"aws_account_id,omitempty"`
 	RuleType                 string                 `json:"rule_type"`
 	RuleValue                map[string]interface{} `json:"rule_value"`
 	ActionType               string                 `json:"action_type"`
@@ -80,6 +80,7 @@ type JobAttributes struct {
 
 var TRACE_STATUS_NOT_SUPPORTED_ACTION_TYPES = []string{
 	"authorize_security_group_ingress",
+	"copy_rds_cluster_snapshot",
 	"change_instance_type",
 	"deregister_instances",
 	"deregister_target_instances",

@@ -500,6 +500,44 @@ func TestAccCloudAutomatorJob_CopyImageAction(t *testing.T) {
 	})
 }
 
+func TestAccCloudAutomatorJob_CopyRdsClusterSnapshotAction(t *testing.T) {
+	resourceName := "cloudautomator_job.test"
+	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckCloudAutomatorJobConfigCopyRdsClusterSnapshotAction(jobName),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
+					resource.TestCheckResourceAttr(
+						resourceName, "name", jobName),
+					resource.TestCheckResourceAttr(
+						resourceName, "action_type", "copy_rds_cluster_snapshot"),
+					resource.TestCheckResourceAttr(
+						resourceName, "copy_rds_cluster_snapshot_action_value.0.source_region", "ap-northeast-1"),
+					resource.TestCheckResourceAttr(
+						resourceName, "copy_rds_cluster_snapshot_action_value.0.destination_region", "ap-southeast-1"),
+					resource.TestCheckResourceAttr(
+						resourceName, "copy_rds_cluster_snapshot_action_value.0.specify_rds_cluster_snapshot", "rds_cluster_snapshot_id"),
+					resource.TestCheckResourceAttr(
+						resourceName, "copy_rds_cluster_snapshot_action_value.0.rds_cluster_snapshot_id", "test-snapshot"),
+					resource.TestCheckResourceAttr(
+						resourceName, "copy_rds_cluster_snapshot_action_value.0.kms_key_id", "1234abcd-12ab-34cd-56ef-1234567890ab"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
+				),
+			},
+		},
+	})
+}
+
 func TestAccCloudAutomatorJob_CopyRdsSnapshotAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
@@ -1945,7 +1983,6 @@ func testAccCheckCloudAutomatorJobConfigCronRuleOneTime(rName string) string {
 resource "cloudautomator_job" "test" {
 	name = "%s"
 	group_id = "%s"
-	aws_account_id = "%s"
 
 	rule_type = "cron"
 	cron_rule_value {
@@ -1962,7 +1999,7 @@ resource "cloudautomator_job" "test" {
 	}
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}`, rName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigCronRuleWeekly(rName string) string {
@@ -1970,7 +2007,6 @@ func testAccCheckCloudAutomatorJobConfigCronRuleWeekly(rName string) string {
 resource "cloudautomator_job" "test" {
 	name = "%s"
 	group_id = "%s"
-	aws_account_id = "%s"
 
 	rule_type = "cron"
 	cron_rule_value {
@@ -1992,7 +2028,7 @@ resource "cloudautomator_job" "test" {
 	}
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}`, rName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigCronRuleMonthlyDayOfWeek(rName string) string {
@@ -2000,7 +2036,6 @@ func testAccCheckCloudAutomatorJobConfigCronRuleMonthlyDayOfWeek(rName string) s
 resource "cloudautomator_job" "test" {
 	name = "%s"
 	group_id = "%s"
-	aws_account_id = "%s"
 
 	rule_type = "cron"
 	cron_rule_value {
@@ -2021,7 +2056,7 @@ resource "cloudautomator_job" "test" {
 	}
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}`, rName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigWebhookRule(rName string) string {
@@ -2029,7 +2064,6 @@ func testAccCheckCloudAutomatorJobConfigWebhookRule(rName string) string {
 resource "cloudautomator_job" "test" {
 	name = "%s"
 	group_id = "%s"
-	aws_account_id = "%s"
 
 	rule_type = "webhook"
 
@@ -2039,7 +2073,7 @@ resource "cloudautomator_job" "test" {
 	}
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}`, rName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigScheduleRule(rName string) string {
@@ -2047,7 +2081,6 @@ func testAccCheckCloudAutomatorJobConfigScheduleRule(rName string) string {
 resource "cloudautomator_job" "test" {
 	name = "%s"
 	group_id = "%s"
-	aws_account_id = "%s"
 
 	rule_type = "schedule"
 	schedule_rule_value {
@@ -2061,7 +2094,7 @@ resource "cloudautomator_job" "test" {
 	}
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}`, rName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigSqsV2Rule(rName string) string {
@@ -2069,7 +2102,6 @@ func testAccCheckCloudAutomatorJobConfigSqsV2Rule(rName string) string {
 resource "cloudautomator_job" "test" {
 	name = "%s"
 	group_id = "%s"
-	aws_account_id = "%s"
 
 	rule_type = "sqs_v2"
 	sqs_v2_rule_value {
@@ -2084,7 +2116,7 @@ resource "cloudautomator_job" "test" {
 	}
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestSqsAwsAccountId(), acctest.TestSqsRegion(), acctest.TestSqsQueue(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}`, rName, acctest.TestGroupId(), acctest.TestSqsAwsAccountId(), acctest.TestSqsRegion(), acctest.TestSqsQueue(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigAmazonSnsRule(rName string) string {
@@ -2092,7 +2124,6 @@ func testAccCheckCloudAutomatorJobConfigAmazonSnsRule(rName string) string {
 resource "cloudautomator_job" "test" {
 	name = "%s"
 	group_id = "%s"
-	aws_account_id = "%s"
 
 	rule_type = "amazon_sns"
 
@@ -2102,7 +2133,7 @@ resource "cloudautomator_job" "test" {
 	}
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}`, rName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigAuthorizeSecurityGroupIngressAction(rName string) string {
@@ -2236,6 +2267,29 @@ resource "cloudautomator_job" "test" {
 		tag_value = "develop"
 		trace_status = "true"
 	}
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}
+
+func testAccCheckCloudAutomatorJobConfigCopyRdsClusterSnapshotAction(rName string) string {
+	return fmt.Sprintf(`
+resource "cloudautomator_job" "test" {
+	name = "%s"
+	group_id = "%s"
+	aws_account_id = "%s"
+
+	rule_type = "webhook"
+
+	action_type = "copy_rds_cluster_snapshot"
+	copy_rds_cluster_snapshot_action_value {
+	  source_region = "ap-northeast-1"
+	  destination_region = "ap-southeast-1"
+	  specify_rds_cluster_snapshot = "rds_cluster_snapshot_id"
+	  rds_cluster_snapshot_id = "test-snapshot"
+	  kms_key_id = "1234abcd-12ab-34cd-56ef-1234567890ab"
+	}
+
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]
 }`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
@@ -2403,7 +2457,6 @@ func testAccCheckCloudAutomatorJobConfigDelayAction(rName string) string {
 resource "cloudautomator_job" "test" {
 	name = "%s"
 	group_id = "%s"
-	aws_account_id = "%s"
 
 	rule_type = "webhook"
 
@@ -2413,7 +2466,7 @@ resource "cloudautomator_job" "test" {
 	}
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}`, rName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigDeleteClusterAction(rName string) string {
