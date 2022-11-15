@@ -2841,8 +2841,8 @@ resource "cloudautomator_job" "test" {
 		output_s3_bucket_name = "test-s3-bucket"
 		output_s3_key_prefix = "test-key"
 		trace_status = "true"
-		timeout_seconds = 60
-		execution_timeout_seconds = 60
+		timeout_seconds = "60"
+		execution_timeout_seconds = "60"
 	}
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]
@@ -3072,7 +3072,7 @@ resource "cloudautomator_job" "test" {
 		output_s3_bucket_name = "test-s3-bucket"
 		output_s3_key_prefix = "test-key"
 		update_level = "All"
-		timeout_seconds = 60
+		timeout_seconds = "60"
 	}
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]

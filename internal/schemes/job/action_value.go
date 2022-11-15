@@ -1299,12 +1299,12 @@ func SendCommandActionValueFields() map[string]*schema.Schema {
 		},
 		"timeout_seconds": {
 			Description: "Instance connection timeout time (seconds)",
-			Type:        schema.TypeInt,
+			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		"execution_timeout_seconds": {
 			Description: "Timeout period for command execution (seconds)",
-			Type:        schema.TypeInt,
+			Type:        schema.TypeString,
 			Optional:    true,
 		},
 	}
@@ -1659,7 +1659,7 @@ func WindowsUpdateActionValueFields() map[string]*schema.Schema {
 		},
 		"timeout_seconds": {
 			Description: "Timeout time (sec)",
-			Type:        schema.TypeInt,
+			Type:        schema.TypeString,
 			Optional:    true,
 		},
 	}

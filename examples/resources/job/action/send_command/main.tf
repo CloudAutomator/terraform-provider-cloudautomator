@@ -46,7 +46,7 @@ resource "cloudautomator_job" "example-send-command-job" {
     output_s3_bucket_name     = "example-bucket"
     output_s3_key_prefix      = "example"
     trace_status              = "true"
-    timeout_seconds           = 30
-    execution_timeout_seconds = 30
+    timeout_seconds           = "30"
+    execution_timeout_seconds = "30"
   }
 }
