@@ -30,6 +30,11 @@ func resourceJob() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 			},
+			"for_workflow": {
+				Description: "for workflow",
+				Type:        schema.TypeBool,
+				Optional:    true,
+			},
 			"group_id": {
 				Description: "Group ID",
 				Type:        schema.TypeInt,
@@ -493,6 +498,11 @@ func resourceJobCreate(ctx context.Context, d *schema.ResourceData, m interface{
 		job.AwsAccountId = v.(int)
 	}
 
+	if v, ok := d.GetOkExists("for_workflow"); ok {
+		fw := v.(bool)
+		job.ForWorkflow = &fw
+	}
+
 	if v, ok := d.GetOk("rule_type"); ok {
 		job.RuleType = v.(string)
 	}
@@ -554,6 +564,7 @@ func resourceJobRead(ctx context.Context, d *schema.ResourceData, m interface{})
 	d.Set("name", job.Name)
 	d.Set("group_id", job.GroupId)
 	d.Set("aws_account_id", job.AwsAccountId)
+	d.Set("for_workflow", job.ForWorkflow)
 
 	d.Set("rule_type", job.RuleType)
 	switch job.RuleType {
@@ -603,6 +614,11 @@ func resourceJobUpdate(ctx context.Context, d *schema.ResourceData, m interface{
 
 	if d.HasChange("aws_account_id") {
 		job.AwsAccountId = d.Get("aws_account_id").(int)
+	}
+
+	if d.HasChange("for_workflow") {
+		fw := d.Get("for_workflow").(bool)
+		job.ForWorkflow = &fw
 	}
 
 	ruleValueBlockName := fmt.Sprintf("%s_rule_value", job.RuleType)
