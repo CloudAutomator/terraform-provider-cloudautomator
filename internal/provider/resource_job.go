@@ -256,6 +256,24 @@ func resourceJob() *schema.Resource {
 					Schema: schemes.DeregisterTargetInstancesActionValueFields(),
 				},
 			},
+			"describe_metadata_action_value": {
+				Description: "\"DR: Update EC2 instance metadata\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: schemes.DescribeMetadataActionValueFields(),
+				},
+			},
+			"disaster_recovery_action_value": {
+				Description: "\"DR: Launch EC2 instance\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: schemes.DisasterRecoveryActionValueFields(),
+				},
+			},
 			"reboot_rds_instances_action_value": {
 				Description: "\"RDS: Reboot DB instance\" action value",
 				Type:        schema.TypeList,
