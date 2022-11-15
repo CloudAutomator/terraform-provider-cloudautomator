@@ -86,6 +86,7 @@ var TRACE_STATUS_NOT_SUPPORTED_ACTION_TYPES = []string{
 	"change_instance_type",
 	"deregister_instances",
 	"deregister_target_instances",
+	"describe_metadata",
 	"reboot_rds_instances",
 	"register_instances",
 	"register_target_instances",
