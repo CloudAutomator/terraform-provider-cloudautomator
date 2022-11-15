@@ -2136,6 +2136,25 @@ resource "cloudautomator_job" "test" {
 }`, rName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
+func testAccCheckCloudAutomatorJobConfigNoRule(rName string) string {
+	return fmt.Sprintf(`
+resource "cloudautomator_job" "test" {
+	name = "%s"
+	group_id = "%s"
+
+	for_workflow = true
+
+	rule_type = "no_rule"
+
+	action_type = "delay"
+	delay_action_value {
+		delay_minutes = 1
+	}
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}
+
 func testAccCheckCloudAutomatorJobConfigAuthorizeSecurityGroupIngressAction(rName string) string {
 	return fmt.Sprintf(`
 resource "cloudautomator_job" "test" {
