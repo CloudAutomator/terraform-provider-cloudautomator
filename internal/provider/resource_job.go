@@ -157,6 +157,15 @@ func resourceJob() *schema.Resource {
 					Schema: schemes.CopyRdsSnapshotActionValueFields(),
 				},
 			},
+			"create_fsx_backup_action_value": {
+				Description: "\"FSx: Create a backup\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: schemes.CreateFSxBackupActionValueFields(),
+				},
+			},
 			"create_ebs_snapshot_action_value": {
 				Description: "\"EC2: Create EBS snapshot\" action value",
 				Type:        schema.TypeList,
