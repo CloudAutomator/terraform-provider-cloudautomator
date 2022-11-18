@@ -9,6 +9,7 @@ import (
 
 const testApiKeyEnvName = "CA_TEST_API_KEY"
 const testAwsAccountIdEnvName = "CA_TEST_AWS_ACCOUNT_ID"
+const testGoogleCloudAccountIdEnvName = "CA_TEST_GOOGLE_CLOUD_ACCOUNT_ID"
 const testGroupIdEnvName = "CA_TEST_GROUP_ID"
 const testSqsAwsAccountIdEnvName = "CA_TEST_SQS_AWS_ACCOUNT_ID"
 const testSqsRegionEnvName = "CA_TEST_SQS_REGION"
@@ -50,6 +51,10 @@ func testAccPreCheck(t *testing.T) {
 
 	if err := os.Getenv(testAwsAccountIdEnvName); err == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAwsAccountIdEnvName)
+	}
+
+	if err := os.Getenv(testGoogleCloudAccountIdEnvName); err == "" {
+		t.Fatalf("%s must be set for acceptance tests", testGoogleCloudAccountIdEnvName)
 	}
 
 	if err := os.Getenv(testSqsAwsAccountIdEnvName); err == "" {

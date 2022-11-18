@@ -1074,6 +1074,50 @@ func TestAccCloudAutomatorJob_DeregisterTargetInstancesAction(t *testing.T) {
 	})
 }
 
+func TestAccCloudAutomatorJob_GoogleComputeInsertMachineImageAction(t *testing.T) {
+	resourceName := "cloudautomator_job.test"
+	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckCloudAutomatorJobConfigGoogleComputeInsertMachineImageAction(jobName),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
+					resource.TestCheckResourceAttr(
+						resourceName, "name", jobName),
+					resource.TestCheckResourceAttr(
+						resourceName, "action_type", "google_compute_insert_machine_image"),
+					resource.TestCheckResourceAttr(
+						resourceName, "google_compute_insert_machine_image_action_value.0.region", "asia-northeast1"),
+					resource.TestCheckResourceAttr(
+						resourceName, "google_compute_insert_machine_image_action_value.0.project_id", "example-project"),
+					resource.TestCheckResourceAttr(
+						resourceName, "google_compute_insert_machine_image_action_value.0.specify_vm_instance", "label"),
+					resource.TestCheckResourceAttr(
+						resourceName, "google_compute_insert_machine_image_action_value.0.vm_instance_label_key", "env"),
+					resource.TestCheckResourceAttr(
+						resourceName, "google_compute_insert_machine_image_action_value.0.vm_instance_label_value", "develop"),
+					resource.TestCheckResourceAttr(
+						resourceName, "google_compute_insert_machine_image_action_value.0.machine_image_storage_location", "asia-northeast1"),
+					resource.TestCheckResourceAttr(
+						resourceName, "google_compute_insert_machine_image_action_value.0.machine_image_basename", "example-daily"),
+					resource.TestCheckResourceAttr(
+						resourceName, "google_compute_insert_machine_image_action_value.0.generation", "10"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
+				),
+			},
+		},
+	})
+}
+
 func TestAccCloudAutomatorJob_RebootRdsInstancesAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
@@ -2662,6 +2706,31 @@ resource "cloudautomator_job" "test" {
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]
 }`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}
+
+func testAccCheckCloudAutomatorJobConfigGoogleComputeInsertMachineImageAction(rName string) string {
+	return fmt.Sprintf(`
+resource "cloudautomator_job" "test" {
+	name = "%s"
+	group_id = "%s"
+	google_cloud_account_id = "%s"
+
+	rule_type = "webhook"
+
+	action_type = "google_compute_insert_machine_image"
+	google_compute_insert_machine_image_action_value {
+		region = "asia-northeast1"
+		project_id = "example-project"
+		specify_vm_instance = "label"
+        vm_instance_label_key = "env"
+		vm_instance_label_value = "develop"
+		machine_image_storage_location = "asia-northeast1"
+		machine_image_basename = "example-daily"
+		generation = 10
+	}
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestGoogleCloudAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigRebootRdsInstancesAction(rName string) string {

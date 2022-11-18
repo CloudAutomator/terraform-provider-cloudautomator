@@ -18,6 +18,7 @@ type Job struct {
 	GroupId                  int                    `json:"group_id"`
 	ForWorkflow              *bool                  `json:"for_workflow,omitempty"`
 	AwsAccountId             int                    `json:"aws_account_id,omitempty"`
+	GoogleCloudAccountId     int                    `json:"google_cloud_account_id,omitempty"`
 	RuleType                 string                 `json:"rule_type"`
 	RuleValue                map[string]interface{} `json:"rule_value"`
 	ActionType               string                 `json:"action_type"`
@@ -65,7 +66,8 @@ type JobAttributes struct {
 	Name                     string                 `json:"name"`
 	Active                   bool                   `json:"active"`
 	GroupID                  int                    `json:"group_id"`
-	AwsAccountId             int                    `json:"aws_account_id"`
+	AwsAccountId             int                    `json:"aws_account_id,omitempty"`
+	GoogleCloudAccountId     int                    `json:"google_cloud_account_id,omitempty"`
 	ForWorkflow              *bool                  `json:"for_workflow,omitempty"`
 	RuleType                 string                 `json:"rule_type"`
 	RuleValue                map[string]interface{} `json:"rule_value"`
@@ -88,6 +90,7 @@ var TRACE_STATUS_NOT_SUPPORTED_ACTION_TYPES = []string{
 	"deregister_instances",
 	"deregister_target_instances",
 	"describe_metadata",
+	"google_compute_insert_machine_image",
 	"reboot_rds_instances",
 	"register_instances",
 	"register_target_instances",
@@ -268,6 +271,7 @@ func (j *Job) UnmarshalJSON(data []byte) error {
 	j.GroupId = rj.Attributes.GroupID
 	j.ForWorkflow = rj.Attributes.ForWorkflow
 	j.AwsAccountId = rj.Attributes.AwsAccountId
+	j.GoogleCloudAccountId = rj.Attributes.GoogleCloudAccountId
 	j.RuleType = rj.Attributes.RuleType
 	j.RuleValue = readRuleValues(&rj.Attributes)
 	j.ActionType = rj.Attributes.ActionType

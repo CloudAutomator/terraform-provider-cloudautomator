@@ -16,6 +16,10 @@ func TestSqsAwsAccountId() string {
 	return os.Getenv("CA_TEST_SQS_AWS_ACCOUNT_ID")
 }
 
+func TestGoogleCloudAccountId() string {
+	return os.Getenv("CA_TEST_GOOGLE_CLOUD_ACCOUNT_ID")
+}
+
 func TestSqsRegion() string {
 	return os.Getenv("CA_TEST_SQS_REGION")
 }

@@ -46,6 +46,11 @@ func resourceJob() *schema.Resource {
 				Type:        schema.TypeInt,
 				Optional:    true,
 			},
+			"google_cloud_account_id": {
+				Description: "Google Cloud account ID",
+				Type:        schema.TypeInt,
+				Optional:    true,
+			},
 			"rule_type": {
 				Description: "Trigger type",
 				Type:        schema.TypeString,
@@ -281,6 +286,15 @@ func resourceJob() *schema.Resource {
 				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: schemes.DisasterRecoveryActionValueFields(),
+				},
+			},
+			"google_compute_insert_machine_image_action_value": {
+				Description: "\"Compute Engine: create machine image\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: schemes.GoogleComputeInsertMachineImageActionValueFields(),
 				},
 			},
 			"reboot_rds_instances_action_value": {
@@ -525,6 +539,10 @@ func resourceJobCreate(ctx context.Context, d *schema.ResourceData, m interface{
 		job.AwsAccountId = v.(int)
 	}
 
+	if v, ok := d.GetOk("google_cloud_account_id"); ok {
+		job.GoogleCloudAccountId = v.(int)
+	}
+
 	if v, ok := d.GetOkExists("for_workflow"); ok {
 		fw := v.(bool)
 		job.ForWorkflow = &fw
@@ -591,6 +609,7 @@ func resourceJobRead(ctx context.Context, d *schema.ResourceData, m interface{})
 	d.Set("name", job.Name)
 	d.Set("group_id", job.GroupId)
 	d.Set("aws_account_id", job.AwsAccountId)
+	d.Set("google_cloud_account_id", job.GoogleCloudAccountId)
 	d.Set("for_workflow", job.ForWorkflow)
 
 	d.Set("rule_type", job.RuleType)
@@ -641,6 +660,10 @@ func resourceJobUpdate(ctx context.Context, d *schema.ResourceData, m interface{
 
 	if d.HasChange("aws_account_id") {
 		job.AwsAccountId = d.Get("aws_account_id").(int)
+	}
+
+	if d.HasChange("google_cloud_account_id") {
+		job.GoogleCloudAccountId = d.Get("google_cloud_account_id").(int)
 	}
 
 	if d.HasChange("for_workflow") {
