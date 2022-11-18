@@ -578,6 +578,46 @@ func TestAccCloudAutomatorJob_CopyRdsSnapshotAction(t *testing.T) {
 	})
 }
 
+func TestAccCloudAutomatorJob_CreateFSxBackupAction(t *testing.T) {
+	resourceName := "cloudautomator_job.test"
+	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckCloudAutomatorJobConfigCreateFSxBackupAction(jobName),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
+					resource.TestCheckResourceAttr(
+						resourceName, "name", jobName),
+					resource.TestCheckResourceAttr(
+						resourceName, "action_type", "create_fsx_backup"),
+					resource.TestCheckResourceAttr(
+						resourceName, "create_fsx_backup_action_value.0.region", "ap-northeast-1"),
+					resource.TestCheckResourceAttr(
+						resourceName, "create_fsx_backup_action_value.0.specify_file_system", "tag"),
+					resource.TestCheckResourceAttr(
+						resourceName, "create_fsx_backup_action_value.0.tag_key", "env"),
+					resource.TestCheckResourceAttr(
+						resourceName, "create_fsx_backup_action_value.0.tag_value", "develop"),
+					resource.TestCheckResourceAttr(
+						resourceName, "create_fsx_backup_action_value.0.generation", "10"),
+					resource.TestCheckResourceAttr(
+						resourceName, "create_fsx_backup_action_value.0.backup_name", "example-backup"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
+				),
+			},
+		},
+	})
+}
+
 func TestAccCloudAutomatorJob_CreateEbsSnapshotAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
@@ -2331,6 +2371,29 @@ resource "cloudautomator_job" "test" {
 		rds_snapshot_id = "test-db"
 		option_group_name = "default:mysql-5-6"
 		trace_status = "true"
+	}
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}
+
+func testAccCheckCloudAutomatorJobConfigCreateFSxBackupAction(rName string) string {
+	return fmt.Sprintf(`
+resource "cloudautomator_job" "test" {
+	name = "%s"
+	group_id = "%s"
+	aws_account_id = "%s"
+
+	rule_type = "webhook"
+
+	action_type = "create_fsx_backup"
+	create_fsx_backup_action_value {
+		region = "ap-northeast-1"
+		specify_file_system = "tag"
+		tag_key = "env"
+		tag_value = "develop"
+		generation = 10
+		backup_name = "example-backup"
 	}
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]
