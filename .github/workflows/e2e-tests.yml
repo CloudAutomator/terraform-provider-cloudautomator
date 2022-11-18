@@ -13,6 +13,9 @@ on:
       ca_test_aws_account_id:
         description: "CA_TEST_AWS_ACCOUNT_ID"
         required: true
+      ca_test_google_cloud_account_id:
+        description: "CA_TEST_GOOGLE_CLOUD_ACCOUNT_ID"
+        required: true
       ca_test_group_id:
         description: "CA_TEST_GROUP_ID"
         required: true
@@ -64,6 +67,7 @@ jobs:
           TF_ACC: "1"
           CA_TEST_API_KEY: ${{github.event.inputs.ca_test_api_key}}
           CA_TEST_AWS_ACCOUNT_ID: ${{github.event.inputs.ca_test_aws_account_id}}
+          CA_TEST_GOOGLE_CLOUD_ACCOUNT_ID: ${{github.event.inputs.ca_test_google_cloud_account_id}}
           CA_TEST_GROUP_ID: ${{github.event.inputs.ca_test_group_id}}
           CA_TEST_SQS_AWS_ACCOUNT_ID: ${{github.event.inputs.ca_test_sqs_aws_account_id}}
           CA_TEST_SQS_QUEUE: ${{github.event.inputs.ca_test_sqs_queue}}
