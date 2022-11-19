@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"terraform-provider-cloudautomator/internal/client"
 	schemes "terraform-provider-cloudautomator/internal/schemes/job"
+	aws "terraform-provider-cloudautomator/internal/schemes/job/aws"
+	gcp "terraform-provider-cloudautomator/internal/schemes/job/gcp"
+	other "terraform-provider-cloudautomator/internal/schemes/job/other"
 	"terraform-provider-cloudautomator/internal/utils"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -72,305 +75,397 @@ func dataSourceJob() *schema.Resource {
 			"authorize_security_group_ingress_action_value": {
 				Description: "\"EC2: Authorize security group ingress\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.AuthorizeSecurityGroupIngressyActionValueFields(),
+					Schema: aws.AuthorizeSecurityGroupIngressyActionValueFields(),
 				},
 			},
 			"change_rds_cluster_instance_class_action_value": {
 				Description: "\"RDS(Aurora): Change DB instance class\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.ChangeRdsClusterInstanceClassActionValueFields(),
+					Schema: aws.ChangeRdsClusterInstanceClassActionValueFields(),
 				},
 			},
 			"change_rds_instance_class_action_value": {
 				Description: "\"RDS: Change DB instance class\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.ChangeRdsInstanceClassActionValueFields(),
+					Schema: aws.ChangeRdsInstanceClassActionValueFields(),
 				},
 			},
 			"change_instance_type_action_value": {
 				Description: "\"EC2: Change instance type\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.ChangeInstanceTypeActionValueFields(),
+					Schema: aws.ChangeInstanceTypeActionValueFields(),
 				},
 			},
 			"copy_ebs_snapshot_action_value": {
 				Description: "\"EC2: Copy EBS snapshot\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.CopyEbsSnapshotActionValueFields(),
+					Schema: aws.CopyEbsSnapshotActionValueFields(),
 				},
 			},
 			"copy_image_action_value": {
 				Description: "\"EC2: Copy AMI\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.CopyImageActionValueFields(),
+					Schema: aws.CopyImageActionValueFields(),
+				},
+			},
+			"copy_rds_cluster_snapshot_action_value": {
+				Description: "\"RDS(Aurora): Copy DB cluster snapshot\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.CopyRdsClusterSnapshotActionValueFields(),
 				},
 			},
 			"copy_rds_snapshot_action_value": {
 				Description: "\"RDS: Copy DB snapshot\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.CopyRdsSnapshotActionValueFields(),
+					Schema: aws.CopyRdsSnapshotActionValueFields(),
+				},
+			},
+			"create_fsx_backup_action_value": {
+				Description: "\"FSx: Create a backup\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.CreateFSxBackupActionValueFields(),
 				},
 			},
 			"create_ebs_snapshot_action_value": {
 				Description: "\"EC2: Create EBS snapshot\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.CreateEbsSnapshotActionValueFields(),
+					Schema: aws.CreateEbsSnapshotActionValueFields(),
 				},
 			},
 			"create_image_action_value": {
 				Description: "\"EC2: Create AMI\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.CreateImageActionValueFields(),
+					Schema: aws.CreateImageActionValueFields(),
 				},
 			},
 			"create_rds_cluster_snapshot_action_value": {
 				Description: "\"RDS(Aurora): Create DB cluster snapshot\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.CreateRdsClusterSnapshotActionValueFields(),
+					Schema: aws.CreateRdsClusterSnapshotActionValueFields(),
 				},
 			},
 			"create_rds_snapshot_action_value": {
 				Description: "\"RDS: Create DB snapshot\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.CreateRdsSnapshotActionValueFields(),
+					Schema: aws.CreateRdsSnapshotActionValueFields(),
 				},
 			},
 			"create_redshift_snapshot_action_value": {
 				Description: "\"Redshift: Create cluster snapshot\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.CreateRedshiftSnapshotActionValueFields(),
+					Schema: aws.CreateRedshiftSnapshotActionValueFields(),
 				},
 			},
 			"delay_action_value": {
 				Description: "\"Other: Delay\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.DelayActionValueFields(),
+					Schema: other.DelayActionValueFields(),
 				},
 			},
 			"delete_cluster_action_value": {
 				Description: "\"Redshift: Delete cluster\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.DeleteClusterActionValueFields(),
+					Schema: aws.DeleteClusterActionValueFields(),
 				},
 			},
 			"delete_rds_cluster_action_value": {
 				Description: "\"RDS(Aurora): Delete DB cluster\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.DeleteRdsClusterActionValueFields(),
+					Schema: aws.DeleteRdsClusterActionValueFields(),
 				},
 			},
 			"delete_rds_instance_action_value": {
 				Description: "\"RDS: Delete DB instance\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.DeleteRdsInstanceActionValueFields(),
+					Schema: aws.DeleteRdsInstanceActionValueFields(),
 				},
 			},
 			"deregister_instances_action_value": {
 				Description: "\"ELB(CLB): De-register EC2 instance\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.DeregisterInstancesActionValueFields(),
+					Schema: aws.DeregisterInstancesActionValueFields(),
 				},
 			},
 			"deregister_target_instances_action_value": {
 				Description: "\"ELB(ALB/NLB): Deregister EC2 instances from target group\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.DeregisterTargetInstancesActionValueFields(),
+					Schema: aws.DeregisterTargetInstancesActionValueFields(),
+				},
+			},
+			"describe_metadata_action_value": {
+				Description: "\"DR: Update EC2 instance metadata\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.DescribeMetadataActionValueFields(),
+				},
+			},
+			"disaster_recovery_action_value": {
+				Description: "\"DR: Launch EC2 instance\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.DisasterRecoveryActionValueFields(),
+				},
+			},
+			"google_compute_insert_machine_image_action_value": {
+				Description: "\"Compute Engine: create machine image\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: gcp.GoogleComputeInsertMachineImageActionValueFields(),
 				},
 			},
 			"reboot_rds_instances_action_value": {
 				Description: "\"RDS: Reboot DB instance\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.RebootRdsInstancesActionValueFields(),
+					Schema: aws.RebootRdsInstancesActionValueFields(),
 				},
 			},
 			"reboot_workspaces_action_value": {
 				Description: "\"WorkSpaces: Reboot WorkSpace\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.RebootWorkspacesActionValueFields(),
+					Schema: aws.RebootWorkspacesActionValueFields(),
+				},
+			},
+			"rebuild_workspaces_action_value": {
+				Description: "\"WorkSpaces: Rebuild WorkSpace\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.RebuildWorkspacesActionValueFields(),
 				},
 			},
 			"register_instances_action_value": {
 				Description: "\"ELB(CLB): Register EC2 instance\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.RegisterInstancesActionValueFields(),
+					Schema: aws.RegisterInstancesActionValueFields(),
 				},
 			},
 			"register_target_instances_action_value": {
 				Description: "\"ELB(ALB/NLB): Register EC2 instances to target group\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.RegisterTargetInstancesActionValueFields(),
+					Schema: aws.RegisterTargetInstancesActionValueFields(),
 				},
 			},
 			"restore_from_cluster_snapshot_action_value": {
 				Description: "\"Redshift: Restore from snapshot\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.RestoreFromClusterSnapshotActionValueFields(),
+					Schema: aws.RestoreFromClusterSnapshotActionValueFields(),
 				},
 			},
 			"restore_rds_cluster_action_value": {
 				Description: "\"RDS(Aurora): Restore DB cluster from DB cluster snapshot\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.RestoreRdsClusterActionValueFields(),
+					Schema: aws.RestoreRdsClusterActionValueFields(),
 				},
 			},
 			"restore_rds_instance_action_value": {
 				Description: "\"RDS: Restore from DB snapshot\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.RestoreRdsInstanceActionValueFields(),
+					Schema: aws.RestoreRdsInstanceActionValueFields(),
 				},
 			},
 			"revoke_security_group_ingress_action_value": {
 				Description: "\"EC2: Revoke security group ingress\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.RevokeSecurityGroupIngressActionValueFields(),
+					Schema: aws.RevokeSecurityGroupIngressActionValueFields(),
 				},
 			},
 			"send_command_action_value": {
 				Description: "\"EC2: Send command on instance\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.SendCommandActionValueFields(),
+					Schema: aws.SendCommandActionValueFields(),
 				},
 			},
 			"start_instances_action_value": {
 				Description: "\"EC2: Start instance\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.StartInstancesActionValueFields(),
+					Schema: aws.StartInstancesActionValueFields(),
 				},
 			},
 			"start_rds_clusters_action_value": {
 				Description: "\"RDS(Aurora): Start DB cluster\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.StartRdsClustersActionValueFields(),
+					Schema: aws.StartRdsClustersActionValueFields(),
 				},
 			},
 			"start_rds_instances_action_value": {
 				Description: "\"RDS: Start DB instance\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.StartRdsInstancesActionValueFields(),
+					Schema: aws.StartRdsInstancesActionValueFields(),
 				},
 			},
 			"stop_instances_action_value": {
 				Description: "\"EC2: Stop instance\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.StopInstancesActionValueFields(),
+					Schema: aws.StopInstancesActionValueFields(),
 				},
 			},
 			"stop_rds_clusters_action_value": {
 				Description: "\"RDS(Aurora): Stop DB cluster\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.StopRdsClustersActionValueFields(),
+					Schema: aws.StopRdsClustersActionValueFields(),
 				},
 			},
 			"stop_rds_instances_action_value": {
 				Description: "\"RDS: Stop DB instance\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.StopRdsInstancesActionValueFields(),
+					Schema: aws.StopRdsInstancesActionValueFields(),
 				},
 			},
 			"start_workspaces_action_value": {
 				Description: "\"WorkSpaces: Start WorkSpace\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.StartWorkspacesActionValueFields(),
+					Schema: aws.StartWorkspacesActionValueFields(),
 				},
 			},
 			"terminate_workspaces_action_value": {
 				Description: "\"WorkSpaces: Remove WorkSpace\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.TerminateWorkspacesActionValueFields(),
+					Schema: aws.TerminateWorkspacesActionValueFields(),
 				},
 			},
 			"update_record_set_action_value": {
 				Description: "\"Route 53: Update Resource Record Set\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.UpdateRecordSetActionValueFields(),
+					Schema: aws.UpdateRecordSetActionValueFields(),
 				},
 			},
 			"windows_update_action_value": {
 				Description: "\"EC2: Windows Update to instance (Old version)\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.WindowsUpdateActionValueFields(),
+					Schema: aws.WindowsUpdateActionValueFields(),
 				},
 			},
 			"windows_update_v2_action_value": {
 				Description: "\"EC2: Windows Update to instance (New version)\" action value",
 				Type:        schema.TypeList,
-				Computed:    true,
+				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.WindowsUpdateV2ActionValueFields(),
+					Schema: aws.WindowsUpdateV2ActionValueFields(),
 				},
 			},
 			"allow_runtime_action_values": {

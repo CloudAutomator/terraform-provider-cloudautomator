@@ -6,6 +6,9 @@ import (
 
 	"terraform-provider-cloudautomator/internal/client"
 	schemes "terraform-provider-cloudautomator/internal/schemes/job"
+	aws "terraform-provider-cloudautomator/internal/schemes/job/aws"
+	gcp "terraform-provider-cloudautomator/internal/schemes/job/gcp"
+	other "terraform-provider-cloudautomator/internal/schemes/job/other"
 	"terraform-provider-cloudautomator/internal/utils"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -97,7 +100,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.AuthorizeSecurityGroupIngressyActionValueFields(),
+					Schema: aws.AuthorizeSecurityGroupIngressyActionValueFields(),
 				},
 			},
 			"change_rds_cluster_instance_class_action_value": {
@@ -106,7 +109,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.ChangeRdsClusterInstanceClassActionValueFields(),
+					Schema: aws.ChangeRdsClusterInstanceClassActionValueFields(),
 				},
 			},
 			"change_rds_instance_class_action_value": {
@@ -115,7 +118,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.ChangeRdsInstanceClassActionValueFields(),
+					Schema: aws.ChangeRdsInstanceClassActionValueFields(),
 				},
 			},
 			"change_instance_type_action_value": {
@@ -124,7 +127,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.ChangeInstanceTypeActionValueFields(),
+					Schema: aws.ChangeInstanceTypeActionValueFields(),
 				},
 			},
 			"copy_ebs_snapshot_action_value": {
@@ -133,7 +136,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.CopyEbsSnapshotActionValueFields(),
+					Schema: aws.CopyEbsSnapshotActionValueFields(),
 				},
 			},
 			"copy_image_action_value": {
@@ -142,7 +145,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.CopyImageActionValueFields(),
+					Schema: aws.CopyImageActionValueFields(),
 				},
 			},
 			"copy_rds_cluster_snapshot_action_value": {
@@ -151,7 +154,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.CopyRdsClusterSnapshotActionValueFields(),
+					Schema: aws.CopyRdsClusterSnapshotActionValueFields(),
 				},
 			},
 			"copy_rds_snapshot_action_value": {
@@ -160,7 +163,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.CopyRdsSnapshotActionValueFields(),
+					Schema: aws.CopyRdsSnapshotActionValueFields(),
 				},
 			},
 			"create_fsx_backup_action_value": {
@@ -169,7 +172,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.CreateFSxBackupActionValueFields(),
+					Schema: aws.CreateFSxBackupActionValueFields(),
 				},
 			},
 			"create_ebs_snapshot_action_value": {
@@ -178,7 +181,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.CreateEbsSnapshotActionValueFields(),
+					Schema: aws.CreateEbsSnapshotActionValueFields(),
 				},
 			},
 			"create_image_action_value": {
@@ -187,7 +190,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.CreateImageActionValueFields(),
+					Schema: aws.CreateImageActionValueFields(),
 				},
 			},
 			"create_rds_cluster_snapshot_action_value": {
@@ -196,7 +199,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.CreateRdsClusterSnapshotActionValueFields(),
+					Schema: aws.CreateRdsClusterSnapshotActionValueFields(),
 				},
 			},
 			"create_rds_snapshot_action_value": {
@@ -205,7 +208,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.CreateRdsSnapshotActionValueFields(),
+					Schema: aws.CreateRdsSnapshotActionValueFields(),
 				},
 			},
 			"create_redshift_snapshot_action_value": {
@@ -214,7 +217,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.CreateRedshiftSnapshotActionValueFields(),
+					Schema: aws.CreateRedshiftSnapshotActionValueFields(),
 				},
 			},
 			"delay_action_value": {
@@ -223,7 +226,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.DelayActionValueFields(),
+					Schema: other.DelayActionValueFields(),
 				},
 			},
 			"delete_cluster_action_value": {
@@ -232,7 +235,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.DeleteClusterActionValueFields(),
+					Schema: aws.DeleteClusterActionValueFields(),
 				},
 			},
 			"delete_rds_cluster_action_value": {
@@ -241,7 +244,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.DeleteRdsClusterActionValueFields(),
+					Schema: aws.DeleteRdsClusterActionValueFields(),
 				},
 			},
 			"delete_rds_instance_action_value": {
@@ -250,7 +253,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.DeleteRdsInstanceActionValueFields(),
+					Schema: aws.DeleteRdsInstanceActionValueFields(),
 				},
 			},
 			"deregister_instances_action_value": {
@@ -259,7 +262,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.DeregisterInstancesActionValueFields(),
+					Schema: aws.DeregisterInstancesActionValueFields(),
 				},
 			},
 			"deregister_target_instances_action_value": {
@@ -268,7 +271,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.DeregisterTargetInstancesActionValueFields(),
+					Schema: aws.DeregisterTargetInstancesActionValueFields(),
 				},
 			},
 			"describe_metadata_action_value": {
@@ -277,7 +280,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.DescribeMetadataActionValueFields(),
+					Schema: aws.DescribeMetadataActionValueFields(),
 				},
 			},
 			"disaster_recovery_action_value": {
@@ -286,7 +289,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.DisasterRecoveryActionValueFields(),
+					Schema: aws.DisasterRecoveryActionValueFields(),
 				},
 			},
 			"google_compute_insert_machine_image_action_value": {
@@ -295,7 +298,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.GoogleComputeInsertMachineImageActionValueFields(),
+					Schema: gcp.GoogleComputeInsertMachineImageActionValueFields(),
 				},
 			},
 			"reboot_rds_instances_action_value": {
@@ -304,7 +307,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.RebootRdsInstancesActionValueFields(),
+					Schema: aws.RebootRdsInstancesActionValueFields(),
 				},
 			},
 			"reboot_workspaces_action_value": {
@@ -313,7 +316,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.RebootWorkspacesActionValueFields(),
+					Schema: aws.RebootWorkspacesActionValueFields(),
 				},
 			},
 			"rebuild_workspaces_action_value": {
@@ -322,7 +325,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.RebuildWorkspacesActionValueFields(),
+					Schema: aws.RebuildWorkspacesActionValueFields(),
 				},
 			},
 			"register_instances_action_value": {
@@ -331,7 +334,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.RegisterInstancesActionValueFields(),
+					Schema: aws.RegisterInstancesActionValueFields(),
 				},
 			},
 			"register_target_instances_action_value": {
@@ -340,7 +343,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.RegisterTargetInstancesActionValueFields(),
+					Schema: aws.RegisterTargetInstancesActionValueFields(),
 				},
 			},
 			"restore_from_cluster_snapshot_action_value": {
@@ -349,7 +352,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.RestoreFromClusterSnapshotActionValueFields(),
+					Schema: aws.RestoreFromClusterSnapshotActionValueFields(),
 				},
 			},
 			"restore_rds_cluster_action_value": {
@@ -358,7 +361,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.RestoreRdsClusterActionValueFields(),
+					Schema: aws.RestoreRdsClusterActionValueFields(),
 				},
 			},
 			"restore_rds_instance_action_value": {
@@ -367,7 +370,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.RestoreRdsInstanceActionValueFields(),
+					Schema: aws.RestoreRdsInstanceActionValueFields(),
 				},
 			},
 			"revoke_security_group_ingress_action_value": {
@@ -376,7 +379,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.RevokeSecurityGroupIngressActionValueFields(),
+					Schema: aws.RevokeSecurityGroupIngressActionValueFields(),
 				},
 			},
 			"send_command_action_value": {
@@ -385,7 +388,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.SendCommandActionValueFields(),
+					Schema: aws.SendCommandActionValueFields(),
 				},
 			},
 			"start_instances_action_value": {
@@ -394,7 +397,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.StartInstancesActionValueFields(),
+					Schema: aws.StartInstancesActionValueFields(),
 				},
 			},
 			"start_rds_clusters_action_value": {
@@ -403,7 +406,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.StartRdsClustersActionValueFields(),
+					Schema: aws.StartRdsClustersActionValueFields(),
 				},
 			},
 			"start_rds_instances_action_value": {
@@ -412,7 +415,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.StartRdsInstancesActionValueFields(),
+					Schema: aws.StartRdsInstancesActionValueFields(),
 				},
 			},
 			"stop_instances_action_value": {
@@ -421,7 +424,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.StopInstancesActionValueFields(),
+					Schema: aws.StopInstancesActionValueFields(),
 				},
 			},
 			"stop_rds_clusters_action_value": {
@@ -430,7 +433,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.StopRdsClustersActionValueFields(),
+					Schema: aws.StopRdsClustersActionValueFields(),
 				},
 			},
 			"stop_rds_instances_action_value": {
@@ -439,7 +442,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.StopRdsInstancesActionValueFields(),
+					Schema: aws.StopRdsInstancesActionValueFields(),
 				},
 			},
 			"start_workspaces_action_value": {
@@ -448,7 +451,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.StartWorkspacesActionValueFields(),
+					Schema: aws.StartWorkspacesActionValueFields(),
 				},
 			},
 			"terminate_workspaces_action_value": {
@@ -457,7 +460,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.TerminateWorkspacesActionValueFields(),
+					Schema: aws.TerminateWorkspacesActionValueFields(),
 				},
 			},
 			"update_record_set_action_value": {
@@ -466,7 +469,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.UpdateRecordSetActionValueFields(),
+					Schema: aws.UpdateRecordSetActionValueFields(),
 				},
 			},
 			"windows_update_action_value": {
@@ -475,7 +478,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.WindowsUpdateActionValueFields(),
+					Schema: aws.WindowsUpdateActionValueFields(),
 				},
 			},
 			"windows_update_v2_action_value": {
@@ -484,7 +487,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: schemes.WindowsUpdateV2ActionValueFields(),
+					Schema: aws.WindowsUpdateV2ActionValueFields(),
 				},
 			},
 			"allow_runtime_action_values": {
