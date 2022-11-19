@@ -34,6 +34,7 @@ func resourceJob() *schema.Resource {
 				Description: "for workflow",
 				Type:        schema.TypeBool,
 				Optional:    true,
+				ForceNew:    true,
 			},
 			"group_id": {
 				Description: "Group ID",
