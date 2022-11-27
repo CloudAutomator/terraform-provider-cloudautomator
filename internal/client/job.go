@@ -239,6 +239,12 @@ func readActionValues(rawJob *JobAttributes) map[string]interface{} {
 			generation, _ := strconv.Atoi(rawJob.ActionValue["generation"].(string))
 			rawJob.ActionValue["generation"] = generation
 		}
+	case "delay":
+		switch rawJob.ActionValue["delay_minutes"].(type) {
+		case string:
+			delay_minutes, _ := strconv.Atoi(rawJob.ActionValue["delay_minutes"].(string))
+			rawJob.ActionValue["delay_minutes"] = delay_minutes
+		}
 	case "authorize_security_group_ingress", "revoke_security_group_ingress":
 		toPort := rawJob.ActionValue["to_port"].(float64)
 		rawJob.ActionValue["to_port"] = strconv.Itoa(int(toPort))
