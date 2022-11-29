@@ -96,7 +96,6 @@ resource "cloudautomator_job" "example-job" {
   name = "example-job"
 
   group_id       = 10
-  aws_account_id = 20
 
   rule_type = "cron"
   cron_rule_value {
