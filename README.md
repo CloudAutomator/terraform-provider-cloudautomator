@@ -11,18 +11,18 @@ Terraform provider for Cloud Automator
 
 ## Building The Provider
 
-Clone repository to: $GOPATH/src/github.com/penta515/terraform-provider-cloudautomator
+Clone repository to: $GOPATH/src/github.com/CloudAutomator/terraform-provider-cloudautomator
 
 ```sh
-$ mkdir -p $GOPATH/src/github.com/penta515; cd $GOPATH/src/github.com/penta515
-$ git clone git@github.com:penta515/terraform-provider-cloudautomator
+$ mkdir -p $GOPATH/src/github.com/CloudAutomator; cd $GOPATH/src/github.com/CloudAutomator
+$ git clone git@github.com:CloudAutomator/terraform-provider-cloudautomator
 ```
 
 Enter the provider directory and build the provider
 
 ```sh
-$ cd $GOPATH/src/github.com/penta515/terraform-provider-cloudautomator
-$ make install VERSION=0.2.2
+$ cd $GOPATH/src/github.com/CloudAutomator/terraform-provider-cloudautomator
+$ make install VERSION=0.2.8
 ```
 
 ## Authentication and Configuration
@@ -84,8 +84,8 @@ $ terraform plan
 terraform {
   required_providers {
     cloudautomator = {
-      source = "penta515/cloudautomator"
-      version = "0.2.2"
+      source = "CloudAutomator/cloudautomator"
+      version = "0.2.8"
     }
   }
 }

@@ -2,7 +2,7 @@ BUILD_DIR ?= $(CURDIR)/bin
 TEST?=$$(go list ./... | grep -v '/vendor/')
 
 HOSTNAME=registry.terraform.io
-NAMESPACE=penta515
+NAMESPACE=CloudAutomator
 NAME=cloudautomator
 BINARY=terraform-provider-${NAME}
 
