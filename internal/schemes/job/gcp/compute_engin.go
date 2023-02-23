@@ -42,8 +42,8 @@ func GoogleComputeInsertMachineImageActionValueFields() map[string]*schema.Schem
 			Required:    true,
 		},
 		"generation": {
-			Description: "Tag value used to identify the target resource",
-			Type:        schema.TypeString,
+			Description: "Number of machine image generations",
+			Type:        schema.TypeInt,
 			Required:    true,
 		},
 		"project_id": {
