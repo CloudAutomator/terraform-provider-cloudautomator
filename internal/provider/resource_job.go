@@ -301,6 +301,15 @@ func resourceJob() *schema.Resource {
 					Schema: gcp.GoogleComputeInsertMachineImageActionValueFields(),
 				},
 			},
+			"invoke_lambda_function_action_value": {
+				Description: "\"Lambda: Invoke lambda function\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.InvokeLambdaFunctionActionValueFields(),
+				},
+			},
 			"reboot_rds_instances_action_value": {
 				Description: "\"RDS: Reboot DB instance\" action value",
 				Type:        schema.TypeList,

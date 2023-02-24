@@ -91,6 +91,7 @@ var TRACE_STATUS_NOT_SUPPORTED_ACTION_TYPES = []string{
 	"deregister_target_instances",
 	"describe_metadata",
 	"google_compute_insert_machine_image",
+	"invoke_lambda_function",
 	"reboot_rds_instances",
 	"register_instances",
 	"register_target_instances",
