@@ -301,6 +301,15 @@ func resourceJob() *schema.Resource {
 					Schema: gcp.GoogleComputeInsertMachineImageActionValueFields(),
 				},
 			},
+			"google_compute_stop_vm_instances_action_value": {
+				Description: "\"Compute Engine: stop vm instances\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: gcp.GoogleComputeStopVmInstancesActionValueFields(),
+				},
+			},
 			"invoke_lambda_function_action_value": {
 				Description: "\"Lambda: Invoke lambda function\" action value",
 				Type:        schema.TypeList,
