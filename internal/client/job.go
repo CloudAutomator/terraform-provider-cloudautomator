@@ -92,6 +92,7 @@ var TRACE_STATUS_NOT_SUPPORTED_ACTION_TYPES = []string{
 	"describe_metadata",
 	"google_compute_insert_machine_image",
 	"google_compute_stop_vm_instances",
+	"google_compute_start_vm_instances",
 	"invoke_lambda_function",
 	"reboot_rds_instances",
 	"register_instances",
