@@ -445,6 +445,15 @@ func resourceJob() *schema.Resource {
 					Schema: aws.StartRdsInstancesActionValueFields(),
 				},
 			},
+			"stop_ecs_tasks_action_value": {
+				Description: "\"ECS: Stop task\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.StopEcsTasksActionValueFields(),
+				},
+			},
 			"stop_instances_action_value": {
 				Description: "\"EC2: Stop instance\" action value",
 				Type:        schema.TypeList,

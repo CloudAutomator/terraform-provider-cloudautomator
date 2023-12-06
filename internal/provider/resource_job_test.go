@@ -1806,6 +1806,44 @@ func TestAccCloudAutomatorJob_StartRdsInstancesAction(t *testing.T) {
 	})
 }
 
+func TestAccCloudAutomatorJob_StopEcsTasksAction(t *testing.T) {
+	resourceName := "cloudautomator_job.test"
+	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckCloudAutomatorJobConfigStopEcsTasksAction(jobName),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
+					resource.TestCheckResourceAttr(
+						resourceName, "name", jobName),
+					resource.TestCheckResourceAttr(
+						resourceName, "action_type", "stop_ecs_tasks"),
+					resource.TestCheckResourceAttr(
+						resourceName, "stop_ecs_tasks_action_value.0.region", "ap-northeast-1"),
+					resource.TestCheckResourceAttr(
+						resourceName, "stop_ecs_tasks_action_value.0.ecs_cluster", "example-cluster"),
+					resource.TestCheckResourceAttr(
+						resourceName, "stop_ecs_tasks_action_value.0.specify_ecs_task", "tag"),
+					resource.TestCheckResourceAttr(
+						resourceName, "stop_ecs_tasks_action_value.0.tag_key", "env"),
+					resource.TestCheckResourceAttr(
+						resourceName, "stop_ecs_tasks_action_value.0.tag_value", "develop"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
+				),
+			},
+		},
+	})
+}
+
 func TestAccCloudAutomatorJob_StopInstancesAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
@@ -3239,6 +3277,29 @@ resource "cloudautomator_job" "test" {
 		tag_value = "develop"
 		trace_status = "true"
 	}
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}
+
+func testAccCheckCloudAutomatorJobConfigStopEcsTasksAction(rName string) string {
+	return fmt.Sprintf(`
+resource "cloudautomator_job" "test" {
+	name = "%s"
+	group_id = "%s"
+	aws_account_id = "%s"
+
+	rule_type = "webhook"
+
+	action_type = "stop_ecs_tasks"
+	stop_ecs_tasks_action_value {
+		region = "ap-northeast-1"
+		ecs_cluster = "example-cluster"
+		specify_ecs_task = "tag"
+		tag_key = "env"
+		tag_value = "develop"
+	}
+
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]
 }`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())

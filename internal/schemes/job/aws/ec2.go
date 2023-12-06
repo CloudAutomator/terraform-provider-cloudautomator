@@ -469,6 +469,41 @@ func StartInstancesActionValueFields() map[string]*schema.Schema {
 	}
 }
 
+func StopEcsTasksActionValueFields() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"region": {
+			Description: "AWS Region in which the target resource resides",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"ecs_cluster": {
+			Description: "Target ECS cluster name",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"specify_ecs_task": {
+			Description: "How to identify target resources",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"ecs_task_definition_family": {
+			Description: "ECS task definition family name",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"tag_key": {
+			Description: "Tag key used to identify the target resource",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"tag_value": {
+			Description: "Tag value used to identify the target resource",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+	}
+}
+
 func StopInstancesActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {
