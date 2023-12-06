@@ -1638,6 +1638,64 @@ func TestAccCloudAutomatorJob_RevokeSecurityGroupIngressAction(t *testing.T) {
 	})
 }
 
+func TestAccCloudAutomatorJob_RunEcsTasksFargateAction(t *testing.T) {
+	resourceName := "cloudautomator_job.test"
+	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckCloudAutomatorJobConfigRunEcsTasksFargateAction(jobName),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
+					resource.TestCheckResourceAttr(
+						resourceName, "name", jobName),
+					resource.TestCheckResourceAttr(
+						resourceName, "action_type", "run_ecs_tasks_fargate"),
+					resource.TestCheckResourceAttr(
+						resourceName, "run_ecs_tasks_fargate_action_value.0.region", "ap-northeast-1"),
+					resource.TestCheckResourceAttr(
+						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_cluster", "example-cluster"),
+					resource.TestCheckResourceAttr(
+						resourceName, "run_ecs_tasks_fargate_action_value.0.platform_version", "LATEST"),
+					resource.TestCheckResourceAttr(
+						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_task_definition_family", "example-service"),
+					resource.TestCheckResourceAttr(
+						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_task_count", "1"),
+					resource.TestCheckResourceAttr(
+						resourceName, "run_ecs_tasks_fargate_action_value.0.propagate_tags", "TASK_DEFINITION"),
+					resource.TestCheckResourceAttr(
+						resourceName, "run_ecs_tasks_fargate_action_value.0.enable_ecs_managed_tags", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_vpc", "vpc-00000001"),
+					resource.TestCheckResourceAttr(
+						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_subnets.#", "2"),
+					resource.TestCheckResourceAttr(
+						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_subnets.0", "subnet-00000001"),
+					resource.TestCheckResourceAttr(
+						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_subnets.1", "subnet-00000002"),
+					resource.TestCheckResourceAttr(
+						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_security_groups.#", "2"),
+					resource.TestCheckResourceAttr(
+						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_security_groups.0", "sg-00000001"),
+					resource.TestCheckResourceAttr(
+						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_security_groups.1", "sg-00000002"),
+					resource.TestCheckResourceAttr(
+						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_assign_public_ip", "ENABLED"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
+				),
+			},
+		},
+	})
+}
+
 func TestAccCloudAutomatorJob_SendCommandAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
@@ -3140,6 +3198,35 @@ resource "cloudautomator_job" "test" {
 		to_port = "80"
 		cidr_ip = "172.31.0.0/16"
 	}
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}
+
+func testAccCheckCloudAutomatorJobConfigRunEcsTasksFargateAction(rName string) string {
+	return fmt.Sprintf(`
+resource "cloudautomator_job" "test" {
+	name = "%s"
+	group_id = "%s"
+	aws_account_id = "%s"
+
+	rule_type = "webhook"
+
+	action_type = "run_ecs_tasks_fargate"
+	run_ecs_tasks_fargate_action_value {
+		region = "ap-northeast-1"
+		ecs_cluster = "example-cluster"
+		platform_version = "LATEST"
+		ecs_task_definition_family = "example-service"
+		ecs_task_count = 1
+		propagate_tags = "TASK_DEFINITION"
+		enable_ecs_managed_tags = true
+		ecs_awsvpc_vpc = "vpc-00000001"
+		ecs_awsvpc_subnets = ["subnet-00000001", "subnet-00000002"]
+		ecs_awsvpc_security_groups = ["sg-00000001", "sg-00000002"]
+		ecs_awsvpc_assign_public_ip = "ENABLED"
+	}
+
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]
 }`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
