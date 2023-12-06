@@ -49,6 +49,26 @@ func AuthorizeSecurityGroupIngressyActionValueFields() map[string]*schema.Schema
 	}
 }
 
+func BulkStopInstancesActionValueFields() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"exclude_by_tag": {
+			Description: "Whether to exclude instances with the specified tag from the target",
+			Type:        schema.TypeBool,
+			Required:    true,
+		},
+		"exclude_by_tag_key": {
+			Description: "Tag key used to exclude instances from the target",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"exclude_by_tag_value": {
+			Description: "Tag value used to exclude instances from the target",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+	}
+}
+
 func ChangeInstanceTypeActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {

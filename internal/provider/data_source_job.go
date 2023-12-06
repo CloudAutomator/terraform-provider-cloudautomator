@@ -38,6 +38,12 @@ func dataSourceJob() *schema.Resource {
 				Type:        schema.TypeInt,
 				Computed:    true,
 			},
+			"aws_account_ids": {
+				Description: "AWS account IDs",
+				Type:        schema.TypeList,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeInt},
+			},
 			"rule_type": {
 				Description: "Trigger type",
 				Type:        schema.TypeString,
@@ -79,6 +85,15 @@ func dataSourceJob() *schema.Resource {
 				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: aws.AuthorizeSecurityGroupIngressyActionValueFields(),
+				},
+			},
+			"bulk_stop_instances_action_value": {
+				Description: "\"EC2: Stop ALL instances\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.BulkStopInstancesActionValueFields(),
 				},
 			},
 			"change_rds_cluster_instance_class_action_value": {
@@ -515,6 +530,7 @@ func dataSourceJobRead(ctx context.Context, d *schema.ResourceData, m interface{
 	d.Set("name", job.Name)
 	d.Set("group_id", job.GroupId)
 	d.Set("aws_account_id", job.AwsAccountId)
+	d.Set("aws_account_ids", utils.FlattenIntList(job.AwsAccountIds))
 
 	d.Set("rule_type", job.RuleType)
 

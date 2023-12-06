@@ -18,6 +18,7 @@ type Job struct {
 	GroupId                  int                    `json:"group_id"`
 	ForWorkflow              *bool                  `json:"for_workflow,omitempty"`
 	AwsAccountId             int                    `json:"aws_account_id,omitempty"`
+	AwsAccountIds            []int                  `json:"aws_account_ids,omitempty"`
 	GoogleCloudAccountId     int                    `json:"google_cloud_account_id,omitempty"`
 	RuleType                 string                 `json:"rule_type"`
 	RuleValue                map[string]interface{} `json:"rule_value"`
@@ -67,6 +68,7 @@ type JobAttributes struct {
 	Active                   bool                   `json:"active"`
 	GroupID                  int                    `json:"group_id"`
 	AwsAccountId             int                    `json:"aws_account_id,omitempty"`
+	AwsAccountIds            []int                  `json:"aws_account_ids,omitempty"`
 	GoogleCloudAccountId     int                    `json:"google_cloud_account_id,omitempty"`
 	ForWorkflow              *bool                  `json:"for_workflow,omitempty"`
 	RuleType                 string                 `json:"rule_type"`
@@ -280,6 +282,7 @@ func (j *Job) UnmarshalJSON(data []byte) error {
 	j.GroupId = rj.Attributes.GroupID
 	j.ForWorkflow = rj.Attributes.ForWorkflow
 	j.AwsAccountId = rj.Attributes.AwsAccountId
+	j.AwsAccountIds = rj.Attributes.AwsAccountIds
 	j.GoogleCloudAccountId = rj.Attributes.GoogleCloudAccountId
 	j.RuleType = rj.Attributes.RuleType
 	j.RuleValue = readRuleValues(&rj.Attributes)
