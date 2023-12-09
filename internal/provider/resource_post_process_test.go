@@ -95,7 +95,7 @@ func TestAccCloudAutomatorPostProcess_Sqs(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						resourceName, "shared_by_group", "false"),
 					resource.TestCheckResourceAttr(
-						resourceName, "sqs_parameters.0.sqs_aws_account_id", acctest.TestSqsAwsAccountId()),
+						resourceName, "sqs_parameters.0.sqs_aws_account_id", acctest.TestAwsAccountId()),
 					resource.TestCheckResourceAttr(
 						resourceName, "sqs_parameters.0.sqs_queue", "test-queue"),
 					resource.TestCheckResourceAttr(

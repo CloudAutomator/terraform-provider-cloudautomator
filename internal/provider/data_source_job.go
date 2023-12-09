@@ -384,6 +384,15 @@ func dataSourceJob() *schema.Resource {
 					Schema: aws.RunEcsTasksFargateActionValueFields(),
 				},
 			},
+			"s3_start_backup_job_action_value": {
+				Description: "\"S3: Backup\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.S3StartBackupJobActionValueFields(),
+				},
+			},
 			"send_command_action_value": {
 				Description: "\"EC2: Send command on instance\" action value",
 				Type:        schema.TypeList,
