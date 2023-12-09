@@ -202,8 +202,8 @@ func TestAccCloudAutomatorJob_ScheduleRule(t *testing.T) {
 func TestAccCloudAutomatorJob_SqsV2Rule(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	sqsAwsAccountId := acctest.TestSqsAwsAccountId()
-	sqsRegion := acctest.TestSqsRegion()
+	sqsAwsAccountId := acctest.TestAwsAccountId()
+	sqsRegion := acctest.TestRegion()
 	sqsQueue := acctest.TestSqsQueue()
 	postProcessId := acctest.TestPostProcessId()
 
@@ -1730,6 +1730,55 @@ func TestAccCloudAutomatorJob_RunEcsTasksFargateAction(t *testing.T) {
 	})
 }
 
+func TestAccCloudAutomatorJob_S3StartBackupJobAction(t *testing.T) {
+	resourceName := "cloudautomator_job.test"
+	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	region := acctest.TestRegion()
+	postProcessId := acctest.TestPostProcessId()
+	s3BucketName := acctest.TestS3BucketName()
+	iamRoleArn := fmt.Sprintf("arn:aws:iam::%s:role/service-role/AWSBackupDefaultServiceRole", acctest.TestAwsAccountNumber())
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckCloudAutomatorJobConfigS3StartBackupJobAction(jobName),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
+					resource.TestCheckResourceAttr(
+						resourceName, "name", jobName),
+					resource.TestCheckResourceAttr(
+						resourceName, "action_type", "s3_start_backup_job"),
+					resource.TestCheckResourceAttr(
+						resourceName, "s3_start_backup_job_action_value.0.region", region),
+					resource.TestCheckResourceAttr(
+						resourceName, "s3_start_backup_job_action_value.0.bucket_name", s3BucketName),
+					resource.TestCheckResourceAttr(
+						resourceName, "s3_start_backup_job_action_value.0.backup_vault_name", "Default"),
+					resource.TestCheckResourceAttr(
+						resourceName, "s3_start_backup_job_action_value.0.lifecycle_delete_after_days", "7"),
+					resource.TestCheckResourceAttr(
+						resourceName, "s3_start_backup_job_action_value.0.iam_role_arn", iamRoleArn),
+					resource.TestCheckResourceAttr(
+						resourceName, "s3_start_backup_job_action_value.0.additional_tags.0.key", "key-1"),
+					resource.TestCheckResourceAttr(
+						resourceName, "s3_start_backup_job_action_value.0.additional_tags.0.value", "value-1"),
+					resource.TestCheckResourceAttr(
+						resourceName, "s3_start_backup_job_action_value.0.additional_tags.1.key", "key-2"),
+					resource.TestCheckResourceAttr(
+						resourceName, "s3_start_backup_job_action_value.0.additional_tags.1.value", "value-2"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
+				),
+			},
+		},
+	})
+}
+
 func TestAccCloudAutomatorJob_SendCommandAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
@@ -2440,7 +2489,7 @@ resource "cloudautomator_job" "test" {
 	}
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestSqsAwsAccountId(), acctest.TestSqsRegion(), acctest.TestSqsQueue(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestRegion(), acctest.TestSqsQueue(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigAmazonSnsRule(rName string) string {
@@ -3352,6 +3401,37 @@ resource "cloudautomator_job" "test" {
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]
 }`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}
+
+func testAccCheckCloudAutomatorJobConfigS3StartBackupJobAction(rName string) string {
+	return fmt.Sprintf(`
+resource "cloudautomator_job" "test" {
+	name = "%s"
+	group_id = "%s"
+	aws_account_id = "%s"
+
+	rule_type = "webhook"
+
+	action_type = "s3_start_backup_job"
+	s3_start_backup_job_action_value {
+		region = "%s"
+		bucket_name = "%s"
+		backup_vault_name = "Default"
+		lifecycle_delete_after_days = 7
+		iam_role_arn = "arn:aws:iam::%s:role/service-role/AWSBackupDefaultServiceRole"
+		additional_tags {
+			key = "key-1"
+			value= "value-1"
+		}
+		additional_tags {
+			key = "key-2"
+			value= "value-2"
+		}
+	}
+
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestRegion(), acctest.TestS3BucketName(), acctest.TestAwsAccountNumber(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
 func testAccCheckCloudAutomatorJobConfigStartInstancesAction(rName string) string {

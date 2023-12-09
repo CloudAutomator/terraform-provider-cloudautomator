@@ -433,6 +433,15 @@ func resourceJob() *schema.Resource {
 					Schema: aws.RunEcsTasksFargateActionValueFields(),
 				},
 			},
+			"s3_start_backup_job_action_value": {
+				Description: "\"S3: Backup\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.S3StartBackupJobActionValueFields(),
+				},
+			},
 			"send_command_action_value": {
 				Description: "\"EC2: Send command on instance\" action value",
 				Type:        schema.TypeList,
@@ -834,20 +843,19 @@ func buildRuleValue(d *schema.ResourceData, job *client.Job) map[string]interfac
 }
 
 func buildActionValue(d *schema.ResourceData, job *client.Job) map[string]interface{} {
-	switch job.ActionType {
-	case "create_image":
-		if v, ok := d.GetOk("create_image_action_value"); ok {
-			actionValue := v.([]interface{})[0].(map[string]interface{})
-			actionValue["additional_tags"] = actionValue["additional_tags"].(*schema.Set).List()
+	var actionValue map[string]interface{}
 
-			return actionValue
-		}
-	default:
-		blockName := fmt.Sprintf("%s_action_value", job.ActionType)
-		if v, ok := d.GetOk(blockName); ok {
-			return v.([]interface{})[0].(map[string]interface{})
+	blockName := fmt.Sprintf("%s_action_value", job.ActionType)
+	if v, ok := d.GetOk(blockName); ok {
+		actionValue = v.([]interface{})[0].(map[string]interface{})
+	}
+
+	// additional_tags が存在する場合はリストに変換する
+	if tags, exists := actionValue["additional_tags"]; exists {
+		if tagsSet, ok := tags.(*schema.Set); ok {
+			actionValue["additional_tags"] = tagsSet.List()
 		}
 	}
 
-	return nil
+	return actionValue
 }

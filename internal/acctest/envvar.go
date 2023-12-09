@@ -8,20 +8,24 @@ func TestGroupId() string {
 	return os.Getenv("CA_TEST_GROUP_ID")
 }
 
-func TestAwsAccountId() string {
-	return os.Getenv("CA_TEST_AWS_ACCOUNT_ID")
+func TestAwsAccountNumber() string {
+	return os.Getenv("CA_TEST_AWS_ACCOUNT_NUMBER")
 }
 
-func TestSqsAwsAccountId() string {
-	return os.Getenv("CA_TEST_SQS_AWS_ACCOUNT_ID")
+func TestAwsAccountId() string {
+	return os.Getenv("CA_TEST_AWS_ACCOUNT_ID")
 }
 
 func TestGoogleCloudAccountId() string {
 	return os.Getenv("CA_TEST_GOOGLE_CLOUD_ACCOUNT_ID")
 }
 
-func TestSqsRegion() string {
-	return os.Getenv("CA_TEST_SQS_REGION")
+func TestRegion() string {
+	return os.Getenv("CA_TEST_REGION")
+}
+
+func TestS3BucketName() string {
+	return os.Getenv("CA_TEST_S3_BUCKET_NAME")
 }
 
 func TestSqsQueue() string {
