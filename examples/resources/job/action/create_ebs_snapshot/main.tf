@@ -41,3 +41,52 @@ resource "cloudautomator_job" "example-create-ebs-snapshot-job" {
     trace_status         = "true"
   }
 }
+
+# ----------------------------------------------------------
+# - アクション
+#   - EC2: EBSスナップショットを作成
+# - アクションの設定
+#   - EBSスナップショットを作成するAWSリージョン
+#     - ap-northeast-1
+#   - タグで対象のEBSボリュームを指定
+#     - タグのキー
+#       - env
+#     - タグの値
+#       - develop
+#   - EBSボリュームの世代管理を行う数
+#     - 10
+#   - EBSボリュームに設定する説明
+#     - test db
+#   - 作成したEBSボリュームに割り当てるタグの配列
+#     - example-key-1: example-value-1
+#     - example-key-2: example-value-2
+#   - EBSボリュームの作成完了をジョブ完了の判定にする
+#     - true
+# ----------------------------------------------------------
+
+resource "cloudautomator_job" "example-create-ebs-snapshot-job" {
+  name           = "example-create-ebs-snapshot-job"
+  group_id       = 10
+  aws_account_id = 20
+
+  rule_type = "webhook"
+
+  action_type = "create_ebs_snapshot"
+  create_ebs_snapshot_action_value {
+    region         = "ap-northeast-1"
+    specify_volume = "tag"
+    tag_key        = "env"
+    tag_value      = "develop"
+    generation     = 10
+    description    = "test db"
+    additional_tags {
+      key   = "example-key-1"
+      value = "example-value-1"
+    }
+    additional_tags {
+      key   = "example-key-2"
+      value = "example-value-2"
+    }
+    trace_status = "true"
+  }
+}

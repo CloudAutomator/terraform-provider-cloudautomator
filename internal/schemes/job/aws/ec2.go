@@ -221,6 +221,23 @@ func CreateEbsSnapshotActionValueFields() map[string]*schema.Schema {
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
+		"additional_tags": {
+			Description: "Array of tags to assign to the created EBS volume",
+			Type:        schema.TypeSet,
+			Optional:    true,
+			Elem: &schema.Resource{
+				Schema: map[string]*schema.Schema{
+					"key": {
+						Type:     schema.TypeString,
+						Required: true,
+					},
+					"value": {
+						Type:     schema.TypeString,
+						Required: true,
+					},
+				},
+			},
+		},
 		"additional_tag_key": {
 			Description: "Tag key to assign to the created EBS volume",
 			Type:        schema.TypeString,
