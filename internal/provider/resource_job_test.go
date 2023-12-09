@@ -306,6 +306,40 @@ func TestAccCloudAutomatorJob_AuthorizeSecurityGroupIngressAction(t *testing.T) 
 	})
 }
 
+func TestAccCloudAutomatorJob_BulkStopInstancesAction(t *testing.T) {
+	resourceName := "cloudautomator_job.test"
+	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckCloudAutomatorJobConfigBulkStopInstancesAction(jobName),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
+					resource.TestCheckResourceAttr(
+						resourceName, "name", jobName),
+					resource.TestCheckResourceAttr(
+						resourceName, "action_type", "bulk_stop_instances"),
+					resource.TestCheckResourceAttr(
+						resourceName, "bulk_stop_instances_action_value.0.exclude_by_tag", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "bulk_stop_instances_action_value.0.exclude_by_tag_key", "env"),
+					resource.TestCheckResourceAttr(
+						resourceName, "bulk_stop_instances_action_value.0.exclude_by_tag_value", "production"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
+				),
+			},
+		},
+	})
+}
+
 func TestAccCloudAutomatorJob_ChangeRdsClusterInstanceClassAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
@@ -1119,79 +1153,79 @@ func TestAccCloudAutomatorJob_GoogleComputeInsertMachineImageAction(t *testing.T
 }
 
 func TestAccCloudAutomatorJob_GoogleComputeStartVmInstancesAction(t *testing.T) {
-  resourceName := "cloudautomator_job.test"
-  jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-  postProcessId := acctest.TestPostProcessId()
+	resourceName := "cloudautomator_job.test"
+	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
-  resource.Test(t, resource.TestCase{
-    PreCheck:          func() { testAccPreCheck(t) },
-    ProviderFactories: testAccProviderFactories,
-    CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-    Steps: []resource.TestStep{
-      {
-        Config: testAccCheckCloudAutomatorJobConfigGoogleComputeStartVmInstancesAction(jobName),
-        Check: resource.ComposeTestCheckFunc(
-          testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-          resource.TestCheckResourceAttr(
-            resourceName, "name", jobName),
-          resource.TestCheckResourceAttr(
-            resourceName, "action_type", "google_compute_start_vm_instances"),
-          resource.TestCheckResourceAttr(
-            resourceName, "google_compute_start_vm_instances_action_value.0.region", "asia-northeast1"),
-          resource.TestCheckResourceAttr(
-            resourceName, "google_compute_start_vm_instances_action_value.0.project_id", "example-project"),
-          resource.TestCheckResourceAttr(
-            resourceName, "google_compute_start_vm_instances_action_value.0.specify_vm_instance", "label"),
-          resource.TestCheckResourceAttr(
-            resourceName, "google_compute_start_vm_instances_action_value.0.vm_instance_label_key", "env"),
-          resource.TestCheckResourceAttr(
-            resourceName, "google_compute_start_vm_instances_action_value.0.vm_instance_label_value", "develop"),
-          resource.TestCheckResourceAttr(
-            resourceName, "completed_post_process_id.0", postProcessId),
-          resource.TestCheckResourceAttr(
-            resourceName, "failed_post_process_id.0", postProcessId),
-        ),
-      },
-    },
-  })
+	resource.Test(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckCloudAutomatorJobConfigGoogleComputeStartVmInstancesAction(jobName),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
+					resource.TestCheckResourceAttr(
+						resourceName, "name", jobName),
+					resource.TestCheckResourceAttr(
+						resourceName, "action_type", "google_compute_start_vm_instances"),
+					resource.TestCheckResourceAttr(
+						resourceName, "google_compute_start_vm_instances_action_value.0.region", "asia-northeast1"),
+					resource.TestCheckResourceAttr(
+						resourceName, "google_compute_start_vm_instances_action_value.0.project_id", "example-project"),
+					resource.TestCheckResourceAttr(
+						resourceName, "google_compute_start_vm_instances_action_value.0.specify_vm_instance", "label"),
+					resource.TestCheckResourceAttr(
+						resourceName, "google_compute_start_vm_instances_action_value.0.vm_instance_label_key", "env"),
+					resource.TestCheckResourceAttr(
+						resourceName, "google_compute_start_vm_instances_action_value.0.vm_instance_label_value", "develop"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
+				),
+			},
+		},
+	})
 }
 
 func TestAccCloudAutomatorJob_GoogleComputeStopVmInstancesAction(t *testing.T) {
-  resourceName := "cloudautomator_job.test"
-  jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-  postProcessId := acctest.TestPostProcessId()
+	resourceName := "cloudautomator_job.test"
+	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
 
-  resource.Test(t, resource.TestCase{
-    PreCheck:          func() { testAccPreCheck(t) },
-    ProviderFactories: testAccProviderFactories,
-    CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-    Steps: []resource.TestStep{
-      {
-        Config: testAccCheckCloudAutomatorJobConfigGoogleComputeStopVmInstancesAction(jobName),
-        Check: resource.ComposeTestCheckFunc(
-          testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-          resource.TestCheckResourceAttr(
-            resourceName, "name", jobName),
-          resource.TestCheckResourceAttr(
-            resourceName, "action_type", "google_compute_stop_vm_instances"),
-          resource.TestCheckResourceAttr(
-            resourceName, "google_compute_stop_vm_instances_action_value.0.region", "asia-northeast1"),
-          resource.TestCheckResourceAttr(
-            resourceName, "google_compute_stop_vm_instances_action_value.0.project_id", "example-project"),
-          resource.TestCheckResourceAttr(
-            resourceName, "google_compute_stop_vm_instances_action_value.0.specify_vm_instance", "label"),
-          resource.TestCheckResourceAttr(
-            resourceName, "google_compute_stop_vm_instances_action_value.0.vm_instance_label_key", "env"),
-          resource.TestCheckResourceAttr(
-            resourceName, "google_compute_stop_vm_instances_action_value.0.vm_instance_label_value", "develop"),
-          resource.TestCheckResourceAttr(
-            resourceName, "completed_post_process_id.0", postProcessId),
-          resource.TestCheckResourceAttr(
-            resourceName, "failed_post_process_id.0", postProcessId),
-        ),
-      },
-    },
-  })
+	resource.Test(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckCloudAutomatorJobConfigGoogleComputeStopVmInstancesAction(jobName),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
+					resource.TestCheckResourceAttr(
+						resourceName, "name", jobName),
+					resource.TestCheckResourceAttr(
+						resourceName, "action_type", "google_compute_stop_vm_instances"),
+					resource.TestCheckResourceAttr(
+						resourceName, "google_compute_stop_vm_instances_action_value.0.region", "asia-northeast1"),
+					resource.TestCheckResourceAttr(
+						resourceName, "google_compute_stop_vm_instances_action_value.0.project_id", "example-project"),
+					resource.TestCheckResourceAttr(
+						resourceName, "google_compute_stop_vm_instances_action_value.0.specify_vm_instance", "label"),
+					resource.TestCheckResourceAttr(
+						resourceName, "google_compute_stop_vm_instances_action_value.0.vm_instance_label_key", "env"),
+					resource.TestCheckResourceAttr(
+						resourceName, "google_compute_stop_vm_instances_action_value.0.vm_instance_label_value", "develop"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
+				),
+			},
+		},
+	})
 }
 
 func TestAccCloudAutomatorJob_InvokeLambdaFunctionAction(t *testing.T) {
@@ -2469,6 +2503,27 @@ resource "cloudautomator_job" "test" {
 }`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
 
+func testAccCheckCloudAutomatorJobConfigBulkStopInstancesAction(rName string) string {
+	return fmt.Sprintf(`
+resource "cloudautomator_job" "test" {
+	name = "%s"
+	group_id = "%s"
+	aws_account_ids = [%s]
+
+	rule_type = "webhook"
+
+	action_type = "bulk_stop_instances"
+	bulk_stop_instances_action_value {
+		exclude_by_tag = true
+		exclude_by_tag_key = "env"
+		exclude_by_tag_value = "production"
+	}
+
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}
+
 func testAccCheckCloudAutomatorJobConfigChangeRdsClusterInstanceClassAction(rName string) string {
 	return fmt.Sprintf(`
 resource "cloudautomator_job" "test" {
@@ -2940,7 +2995,7 @@ resource "cloudautomator_job" "test" {
 }
 
 func testAccCheckCloudAutomatorJobConfigGoogleComputeStartVmInstancesAction(rName string) string {
-  return fmt.Sprintf(`
+	return fmt.Sprintf(`
 resource "cloudautomator_job" "test" {
   name = "%s"
   group_id = "%s"
@@ -2962,7 +3017,7 @@ resource "cloudautomator_job" "test" {
 }
 
 func testAccCheckCloudAutomatorJobConfigGoogleComputeStopVmInstancesAction(rName string) string {
-  return fmt.Sprintf(`
+	return fmt.Sprintf(`
 resource "cloudautomator_job" "test" {
   name = "%s"
   group_id = "%s"

@@ -50,6 +50,12 @@ func resourceJob() *schema.Resource {
 				Type:        schema.TypeInt,
 				Optional:    true,
 			},
+			"aws_account_ids": {
+				Description: "AWS account IDs",
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem:        &schema.Schema{Type: schema.TypeInt},
+			},
 			"google_cloud_account_id": {
 				Description: "Google Cloud account ID",
 				Type:        schema.TypeInt,
@@ -101,6 +107,15 @@ func resourceJob() *schema.Resource {
 				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: aws.AuthorizeSecurityGroupIngressyActionValueFields(),
+				},
+			},
+			"bulk_stop_instances_action_value": {
+				Description: "\"EC2: Stop ALL instances\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.BulkStopInstancesActionValueFields(),
 				},
 			},
 			"change_rds_cluster_instance_class_action_value": {
@@ -301,24 +316,24 @@ func resourceJob() *schema.Resource {
 					Schema: gcp.GoogleComputeInsertMachineImageActionValueFields(),
 				},
 			},
-      "google_compute_start_vm_instances_action_value": {
-        Description: "\"Compute Engine: start vm instances\" action value",
-        Type:        schema.TypeList,
-        Optional:    true,
-        MaxItems:    1,
-        Elem: &schema.Resource{
-          Schema: gcp.GoogleComputeStartVmInstancesActionValueFields(),
-        },
-      },
-      "google_compute_stop_vm_instances_action_value": {
-        Description: "\"Compute Engine: stop vm instances\" action value",
-        Type:        schema.TypeList,
-        Optional:    true,
-        MaxItems:    1,
-        Elem: &schema.Resource{
-          Schema: gcp.GoogleComputeStopVmInstancesActionValueFields(),
-        },
-      },
+			"google_compute_start_vm_instances_action_value": {
+				Description: "\"Compute Engine: start vm instances\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: gcp.GoogleComputeStartVmInstancesActionValueFields(),
+				},
+			},
+			"google_compute_stop_vm_instances_action_value": {
+				Description: "\"Compute Engine: stop vm instances\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: gcp.GoogleComputeStopVmInstancesActionValueFields(),
+				},
+			},
 			"invoke_lambda_function_action_value": {
 				Description: "\"Lambda: Invoke lambda function\" action value",
 				Type:        schema.TypeList,
@@ -588,6 +603,10 @@ func resourceJobCreate(ctx context.Context, d *schema.ResourceData, m interface{
 		job.AwsAccountId = v.(int)
 	}
 
+	if v, ok := d.GetOk("aws_account_ids"); ok && len(v.([]interface{})) > 0 {
+		job.AwsAccountIds = utils.ExpandIntList(v.([]interface{}))
+	}
+
 	if v, ok := d.GetOk("google_cloud_account_id"); ok {
 		job.GoogleCloudAccountId = v.(int)
 	}
@@ -658,6 +677,7 @@ func resourceJobRead(ctx context.Context, d *schema.ResourceData, m interface{})
 	d.Set("name", job.Name)
 	d.Set("group_id", job.GroupId)
 	d.Set("aws_account_id", job.AwsAccountId)
+	d.Set("aws_account_ids", utils.FlattenIntList(job.AwsAccountIds))
 	d.Set("google_cloud_account_id", job.GoogleCloudAccountId)
 	d.Set("for_workflow", job.ForWorkflow)
 
@@ -709,6 +729,10 @@ func resourceJobUpdate(ctx context.Context, d *schema.ResourceData, m interface{
 
 	if d.HasChange("aws_account_id") {
 		job.AwsAccountId = d.Get("aws_account_id").(int)
+	}
+
+	if d.HasChange("aws_account_ids") {
+		job.AwsAccountIds = utils.ExpandIntList(d.Get("aws_account_ids").([]interface{}))
 	}
 
 	if d.HasChange("google_cloud_account_id") {
