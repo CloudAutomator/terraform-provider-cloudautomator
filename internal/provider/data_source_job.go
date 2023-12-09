@@ -360,6 +360,15 @@ func dataSourceJob() *schema.Resource {
 					Schema: aws.RevokeSecurityGroupIngressActionValueFields(),
 				},
 			},
+			"run_ecs_tasks_fargate_action_value": {
+				Description: "\"ECS: Run task (Fargate)\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.RunEcsTasksFargateActionValueFields(),
+				},
+			},
 			"send_command_action_value": {
 				Description: "\"EC2: Send command on instance\" action value",
 				Type:        schema.TypeList,
