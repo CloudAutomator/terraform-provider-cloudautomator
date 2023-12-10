@@ -843,17 +843,21 @@ func buildRuleValue(d *schema.ResourceData, job *client.Job) map[string]interfac
 }
 
 func buildActionValue(d *schema.ResourceData, job *client.Job) map[string]interface{} {
-	var actionValue map[string]interface{}
-
 	blockName := fmt.Sprintf("%s_action_value", job.ActionType)
-	if v, ok := d.GetOk(blockName); ok {
-		actionValue = v.([]interface{})[0].(map[string]interface{})
+
+	v, ok := d.GetOk(blockName)
+	if !ok {
+		return nil
 	}
 
-	// additional_tags が存在する場合はリストに変換する
-	if tags, exists := actionValue["additional_tags"]; exists {
-		if tagsSet, ok := tags.(*schema.Set); ok {
+	actionValue := v.([]interface{})[0].(map[string]interface{})
+
+	// additional_tags が存在する場合はリストに変換して、空の場合は削除する
+	if tags, ok := actionValue["additional_tags"]; ok {
+		if tagsSet, ok := tags.(*schema.Set); ok && tagsSet.Len() > 0 {
 			actionValue["additional_tags"] = tagsSet.List()
+		} else {
+			delete(actionValue, "additional_tags")
 		}
 	}
 
