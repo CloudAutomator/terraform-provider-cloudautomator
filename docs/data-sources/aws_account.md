@@ -23,5 +23,3 @@ description: |-
 ### Read-Only
 
 - `name` (String) AWS account name
-
-

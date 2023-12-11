@@ -27,6 +27,8 @@ Manage Cloud Automator job resources
 - `allow_runtime_action_values` (Boolean) Whether the value of the action setting is specified at runtime or not
 - `authorize_security_group_ingress_action_value` (Block List, Max: 1) "EC2: Authorize security group ingress" action value (see [below for nested schema](#nestedblock--authorize_security_group_ingress_action_value))
 - `aws_account_id` (Number) AWS account ID
+- `aws_account_ids` (List of Number) AWS account IDs
+- `bulk_stop_instances_action_value` (Block List, Max: 1) "EC2: Stop ALL instances" action value (see [below for nested schema](#nestedblock--bulk_stop_instances_action_value))
 - `change_instance_type_action_value` (Block List, Max: 1) "EC2: Change instance type" action value (see [below for nested schema](#nestedblock--change_instance_type_action_value))
 - `change_rds_cluster_instance_class_action_value` (Block List, Max: 1) "RDS(Aurora): Change DB instance class" action value (see [below for nested schema](#nestedblock--change_rds_cluster_instance_class_action_value))
 - `change_rds_instance_class_action_value` (Block List, Max: 1) "RDS: Change DB instance class" action value (see [below for nested schema](#nestedblock--change_rds_instance_class_action_value))
@@ -56,6 +58,9 @@ Manage Cloud Automator job resources
 - `for_workflow` (Boolean) for workflow
 - `google_cloud_account_id` (Number) Google Cloud account ID
 - `google_compute_insert_machine_image_action_value` (Block List, Max: 1) "Compute Engine: create machine image" action value (see [below for nested schema](#nestedblock--google_compute_insert_machine_image_action_value))
+- `google_compute_start_vm_instances_action_value` (Block List, Max: 1) "Compute Engine: start vm instances" action value (see [below for nested schema](#nestedblock--google_compute_start_vm_instances_action_value))
+- `google_compute_stop_vm_instances_action_value` (Block List, Max: 1) "Compute Engine: stop vm instances" action value (see [below for nested schema](#nestedblock--google_compute_stop_vm_instances_action_value))
+- `invoke_lambda_function_action_value` (Block List, Max: 1) "Lambda: Invoke lambda function" action value (see [below for nested schema](#nestedblock--invoke_lambda_function_action_value))
 - `reboot_rds_instances_action_value` (Block List, Max: 1) "RDS: Reboot DB instance" action value (see [below for nested schema](#nestedblock--reboot_rds_instances_action_value))
 - `reboot_workspaces_action_value` (Block List, Max: 1) "WorkSpaces: Reboot WorkSpace" action value (see [below for nested schema](#nestedblock--reboot_workspaces_action_value))
 - `rebuild_workspaces_action_value` (Block List, Max: 1) "WorkSpaces: Rebuild WorkSpace" action value (see [below for nested schema](#nestedblock--rebuild_workspaces_action_value))
@@ -65,6 +70,8 @@ Manage Cloud Automator job resources
 - `restore_rds_cluster_action_value` (Block List, Max: 1) "RDS(Aurora): Restore DB cluster from DB cluster snapshot" action value (see [below for nested schema](#nestedblock--restore_rds_cluster_action_value))
 - `restore_rds_instance_action_value` (Block List, Max: 1) "RDS: Restore from DB snapshot" action value (see [below for nested schema](#nestedblock--restore_rds_instance_action_value))
 - `revoke_security_group_ingress_action_value` (Block List, Max: 1) "EC2: Revoke security group ingress" action value (see [below for nested schema](#nestedblock--revoke_security_group_ingress_action_value))
+- `run_ecs_tasks_fargate_action_value` (Block List, Max: 1) "ECS: Run task (Fargate)" action value (see [below for nested schema](#nestedblock--run_ecs_tasks_fargate_action_value))
+- `s3_start_backup_job_action_value` (Block List, Max: 1) "S3: Backup" action value (see [below for nested schema](#nestedblock--s3_start_backup_job_action_value))
 - `schedule_rule_value` (Block List, Max: 1) Schedule trigger value (see [below for nested schema](#nestedblock--schedule_rule_value))
 - `send_command_action_value` (Block List, Max: 1) "EC2: Send command on instance" action value (see [below for nested schema](#nestedblock--send_command_action_value))
 - `sqs_v2_rule_value` (Block List, Max: 1) SQS trigger value (see [below for nested schema](#nestedblock--sqs_v2_rule_value))
@@ -72,6 +79,7 @@ Manage Cloud Automator job resources
 - `start_rds_clusters_action_value` (Block List, Max: 1) "RDS(Aurora): Start DB cluster" action value (see [below for nested schema](#nestedblock--start_rds_clusters_action_value))
 - `start_rds_instances_action_value` (Block List, Max: 1) "RDS: Start DB instance" action value (see [below for nested schema](#nestedblock--start_rds_instances_action_value))
 - `start_workspaces_action_value` (Block List, Max: 1) "WorkSpaces: Start WorkSpace" action value (see [below for nested schema](#nestedblock--start_workspaces_action_value))
+- `stop_ecs_tasks_action_value` (Block List, Max: 1) "ECS: Stop task" action value (see [below for nested schema](#nestedblock--stop_ecs_tasks_action_value))
 - `stop_instances_action_value` (Block List, Max: 1) "EC2: Stop instance" action value (see [below for nested schema](#nestedblock--stop_instances_action_value))
 - `stop_rds_clusters_action_value` (Block List, Max: 1) "RDS(Aurora): Stop DB cluster" action value (see [below for nested schema](#nestedblock--stop_rds_clusters_action_value))
 - `stop_rds_instances_action_value` (Block List, Max: 1) "RDS: Stop DB instance" action value (see [below for nested schema](#nestedblock--stop_rds_instances_action_value))
@@ -100,6 +108,19 @@ Optional:
 - `security_group_id` (String) Target security group ID
 - `tag_key` (String) Tag key used to identify the target resource
 - `tag_value` (String) Tag value used to identify the target resource
+
+
+<a id="nestedblock--bulk_stop_instances_action_value"></a>
+### Nested Schema for `bulk_stop_instances_action_value`
+
+Required:
+
+- `exclude_by_tag` (Boolean) Whether to exclude instances with the specified tag from the target
+
+Optional:
+
+- `exclude_by_tag_key` (String) Tag key used to exclude instances from the target
+- `exclude_by_tag_value` (String) Tag value used to exclude instances from the target
 
 
 <a id="nestedblock--change_instance_type_action_value"></a>
@@ -230,11 +251,21 @@ Optional:
 
 - `additional_tag_key` (String) Tag key to assign to the created EBS volume
 - `additional_tag_value` (String) Tag key to assign to the created EBS volume Tag value to assign to the created EBS volume
+- `additional_tags` (Block Set) Array of tags to assign to the created EBS volume (see [below for nested schema](#nestedblock--create_ebs_snapshot_action_value--additional_tags))
 - `description` (String) Description to be set for EBS volume
 - `tag_key` (String) Tag key used to identify the target resource
 - `tag_value` (String) Tag value used to identify the target resource
 - `trace_status` (String) Whether to Verify completion status of the resource
 - `volume_id` (String) 対象のEBSボリュームID
+
+<a id="nestedblock--create_ebs_snapshot_action_value--additional_tags"></a>
+### Nested Schema for `create_ebs_snapshot_action_value.additional_tags`
+
+Required:
+
+- `key` (String)
+- `value` (String)
+
 
 
 <a id="nestedblock--create_fsx_backup_action_value"></a>
@@ -482,7 +513,7 @@ Optional:
 
 Required:
 
-- `generation` (String) Tag value used to identify the target resource
+- `generation` (Number) Number of machine image generations
 - `machine_image_basename` (String) Name of the machine image to created
 - `machine_image_storage_location` (String) Machine image storage location
 - `project_id` (String) Project ID to which the target VM instance belongs
@@ -495,6 +526,48 @@ Optional:
 - `vm_instance_id` (String) VM Instance ID
 - `vm_instance_label_key` (String) label key used to identify the target resource
 - `vm_instance_label_value` (String) label value used to identify the target resource
+
+
+<a id="nestedblock--google_compute_start_vm_instances_action_value"></a>
+### Nested Schema for `google_compute_start_vm_instances_action_value`
+
+Required:
+
+- `project_id` (String) Project ID to which the target VM instance belongs
+- `region` (String) GCP Region in which the target resource resides
+- `specify_vm_instance` (String) How to identify target resources
+
+Optional:
+
+- `vm_instance_id` (String) VM Instance ID
+- `vm_instance_label_key` (String) label key used to identify the target resource
+- `vm_instance_label_value` (String) label value used to identify the target resource
+
+
+<a id="nestedblock--google_compute_stop_vm_instances_action_value"></a>
+### Nested Schema for `google_compute_stop_vm_instances_action_value`
+
+Required:
+
+- `project_id` (String) Project ID to which the target VM instance belongs
+- `region` (String) GCP Region in which the target resource resides
+- `specify_vm_instance` (String) How to specify VM instance
+
+Optional:
+
+- `vm_instance_id` (String) VM Instance ID
+- `vm_instance_label_key` (String) label key used to identify the target resource
+- `vm_instance_label_value` (String) label value used to identify the target resource
+
+
+<a id="nestedblock--invoke_lambda_function_action_value"></a>
+### Nested Schema for `invoke_lambda_function_action_value`
+
+Required:
+
+- `function_name` (String) Function name
+- `payload` (String) Event JSON
+- `region` (String) AWS Region in which the target resource resides
 
 
 <a id="nestedblock--reboot_rds_instances_action_value"></a>
@@ -658,6 +731,49 @@ Optional:
 - `tag_value` (String) Tag value used to identify the target resource
 
 
+<a id="nestedblock--run_ecs_tasks_fargate_action_value"></a>
+### Nested Schema for `run_ecs_tasks_fargate_action_value`
+
+Required:
+
+- `ecs_awsvpc_assign_public_ip` (String) ECS awsvpc assign public ip
+- `ecs_awsvpc_security_groups` (List of String) ECS awsvpc security groups
+- `ecs_awsvpc_subnets` (List of String) ECS awsvpc subnets
+- `ecs_awsvpc_vpc` (String) ECS awsvpc vpc
+- `ecs_cluster` (String) ECS cluster name
+- `ecs_task_count` (Number) Number of ECS tasks to run
+- `ecs_task_definition_family` (String) ECS task definition family
+- `enable_ecs_managed_tags` (Boolean) Enable ECS managed tags
+- `platform_version` (String) Platform version
+- `propagate_tags` (String) Propagate tags
+- `region` (String) AWS Region in which the target resource resides
+
+
+<a id="nestedblock--s3_start_backup_job_action_value"></a>
+### Nested Schema for `s3_start_backup_job_action_value`
+
+Required:
+
+- `backup_vault_name` (String) Name of the backup vault to store the backup
+- `bucket_name` (String) Name of the S3 bucket to store the backup
+- `iam_role_arn` (String) ARN of the IAM role to use for the backup
+- `region` (String) AWS Region in which the target resource resides
+
+Optional:
+
+- `additional_tags` (Block Set) Additional tags to be added to the backup (see [below for nested schema](#nestedblock--s3_start_backup_job_action_value--additional_tags))
+- `lifecycle_delete_after_days` (Number) Number of days to keep the backup
+
+<a id="nestedblock--s3_start_backup_job_action_value--additional_tags"></a>
+### Nested Schema for `s3_start_backup_job_action_value.additional_tags`
+
+Required:
+
+- `key` (String)
+- `value` (String)
+
+
+
 <a id="nestedblock--schedule_rule_value"></a>
 ### Nested Schema for `schedule_rule_value`
 
@@ -762,6 +878,22 @@ Required:
 
 Optional:
 
+- `tag_key` (String) Tag key used to identify the target resource
+- `tag_value` (String) Tag value used to identify the target resource
+
+
+<a id="nestedblock--stop_ecs_tasks_action_value"></a>
+### Nested Schema for `stop_ecs_tasks_action_value`
+
+Required:
+
+- `ecs_cluster` (String) Target ECS cluster name
+- `region` (String) AWS Region in which the target resource resides
+- `specify_ecs_task` (String) How to identify target resources
+
+Optional:
+
+- `ecs_task_definition_family` (String) ECS task definition family name
 - `tag_key` (String) Tag key used to identify the target resource
 - `tag_value` (String) Tag value used to identify the target resource
 
@@ -881,5 +1013,3 @@ Optional:
 - `tag_key` (String) Tag key used to identify the target resource
 - `tag_value` (String) Tag value used to identify the target resource
 - `trace_status` (String) Whether to Verify completion status of the resource
-
-
