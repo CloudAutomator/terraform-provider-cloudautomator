@@ -31,11 +31,13 @@ func Provider() *schema.Provider {
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"cloudautomator_job":          resourceJob(),
+			"cloudautomator_job_workflow": resourceJobWorkflow(),
 			"cloudautomator_post_process": resourcePostProcess(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"cloudautomator_aws_account":  dataSourceAwsAccount(),
 			"cloudautomator_job":          dataSourceJob(),
+			"cloudautomator_job_workflow": dataSourceJobWorkflow(),
 			"cloudautomator_post_process": dataSourcePostProcess(),
 		},
 		ConfigureContextFunc: providerConfigure,
