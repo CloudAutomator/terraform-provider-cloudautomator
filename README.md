@@ -22,7 +22,7 @@ Enter the provider directory and build the provider
 
 ```sh
 $ cd $GOPATH/src/github.com/CloudAutomator/terraform-provider-cloudautomator
-$ make install VERSION=0.2.8
+$ make install VERSION=0.3.1
 ```
 
 ## Authentication and Configuration
@@ -62,7 +62,7 @@ Cloud Automator Provider can be customized to connect to non-default endpoints a
 provider "cloudautomator" {
   ...
 
-  endpoint = "http://localhost:3000/api/v1"
+  api_endpoint = "http://localhost:3000/api/v1/"
 }
 ```
 
@@ -73,7 +73,7 @@ provider "cloudautomator" {}
 ```
 
 ```shell
-$ export CLOUD_AUTOMATOR_API_ENDPOINT="http://localhost:3000/api/v1"
+$ export CLOUD_AUTOMATOR_API_ENDPOINT="http://localhost:3000/api/v1/"
 $ terraform plan
 ```
 
@@ -85,7 +85,7 @@ terraform {
   required_providers {
     cloudautomator = {
       source = "CloudAutomator/cloudautomator"
-      version = "0.2.8"
+      version = "0.3.1"
     }
   }
 }
