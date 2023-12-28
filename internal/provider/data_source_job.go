@@ -78,6 +78,15 @@ func dataSourceJob() *schema.Resource {
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
+			"attach_user_policy_action_value": {
+				Description: "\"IAM: Attach Policy to IAM User\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.AttachUserPolicyActionValueFields(),
+				},
+			},
 			"authorize_security_group_ingress_action_value": {
 				Description: "\"EC2: Authorize security group ingress\" action value",
 				Type:        schema.TypeList,
