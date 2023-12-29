@@ -18,3 +18,18 @@ func AttachUserPolicyActionValueFields() map[string]*schema.Schema {
 		},
 	}
 }
+
+func DetachUserPolicyActionValueFields() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"user_name": {
+			Description: "Name of the user to detach the policy from",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"policy_arn": {
+			Description: "ARN of the policy to detach",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+	}
+}

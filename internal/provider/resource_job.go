@@ -307,6 +307,15 @@ func resourceJob() *schema.Resource {
 					Schema: aws.DescribeMetadataActionValueFields(),
 				},
 			},
+			"detach_user_policy_action_value": {
+				Description: "\"IAM: Detach Policy to IAM User\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.DetachUserPolicyActionValueFields(),
+				},
+			},
 			"disaster_recovery_action_value": {
 				Description: "\"DR: Launch EC2 instance\" action value",
 				Type:        schema.TypeList,
