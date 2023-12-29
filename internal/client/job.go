@@ -86,6 +86,7 @@ type JobAttributes struct {
 
 var TRACE_STATUS_NOT_SUPPORTED_ACTION_TYPES = []string{
 	"attach_user_policy",
+	"detach_user_policy",
 	"authorize_security_group_ingress",
 	"copy_rds_cluster_snapshot",
 	"create_fsx_backup",
