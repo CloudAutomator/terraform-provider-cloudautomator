@@ -95,6 +95,7 @@ var TRACE_STATUS_NOT_SUPPORTED_ACTION_TYPES = []string{
 	"deregister_instances",
 	"deregister_target_instances",
 	"describe_metadata",
+	"dynamodb_start_backup_job",
 	"google_compute_insert_machine_image",
 	"google_compute_stop_vm_instances",
 	"google_compute_start_vm_instances",

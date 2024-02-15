@@ -325,6 +325,15 @@ func resourceJob() *schema.Resource {
 					Schema: aws.DisasterRecoveryActionValueFields(),
 				},
 			},
+			"dynamodb_start_backup_job_action_value": {
+				Description: "\"DynamoDB: Backup table\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.DynamodbStartBackupJobActionValueFields(),
+				},
+			},
 			"google_compute_insert_machine_image_action_value": {
 				Description: "\"Compute Engine: create machine image\" action value",
 				Type:        schema.TypeList,
@@ -870,12 +879,26 @@ func buildActionValue(d *schema.ResourceData, job *client.Job) map[string]interf
 
 	actionValue := v.([]interface{})[0].(map[string]interface{})
 
-	// additional_tags が存在する場合はリストに変換して、空の場合は削除する
-	if tags, ok := actionValue["additional_tags"]; ok {
-		if tagsSet, ok := tags.(*schema.Set); ok && tagsSet.Len() > 0 {
+	switch job.ActionType {
+	case "dynamodb_start_backup_job":
+		if actionValue["lifecycle_delete_after_days"] == 0 {
+			actionValue["lifecycle_delete_after_days"] = nil
+		}
+
+		// additional_tags が存在する場合はリストに変換して、空の場合は空のリストに変換する
+		if tagsSet, ok := actionValue["additional_tags"].(*schema.Set); ok && tagsSet.Len() > 0 {
 			actionValue["additional_tags"] = tagsSet.List()
 		} else {
-			delete(actionValue, "additional_tags")
+			actionValue["additional_tags"] = []string{}
+		}
+	default:
+		// additional_tags が存在する場合はリストに変換して、空の場合は削除する
+		if tags, ok := actionValue["additional_tags"]; ok {
+			if tagsSet, ok := tags.(*schema.Set); ok && tagsSet.Len() > 0 {
+				actionValue["additional_tags"] = tagsSet.List()
+			} else {
+				delete(actionValue, "additional_tags")
+			}
 		}
 	}
 
