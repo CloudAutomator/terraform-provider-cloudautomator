@@ -1172,6 +1172,56 @@ func TestAccCloudAutomatorJob_DetachUserPolicyAction(t *testing.T) {
 	})
 }
 
+func TestAccCloudAutomatorJob_DynamodbStartBackupJobAction(t *testing.T) {
+	resourceName := "cloudautomator_job.test"
+	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckCloudAutomatorJobConfigDynamodbStartBackupJobAction(jobName),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
+					resource.TestCheckResourceAttr(
+						resourceName, "name", jobName),
+					resource.TestCheckResourceAttr(
+						resourceName, "action_type", "dynamodb_start_backup_job"),
+					resource.TestCheckResourceAttr(
+						resourceName, "dynamodb_start_backup_job_action_value.0.region", "ap-northeast-1"),
+					resource.TestCheckResourceAttr(
+						resourceName, "dynamodb_start_backup_job_action_value.0.dynamodb_table_name", "example-table"),
+					resource.TestCheckResourceAttr(
+						resourceName, "dynamodb_start_backup_job_action_value.0.lifecycle_delete_after_days", "7"),
+					resource.TestCheckResourceAttr(
+						resourceName, "dynamodb_start_backup_job_action_value.0.backup_vault_name", "example-vault"),
+					resource.TestCheckResourceAttr(
+						resourceName, "dynamodb_start_backup_job_action_value.0.iam_role_arn", "arn:aws:iam::123456789012:role/example-role"),
+					resource.TestCheckResourceAttr(
+						resourceName, "dynamodb_start_backup_job_action_value.0.additional_tags.0.key", "key1"),
+					resource.TestCheckResourceAttr(
+						resourceName, "dynamodb_start_backup_job_action_value.0.additional_tags.0.value", "value1"),
+					resource.TestCheckResourceAttr(
+						resourceName, "dynamodb_start_backup_job_action_value.0.additional_tags.1.key", "key2"),
+					resource.TestCheckResourceAttr(
+						resourceName, "dynamodb_start_backup_job_action_value.0.additional_tags.1.value", "value2"),
+					resource.TestCheckResourceAttr(
+						resourceName, "dynamodb_start_backup_job_action_value.0.additional_tags.2.key", "key3"),
+					resource.TestCheckResourceAttr(
+						resourceName, "dynamodb_start_backup_job_action_value.0.additional_tags.2.value", "value3"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
+				),
+			},
+		},
+	})
+}
+
 func TestAccCloudAutomatorJob_GoogleComputeInsertMachineImageAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
@@ -3114,6 +3164,43 @@ resource "cloudautomator_job" "test" {
 	detach_user_policy_action_value {
 		user_name = "example-user"
 		policy_arn = "arn:aws:iam::123456789012:policy/example-policy"
+	}
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}
+
+func testAccCheckCloudAutomatorJobConfigDynamodbStartBackupJobAction(rName string) string {
+	return fmt.Sprintf(`
+resource "cloudautomator_job" "test" {
+	name = "%s"
+	group_id = "%s"
+	aws_account_id = "%s"
+
+	rule_type = "webhook"
+
+	action_type = "dynamodb_start_backup_job"
+	dynamodb_start_backup_job_action_value {
+	  region                      = "ap-northeast-1"
+	  dynamodb_table_name         = "example-table"
+	  lifecycle_delete_after_days = 7
+	  backup_vault_name           = "example-vault"
+	  iam_role_arn                = "arn:aws:iam::123456789012:role/example-role"
+
+	  additional_tags {
+		key   = "key1"
+		value = "value1"
+	  }
+
+	  additional_tags {
+		key   = "key2"
+		value = "value2"
+	  }
+
+	  additional_tags {
+		key   = "key3"
+		value = "value3"
+	  }
 	}
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]
