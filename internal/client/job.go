@@ -226,6 +226,7 @@ func readRuleValues(rawJob *JobAttributes) map[string]interface{} {
 		delete(ruleValue, "next_occurrence")
 	case "schedule":
 		delete(ruleValue, "next_schedule")
+		delete(ruleValue, "schedule_trigger_setting_id")
 	case "sqs_v2":
 		awsAccountId, _ := strconv.Atoi(ruleValue["aws_account_id"].(string))
 		ruleValue["sqs_aws_account_id"] = awsAccountId
