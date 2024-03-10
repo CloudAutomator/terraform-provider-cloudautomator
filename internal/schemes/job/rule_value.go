@@ -139,3 +139,23 @@ func SqsV2RuleValueFields() map[string]*schema.Schema {
 		},
 	}
 }
+
+func WebhookRuleValueFields() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"token": {
+			Description: "Token",
+			Type:        schema.TypeString,
+			Computed:    true,
+		},
+		"time_zone": {
+			Description: "Timezone",
+			Type:        schema.TypeString,
+			Computed:    true,
+		},
+		"access_token": {
+			Description: "Access token",
+			Type:        schema.TypeString,
+			Computed:    true,
+		},
+	}
+}
