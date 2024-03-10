@@ -5,47 +5,13 @@ concurrency:
   cancel-in-progress: false
 
 on:
-  workflow_dispatch:
-    inputs:
-      ca_test_api_key:
-        description: "CA_TEST_API_KEY"
-        required: true
-      ca_test_aws_account_number:
-        description: "CA_TEST_AWS_ACCOUNT_NUMBER"
-        required: true
-      ca_test_aws_account_id:
-        description: "CA_TEST_AWS_ACCOUNT_ID"
-        required: true
-      ca_test_google_cloud_account_id:
-        description: "CA_TEST_GOOGLE_CLOUD_ACCOUNT_ID"
-        required: true
-      ca_test_group_id:
-        description: "CA_TEST_GROUP_ID"
-        required: true
-      ca_test_region:
-        description: "CA_TEST_REGION"
-        required: true
-      ca_test_s3_bucket_name:
-        description: "CA_TEST_S3_BUCKET_NAME"
-        required: true
-      ca_test_sqs_queue:
-        description: "CA_TEST_SQS_QUEUE"
-        required: true
-      ca_test_post_process_id:
-        description: "CA_TEST_POST_PROCESS_ID"
-        required: true
+  workflow_dispatch
 
 jobs:
   test:
     name: e2e-acc-test
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        terraform:
-          - '0.15.*'
-          - '1.2.*'
     steps:
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -55,7 +21,7 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: ${{ matrix.terraform }}
+          terraform_version: '1.2.*'
           terraform_wrapper: false
       - name: Check out code into the Go module directory
         uses: actions/checkout@v4.1.1
@@ -68,14 +34,14 @@ jobs:
         timeout-minutes: 60
         env:
           TF_ACC: "1"
-          CA_TEST_API_KEY: ${{github.event.inputs.ca_test_api_key}}
-          CA_TEST_AWS_ACCOUNT_NUMBER: ${{github.event.inputs.ca_test_aws_account_number}}
-          CA_TEST_AWS_ACCOUNT_ID: ${{github.event.inputs.ca_test_aws_account_id}}
-          CA_TEST_GOOGLE_CLOUD_ACCOUNT_ID: ${{github.event.inputs.ca_test_google_cloud_account_id}}
-          CA_TEST_GROUP_ID: ${{github.event.inputs.ca_test_group_id}}
-          CA_TEST_REGION: ${{github.event.inputs.ca_test_region}}
-          CA_TEST_S3_BUCKET_NAME: ${{github.event.inputs.ca_test_s3_bucket_name}}
-          CA_TEST_SQS_QUEUE: ${{github.event.inputs.ca_test_sqs_queue}}
-          CA_TEST_POST_PROCESS_ID: ${{github.event.inputs.ca_test_post_process_id}}
+          CA_TEST_API_KEY: ${{secrets.CA_TEST_API_KEY}}
+          CA_TEST_AWS_ACCOUNT_NUMBER: ${{secrets.CA_TEST_AWS_ACCOUNT_NUMBER}}
+          CA_TEST_AWS_ACCOUNT_ID: ${{secrets.CA_TEST_AWS_ACCOUNT_ID}}
+          CA_TEST_GOOGLE_CLOUD_ACCOUNT_ID: ${{secrets.CA_TEST_GOOGLE_CLOUD_ACCOUNT_ID}}
+          CA_TEST_GROUP_ID: ${{secrets.CA_TEST_GROUP_ID}}
+          CA_TEST_REGION: ${{secrets.CA_TEST_REGION}}
+          CA_TEST_S3_BUCKET_NAME: ${{secrets.CA_TEST_S3_BUCKET_NAME}}
+          CA_TEST_SQS_QUEUE: ${{secrets.CA_TEST_SQS_QUEUE}}
+          CA_TEST_POST_PROCESS_ID: ${{secrets.CA_TEST_POST_PROCESS_ID}}
         run: |
           make testacc
