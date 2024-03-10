@@ -120,6 +120,21 @@ func ScheduleRuleValueFields() map[string]*schema.Schema {
 	}
 }
 
+func AmazonSnsRuleValueFields() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"amazon_sns_token": {
+			Description: "Amazon SNS token",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"time_zone": {
+			Description: "Time zone",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+	}
+}
+
 func SqsV2RuleValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"sqs_aws_account_id": {
