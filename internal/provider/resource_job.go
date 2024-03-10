@@ -568,6 +568,16 @@ func resourceJob() *schema.Resource {
 					Schema: aws.UpdateRecordSetActionValueFields(),
 				},
 			},
+			"webhook_rule_value": {
+				Description: "HTTP trigger value",
+				Type:        schema.TypeList,
+				Computed:    true,
+				MaxItems:    1,
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: schemes.WebhookRuleValueFields(),
+				},
+			},
 			"windows_update_action_value": {
 				Description: "\"EC2: Windows Update to instance (Old version)\" action value",
 				Type:        schema.TypeList,
@@ -719,7 +729,7 @@ func resourceJobRead(ctx context.Context, d *schema.ResourceData, m interface{})
 
 	d.Set("rule_type", job.RuleType)
 	switch job.RuleType {
-	case "cron", "schedule", "sqs_v2":
+	case "cron", "schedule", "sqs_v2", "webhook":
 		ruleValueBlockName := fmt.Sprintf("%s_rule_value", job.RuleType)
 		if err := d.Set(ruleValueBlockName, []interface{}{job.RuleValue}); err != nil {
 			diags = append(diags, diag.FromErr(err)...)
