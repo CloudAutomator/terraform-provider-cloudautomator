@@ -96,6 +96,15 @@ func dataSourceJob() *schema.Resource {
 					Schema: aws.AuthorizeSecurityGroupIngressyActionValueFields(),
 				},
 			},
+			"bulk_delete_rds_cluster_snapshots_action_value": {
+				Description: "\"RDS(Aurora): Delete old DB cluster snapshots\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.BulkDeleteRdsClusterSnapshotsActionValueFields(),
+				},
+			},
 			"bulk_stop_instances_action_value": {
 				Description: "\"EC2: Stop ALL instances\" action value",
 				Type:        schema.TypeList,

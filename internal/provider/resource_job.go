@@ -118,6 +118,15 @@ func resourceJob() *schema.Resource {
 					Schema: aws.AuthorizeSecurityGroupIngressyActionValueFields(),
 				},
 			},
+			"bulk_delete_rds_cluster_snapshots_action_value": {
+				Description: "\"RDS(Aurora): Delete old DB cluster snapshots\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.BulkDeleteRdsClusterSnapshotsActionValueFields(),
+				},
+			},
 			"bulk_stop_instances_action_value": {
 				Description: "\"EC2: Stop ALL instances\" action value",
 				Type:        schema.TypeList,
@@ -748,10 +757,11 @@ func resourceJobRead(ctx context.Context, d *schema.ResourceData, m interface{})
 	}
 
 	d.Set("action_type", job.ActionType)
-	actionValueBlockName := fmt.Sprintf("%s_action_value", job.ActionType)
-	if err := d.Set(actionValueBlockName, []interface{}{job.ActionValue}); err != nil {
-		diags = append(diags, diag.FromErr(err)...)
-		return diags
+	if job.ActionType != "no_action" {
+		actionValueBlockName := fmt.Sprintf("%s_action_value", job.ActionType)
+		if err := d.Set(actionValueBlockName, []interface{}{job.ActionValue}); err != nil {
+			return append(diags, diag.FromErr(err)...)
+		}
 	}
 
 	d.Set("allow_runtime_action_values", job.AllowRuntimeActionValues)
