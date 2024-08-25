@@ -99,10 +99,7 @@ resource "cloudautomator_job" "first_job" {
 
   for_workflow = true
 
-  action_type = "delay"
-  delay_action_value {
-	delay_minutes = 1
-  }
+  action_type = "no_action"
 }
 
 resource "cloudautomator_job" "following_job" {
