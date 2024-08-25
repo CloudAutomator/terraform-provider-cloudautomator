@@ -338,6 +338,44 @@ func TestAccCloudAutomatorJob_AuthorizeSecurityGroupIngressAction(t *testing.T) 
 	})
 }
 
+func TestAccCloudAutomatorJob_BulkDeleteImagesAction(t *testing.T) {
+	resourceName := "cloudautomator_job.test"
+	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+	postProcessId := acctest.TestPostProcessId()
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckCloudAutomatorJobConfigBulkDeleteImagesAction(jobName),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
+					resource.TestCheckResourceAttr(
+						resourceName, "name", jobName),
+					resource.TestCheckResourceAttr(
+						resourceName, "action_type", "bulk_delete_images"),
+					resource.TestCheckResourceAttr(
+						resourceName, "bulk_delete_images_action_value.0.exclude_by_tag_bulk_delete_images", "true"),
+					resource.TestCheckResourceAttr(
+						resourceName, "bulk_delete_images_action_value.0.exclude_by_tag_key_bulk_delete_images", "env"),
+					resource.TestCheckResourceAttr(
+						resourceName, "bulk_delete_images_action_value.0.exclude_by_tag_value_bulk_delete_images", "production"),
+					resource.TestCheckResourceAttr(
+						resourceName, "bulk_delete_images_action_value.0.specify_base_date", "before_days"),
+					resource.TestCheckResourceAttr(
+						resourceName, "bulk_delete_images_action_value.0.before_days", "365"),
+					resource.TestCheckResourceAttr(
+						resourceName, "completed_post_process_id.0", postProcessId),
+					resource.TestCheckResourceAttr(
+						resourceName, "failed_post_process_id.0", postProcessId),
+				),
+			},
+		},
+	})
+}
+
 func TestAccCloudAutomatorJob_BulkDeleteRdsClusterSnapshotsAction(t *testing.T) {
 	resourceName := "cloudautomator_job.test"
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
@@ -2718,6 +2756,29 @@ resource "cloudautomator_job" "test" {
 		to_port = "80"
 		cidr_ip = "172.31.0.0/16"
 	}
+	completed_post_process_id = [%s]
+	failed_post_process_id = [%s]
+}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+}
+
+func testAccCheckCloudAutomatorJobConfigBulkDeleteImagesAction(rName string) string {
+	return fmt.Sprintf(`
+resource "cloudautomator_job" "test" {
+	name = "%s"
+	group_id = "%s"
+	aws_account_ids = [%s]
+
+	rule_type = "webhook"
+
+	action_type = "bulk_delete_images"
+	bulk_delete_images_action_value {
+		exclude_by_tag_bulk_delete_images = true
+		exclude_by_tag_key_bulk_delete_images = "env"
+		exclude_by_tag_value_bulk_delete_images = "production"
+		specify_base_date = "before_days"
+		before_days = 365
+	}
+
 	completed_post_process_id = [%s]
 	failed_post_process_id = [%s]
 }`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
