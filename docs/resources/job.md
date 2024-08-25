@@ -80,9 +80,12 @@ resource "cloudautomator_job" "example-create-image-job" {
 ### Optional
 
 - `allow_runtime_action_values` (Boolean) Whether the value of the action setting is specified at runtime or not
+- `attach_user_policy_action_value` (Block List, Max: 1) "IAM: Attach Policy to IAM User" action value (see [below for nested schema](#nestedblock--attach_user_policy_action_value))
 - `authorize_security_group_ingress_action_value` (Block List, Max: 1) "EC2: Authorize security group ingress" action value (see [below for nested schema](#nestedblock--authorize_security_group_ingress_action_value))
 - `aws_account_id` (Number) AWS account ID
 - `aws_account_ids` (List of Number) AWS account IDs
+- `bulk_delete_images_action_value` (Block List, Max: 1) "EC2: Delete old AMIs and Snapshots" action value (see [below for nested schema](#nestedblock--bulk_delete_images_action_value))
+- `bulk_delete_rds_cluster_snapshots_action_value` (Block List, Max: 1) "RDS(Aurora): Delete old DB cluster snapshots" action value (see [below for nested schema](#nestedblock--bulk_delete_rds_cluster_snapshots_action_value))
 - `bulk_stop_instances_action_value` (Block List, Max: 1) "EC2: Stop ALL instances" action value (see [below for nested schema](#nestedblock--bulk_stop_instances_action_value))
 - `change_instance_type_action_value` (Block List, Max: 1) "EC2: Change instance type" action value (see [below for nested schema](#nestedblock--change_instance_type_action_value))
 - `change_rds_cluster_instance_class_action_value` (Block List, Max: 1) "RDS(Aurora): Change DB instance class" action value (see [below for nested schema](#nestedblock--change_rds_cluster_instance_class_action_value))
@@ -106,7 +109,9 @@ resource "cloudautomator_job" "example-create-image-job" {
 - `deregister_instances_action_value` (Block List, Max: 1) "ELB(CLB): De-register EC2 instance" action value (see [below for nested schema](#nestedblock--deregister_instances_action_value))
 - `deregister_target_instances_action_value` (Block List, Max: 1) "ELB(ALB/NLB): Deregister EC2 instances from target group" action value (see [below for nested schema](#nestedblock--deregister_target_instances_action_value))
 - `describe_metadata_action_value` (Block List, Max: 1) "DR: Update EC2 instance metadata" action value (see [below for nested schema](#nestedblock--describe_metadata_action_value))
+- `detach_user_policy_action_value` (Block List, Max: 1) "IAM: Detach Policy to IAM User" action value (see [below for nested schema](#nestedblock--detach_user_policy_action_value))
 - `disaster_recovery_action_value` (Block List, Max: 1) "DR: Launch EC2 instance" action value (see [below for nested schema](#nestedblock--disaster_recovery_action_value))
+- `dynamodb_start_backup_job_action_value` (Block List, Max: 1) "DynamoDB: Backup table" action value (see [below for nested schema](#nestedblock--dynamodb_start_backup_job_action_value))
 - `effective_date` (String) Effective date
 - `expiration_date` (String) Expiration date
 - `failed_post_process_id` (List of Number) Array containing post-process IDs to be executed if the job fails
@@ -145,7 +150,18 @@ resource "cloudautomator_job" "example-create-image-job" {
 
 ### Read-Only
 
+- `amazon_sns_rule_value` (List of Object) SNS trigger value (see [below for nested schema](#nestedatt--amazon_sns_rule_value))
 - `id` (String) Job ID
+- `webhook_rule_value` (List of Object) HTTP trigger value (see [below for nested schema](#nestedatt--webhook_rule_value))
+
+<a id="nestedblock--attach_user_policy_action_value"></a>
+### Nested Schema for `attach_user_policy_action_value`
+
+Required:
+
+- `policy_arn` (String) ARN of the policy to attach
+- `user_name` (String) Name of the user to attach the policy to
+
 
 <a id="nestedblock--authorize_security_group_ingress_action_value"></a>
 ### Nested Schema for `authorize_security_group_ingress_action_value`
@@ -163,6 +179,38 @@ Optional:
 - `security_group_id` (String) Target security group ID
 - `tag_key` (String) Tag key used to identify the target resource
 - `tag_value` (String) Tag value used to identify the target resource
+
+
+<a id="nestedblock--bulk_delete_images_action_value"></a>
+### Nested Schema for `bulk_delete_images_action_value`
+
+Required:
+
+- `exclude_by_tag_bulk_delete_images` (Boolean) Specifies whether to exclude AMIs with certain tags from deletion
+- `specify_base_date` (String) Specifies the method for determining which AMIs to delete
+
+Optional:
+
+- `before_date` (String) The date used to identify AMIs for deletion
+- `before_days` (Number) The number of days used to identify AMIs to be deleted
+- `exclude_by_tag_key_bulk_delete_images` (String) The tag key used to identify AMIs to exclude from deletion
+- `exclude_by_tag_value_bulk_delete_images` (String) The tag value used to identify AMIs to exclude from deletion
+
+
+<a id="nestedblock--bulk_delete_rds_cluster_snapshots_action_value"></a>
+### Nested Schema for `bulk_delete_rds_cluster_snapshots_action_value`
+
+Required:
+
+- `exclude_by_tag_bulk_delete_rds_cluster_snapshots` (Boolean) Specifies whether to exclude DB cluster snapshots with certain tags from deletion
+- `specify_base_date` (String) Specifies the method for determining which DB cluster snapshots to delete
+
+Optional:
+
+- `before_date` (String) The date used to identify DB cluster snapshots for deletion
+- `before_days` (Number) The number of days used to identify DB cluster snapshots to be deleted
+- `exclude_by_tag_key_bulk_delete_rds_cluster_snapshots` (String) The tag key used to identify DB cluster snapshots to exclude from deletion
+- `exclude_by_tag_value_bulk_delete_rds_cluster_snapshots` (String) The tag value used to identify DB cluster snapshots to exclude from deletion
 
 
 <a id="nestedblock--bulk_stop_instances_action_value"></a>
@@ -554,6 +602,15 @@ Optional:
 - `dr_configuration_id` (Number) DR Configuration ID
 
 
+<a id="nestedblock--detach_user_policy_action_value"></a>
+### Nested Schema for `detach_user_policy_action_value`
+
+Required:
+
+- `policy_arn` (String) ARN of the policy to detach
+- `user_name` (String) Name of the user to detach the policy from
+
+
 <a id="nestedblock--disaster_recovery_action_value"></a>
 ### Nested Schema for `disaster_recovery_action_value`
 
@@ -561,6 +618,31 @@ Optional:
 
 - `describe_metadata_job_id` (Number) Describe Metadata Job ID
 - `trace_status` (String) Whether to Verify completion status of the resource
+
+
+<a id="nestedblock--dynamodb_start_backup_job_action_value"></a>
+### Nested Schema for `dynamodb_start_backup_job_action_value`
+
+Required:
+
+- `backup_vault_name` (String) Backup Vault Name
+- `dynamodb_table_name` (String) Name of the DynamoDB table
+- `iam_role_arn` (String) IAM Role ARN
+- `region` (String) AWS Region
+
+Optional:
+
+- `additional_tags` (Block Set) Array of tags to be added to the recovery point (see [below for nested schema](#nestedblock--dynamodb_start_backup_job_action_value--additional_tags))
+- `lifecycle_delete_after_days` (Number) Number of days to hold recovery point
+
+<a id="nestedblock--dynamodb_start_backup_job_action_value--additional_tags"></a>
+### Nested Schema for `dynamodb_start_backup_job_action_value.additional_tags`
+
+Required:
+
+- `key` (String)
+- `value` (String)
+
 
 
 <a id="nestedblock--google_compute_insert_machine_image_action_value"></a>
@@ -1068,3 +1150,22 @@ Optional:
 - `tag_key` (String) Tag key used to identify the target resource
 - `tag_value` (String) Tag value used to identify the target resource
 - `trace_status` (String) Whether to Verify completion status of the resource
+
+
+<a id="nestedatt--amazon_sns_rule_value"></a>
+### Nested Schema for `amazon_sns_rule_value`
+
+Read-Only:
+
+- `amazon_sns_token` (String)
+- `time_zone` (String)
+
+
+<a id="nestedatt--webhook_rule_value"></a>
+### Nested Schema for `webhook_rule_value`
+
+Read-Only:
+
+- `access_token` (String)
+- `time_zone` (String)
+- `token` (String)

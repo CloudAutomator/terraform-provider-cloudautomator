@@ -67,3 +67,25 @@ jobs:
           terraform fmt -recursive examples
           git diff --exit-code examples \
           || (echo 'Seems like you forgot run `terraform fmt -recursive examples`.' && exit 1)
+
+  docs:
+    name: docs
+    needs: terraform-fmt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4.1.7
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.21"
+        id: go
+      - name: generate docs
+        run: |
+          go generate ./...
+          gitstatus="$(git status --porcelain)"
+          if [ -n "$gitstatus" ]; then
+            echo "$gitstatus"
+            echo 'run "go generate ./..."'
+            exit 1
+          fi
