@@ -49,6 +49,41 @@ func AuthorizeSecurityGroupIngressyActionValueFields() map[string]*schema.Schema
 	}
 }
 
+func BulkDeleteEBSSnapshotsActionValueFields() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"exclude_by_tag_bulk_delete_ebs_snapshots": {
+			Description: "Specifies whether to exclude EBS Snapshots with certain tags from deletion",
+			Type:        schema.TypeBool,
+			Required:    true,
+		},
+		"exclude_by_tag_key_bulk_delete_ebs_snapshots": {
+			Description: "The tag key used to identify EBS Snapshots to exclude from deletion",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"exclude_by_tag_value_bulk_delete_ebs_snapshots": {
+			Description: "The tag value used to identify EBS Snapshots to exclude from deletion",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"specify_base_date": {
+			Description: "Specifies the method for determining which EBS Snapshots to delete",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"before_days": {
+			Description: "The number of days used to identify EBS Snapshots to be deleted",
+			Type:        schema.TypeInt,
+			Optional:    true,
+		},
+		"before_date": {
+			Description: "The date used to identify EBS Snapshots for deletion",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+	}
+}
+
 func BulkDeleteImagesActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"exclude_by_tag_bulk_delete_images": {
