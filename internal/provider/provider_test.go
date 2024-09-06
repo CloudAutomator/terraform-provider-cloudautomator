@@ -37,10 +37,6 @@ func TestProvider(t *testing.T) {
 	}
 }
 
-func TestProvider_impl(t *testing.T) {
-	var _ *schema.Provider = Provider()
-}
-
 func testAccPreCheck(t *testing.T) {
 	if err := os.Getenv(testApiKeyEnvName); err == "" {
 		t.Fatalf("%s must be set for acceptance tests", testApiKeyEnvName)
