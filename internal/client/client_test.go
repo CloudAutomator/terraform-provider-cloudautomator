@@ -42,7 +42,7 @@ func TestClient_RequestWithRetry(t *testing.T) {
 			name:               "invalid method",
 			requestMethod:      "{}",
 			expectRequestCount: 0,
-			expectErrorMessage: "net/http: invalid method \"{}\"",
+			expectErrorMessage: "failed to create request: net/http: invalid method \"{}\"",
 		},
 		{
 			name:               "StatusBadRequest",
@@ -123,7 +123,7 @@ func TestClient_RequestWithRetry(t *testing.T) {
 			statusCode:         http.StatusOK,
 			json:               []byte(`{"Name": 1}`),
 			expectRequestCount: 1,
-			expectErrorMessage: "request failed. StatusCode=200 Reason=unmarshal failed",
+			expectErrorMessage: "failed to unmarshal response. StatusCode=200 Reason=unmarshal failed",
 		},
 		{
 			name:               "success",

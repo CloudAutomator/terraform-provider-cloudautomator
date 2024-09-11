@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	ApiEndpoint       = "https://manager.cloudautomator.com/api/v1/"
+	apiEndpoint       = "https://manager.cloudautomator.com/api/v1/"
 	defaultRetryCount = 5
 	delayBaseSecond   = 1
 	retryLimit        = 5
@@ -24,7 +24,7 @@ const (
 var (
 	userAgentHeader = fmt.Sprintf(
 		"go-http/v%s (%s/%s; +go-cloudautomator-client)",
-		Version,
+		version,
 		runtime.GOOS,
 		runtime.GOARCH,
 	)
@@ -48,7 +48,7 @@ type Client struct {
 }
 
 func New(authToken string, options ...ClientOptions) (*Client, error) {
-	parsedApiEndpoint, _ := url.Parse(ApiEndpoint)
+	parsedApiEndpoint, _ := url.Parse(apiEndpoint)
 
 	c := &Client{
 		httpClient:      &http.Client{Timeout: timeoutSeconds},
@@ -91,13 +91,13 @@ func (c *Client) requestWithRetry(method, urlStr string, requestBody, v interfac
 	buf := new(bytes.Buffer)
 	if requestBody != nil {
 		if err := json.NewEncoder(buf).Encode(requestBody); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to encode request body: %w", err)
 		}
 	}
 
 	req, err := http.NewRequest(method, u.String(), buf)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.token))
 	req.Header.Set("Content-Type", "application/json")
@@ -105,18 +105,17 @@ func (c *Client) requestWithRetry(method, urlStr string, requestBody, v interfac
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
+	defer resp.Body.Close()
 
 	if v == nil {
 		return resp, nil
 	}
 
-	defer resp.Body.Close()
-
 	responseBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return resp, errors.New("read data failed")
+		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
 	if c.shouldRetry(c.getError(resp), retry) {
@@ -134,9 +133,8 @@ func (c *Client) requestWithRetry(method, urlStr string, requestBody, v interfac
 
 	if err := json.Unmarshal(responseBody, v); err != nil {
 		return resp, fmt.Errorf(
-			"request failed. StatusCode=%d Reason=%s",
+			"failed to unmarshal response. StatusCode=%d Reason=unmarshal failed",
 			resp.StatusCode,
-			"unmarshal failed",
 		)
 	}
 	time.Sleep(time.Second * 1)
