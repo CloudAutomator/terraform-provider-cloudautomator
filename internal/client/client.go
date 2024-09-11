@@ -118,7 +118,7 @@ func (c *Client) requestWithRetry(method, urlStr string, requestBody, v interfac
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
-	if c.shouldRetry(c.getError(resp), retry) {
+	if c.shouldRetry(c.parseHTTPError(resp), retry) {
 		time.Sleep(c.delayTime(retry))
 		return c.requestWithRetry(method, urlStr, requestBody, v, retry-1)
 	}
@@ -158,7 +158,7 @@ func (c *Client) shouldRetry(err error, retry int) bool {
 	}
 }
 
-func (c *Client) getError(res *http.Response) error {
+func (c *Client) parseHTTPError(res *http.Response) error {
 	switch res.StatusCode {
 	case http.StatusBadRequest: // 400
 		return errBadRequest
