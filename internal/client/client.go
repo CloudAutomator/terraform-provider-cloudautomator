@@ -29,15 +29,15 @@ var (
 		runtime.GOARCH,
 	)
 
-	BadRequest          = errors.New("Bad Request")
-	Unauthorized        = errors.New("Unauthorized")
-	Forbidden           = errors.New("Forbidden")
-	NotFound            = errors.New("Not Found")
-	MethodNotAllowed    = errors.New("Method Not Allowed")
-	InternalServerError = errors.New("Internal Server Error")
-	BadGateway          = errors.New("Bad Gateway")
-	ServiceUnavailable  = errors.New("Service Unavailable")
-	GatewayTimeout      = errors.New("Gateway Timeout")
+	errBadRequest          = errors.New("bad request")
+	errUnauthorized        = errors.New("unauthorized")
+	errForbidden           = errors.New("forbidden")
+	errNotFound            = errors.New("not found")
+	errMethodNotAllowed    = errors.New("method not allowed")
+	errInternalServerError = errors.New("internal server error")
+	errBadGateway          = errors.New("bad gateway")
+	errServiceUnavailable  = errors.New("service unavailable")
+	errGatewayTimeout      = errors.New("gateway timeout")
 )
 
 type Client struct {
@@ -150,10 +150,10 @@ func (c *Client) shouldRetry(err error, retry int) bool {
 	}
 
 	switch err {
-	case InternalServerError,
-		BadGateway,
-		ServiceUnavailable,
-		GatewayTimeout:
+	case errInternalServerError,
+		errBadGateway,
+		errServiceUnavailable,
+		errGatewayTimeout:
 		return true
 	default:
 		return false
@@ -163,23 +163,23 @@ func (c *Client) shouldRetry(err error, retry int) bool {
 func (c *Client) getError(res *http.Response) error {
 	switch res.StatusCode {
 	case http.StatusBadRequest: // 400
-		return BadRequest
+		return errBadRequest
 	case http.StatusUnauthorized: // 401
-		return Unauthorized
+		return errUnauthorized
 	case http.StatusForbidden: // 403
-		return Forbidden
+		return errForbidden
 	case http.StatusNotFound: // 404
-		return NotFound
+		return errNotFound
 	case http.StatusMethodNotAllowed: // 405
-		return MethodNotAllowed
+		return errMethodNotAllowed
 	case http.StatusInternalServerError: // 500
-		return InternalServerError
+		return errInternalServerError
 	case http.StatusBadGateway: // 502
-		return BadGateway
+		return errBadGateway
 	case http.StatusServiceUnavailable: // 503
-		return ServiceUnavailable
+		return errServiceUnavailable
 	case http.StatusGatewayTimeout: // 504
-		return GatewayTimeout
+		return errGatewayTimeout
 	default:
 		return nil
 	}
