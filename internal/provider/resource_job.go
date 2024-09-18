@@ -118,6 +118,15 @@ func resourceJob() *schema.Resource {
 					Schema: aws.AuthorizeSecurityGroupIngressyActionValueFields(),
 				},
 			},
+			"bulk_delete_ebs_snapshots_action_value": {
+				Description: "\"EC2: Delete old EBS Snapshots\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.BulkDeleteEBSSnapshotsActionValueFields(),
+				},
+			},
 			"bulk_delete_images_action_value": {
 				Description: "\"EC2: Delete old AMIs and Snapshots\" action value",
 				Type:        schema.TypeList,
