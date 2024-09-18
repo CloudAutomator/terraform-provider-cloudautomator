@@ -395,15 +395,15 @@ func TestAccCloudAutomatorJob_BulkDeleteEBSSnapshotsAction(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						resourceName, "action_type", "bulk_delete_ebs_snapshots"),
 					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_images_action_value.0.exclude_by_tag_bulk_delete_ebs_snapshots", "true"),
+						resourceName, "bulk_delete_ebs_snapshots_action_value.0.exclude_by_tag_bulk_delete_ebs_snapshots", "true"),
 					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_images_action_value.0.exclude_by_tag_key_bulk_delete_ebs_snapshots", "env"),
+						resourceName, "bulk_delete_ebs_snapshots_action_value.0.exclude_by_tag_key_bulk_delete_ebs_snapshots", "env"),
 					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_images_action_value.0.exclude_by_tag_value_bulk_delete_ebs_snapshots", "production"),
+						resourceName, "bulk_delete_ebs_snapshots_action_value.0.exclude_by_tag_value_bulk_delete_ebs_snapshots", "production"),
 					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_images_action_value.0.specify_base_date", "before_days"),
+						resourceName, "bulk_delete_ebs_snapshots_action_value.0.specify_base_date", "before_days"),
 					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_images_action_value.0.before_days", "365"),
+						resourceName, "bulk_delete_ebs_snapshots_action_value.0.before_days", "365"),
 					resource.TestCheckResourceAttr(
 						resourceName, "completed_post_process_id.0", postProcessId),
 					resource.TestCheckResourceAttr(
