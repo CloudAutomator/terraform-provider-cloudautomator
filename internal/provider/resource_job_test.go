@@ -13,2527 +13,2318 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccCloudAutomatorJob_CronRuleOneTime(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+func TestAccCloudAutomatorJob(t *testing.T) {
+	cases := []struct {
+		name       string
+		jobName    string
+		configFunc func(string) string
+		checks     []resource.TestCheckFunc
+	}{
+		{
+			name:    "CronRuleOneTime",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigCronRuleOneTime(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "rule_type", "cron"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.hour", "3"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.minutes", "30"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.schedule_type", "one_time"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.one_time_schedule", "2099/01/01"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.time_zone", "Tokyo"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				rule_type = "cron"
+				cron_rule_value {
+					hour = "3"
+					minutes = "30"
+					schedule_type = "one_time"
+					one_time_schedule = "2099/01/01"
+					time_zone = "Tokyo"
+				}
+
+				action_type = "delay"
+				delay_action_value {
+					delay_minutes = 1
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rule_type", "cron"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.hour", "3"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.minutes", "30"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.schedule_type", "one_time"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.one_time_schedule", "2099/01/01"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.time_zone", "Tokyo"),
 			},
 		},
-	})
-}
+		{
+			name:    "CronRuleWeekly",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
 
-func TestAccCloudAutomatorJob_CronRuleWeekly(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "cron"
+				cron_rule_value {
+					hour = "3"
+					minutes = "30"
+					schedule_type = "weekly"
+					weekly_schedule = [
+						"monday",
+						"sunday"
+					]
+					time_zone = "Tokyo"
+					dates_to_skip = ["2099-12-31"]
+					national_holiday_schedule = "true"
+				}
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigCronRuleWeekly(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "rule_type", "cron"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.hour", "3"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.minutes", "30"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.schedule_type", "weekly"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.weekly_schedule.#", "2"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.weekly_schedule.0", "monday"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.weekly_schedule.1", "sunday"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.time_zone", "Tokyo"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.dates_to_skip.0", "2099-12-31"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.national_holiday_schedule", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "delay"
+				delay_action_value {
+					delay_minutes = 1
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rule_type", "cron"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.hour", "3"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.minutes", "30"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.schedule_type", "weekly"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.weekly_schedule.#", "2"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.weekly_schedule.0", "monday"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.weekly_schedule.1", "sunday"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.time_zone", "Tokyo"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.dates_to_skip.0", "2099-12-31"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.national_holiday_schedule", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "CronRuleMonthlyDayOfWeek",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
 
-func TestAccCloudAutomatorJob_CronRuleMonthlyDayOfWeek(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "cron"
+				cron_rule_value {
+					hour = "3"
+					minutes = "30"
+					schedule_type = "monthly_day_of_week"
+					monthly_day_of_week_schedule {
+					  friday = [2]
+					}
+					time_zone = "Tokyo"
+					dates_to_skip = ["2099-12-31"]
+					national_holiday_schedule = "true"
+				}
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigCronRuleMonthlyDayOfWeek(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "rule_type", "cron"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.hour", "3"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.minutes", "30"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.schedule_type", "monthly_day_of_week"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.monthly_day_of_week_schedule.0.friday.0", "2"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.time_zone", "Tokyo"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.dates_to_skip.0", "2099-12-31"),
-					resource.TestCheckResourceAttr(
-						resourceName, "cron_rule_value.0.national_holiday_schedule", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "delay"
+				delay_action_value {
+					delay_minutes = 1
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rule_type", "cron"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.hour", "3"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.minutes", "30"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.schedule_type", "monthly_day_of_week"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.monthly_day_of_week_schedule.0.friday.0", "2"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.time_zone", "Tokyo"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.dates_to_skip.0", "2099-12-31"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.national_holiday_schedule", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "WebhookRule",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
 
-func TestAccCloudAutomatorJob_WebhookRule(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigWebhookRule(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "rule_type", "webhook"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "delay"
+				delay_action_value {
+					delay_minutes = 1
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rule_type", "webhook"),
 			},
 		},
-	})
-}
+		{
+			name:    "ScheduleRule",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
 
-func TestAccCloudAutomatorJob_ScheduleRule(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "schedule"
+				schedule_rule_value {
+					schedule = "2099-12-31 10:10:00\n2099-01-01 22:40:00"
+					time_zone = "Tokyo"
+				}
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigScheduleRule(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "rule_type", "schedule"),
-					resource.TestCheckResourceAttr(
-						resourceName, "schedule_rule_value.0.schedule", "2099-12-31 10:10:00\n2099-01-01 22:40:00"),
-					resource.TestCheckResourceAttr(
-						resourceName, "schedule_rule_value.0.time_zone", "Tokyo"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "delay"
+				delay_action_value {
+					delay_minutes = 1
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rule_type", "schedule"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "schedule_rule_value.0.schedule", "2099-12-31 10:10:00\n2099-01-01 22:40:00"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "schedule_rule_value.0.time_zone", "Tokyo"),
 			},
 		},
-	})
-}
+		{
+			name:    "SqsV2Rule",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
 
-func TestAccCloudAutomatorJob_SqsV2Rule(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	sqsAwsAccountId := acctest.TestAwsAccountId()
-	sqsRegion := acctest.TestRegion()
-	sqsQueue := acctest.TestSqsQueue()
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "sqs_v2"
+				sqs_v2_rule_value {
+					sqs_aws_account_id = "%s"
+					sqs_region = "%s"
+					queue = "%s"
+				}
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigSqsV2Rule(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "rule_type", "sqs_v2"),
-					resource.TestCheckResourceAttr(
-						resourceName, "sqs_v2_rule_value.0.sqs_aws_account_id", sqsAwsAccountId),
-					resource.TestCheckResourceAttr(
-						resourceName, "sqs_v2_rule_value.0.sqs_region", sqsRegion),
-					resource.TestCheckResourceAttr(
-						resourceName, "sqs_v2_rule_value.0.queue", sqsQueue),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "delay"
+				delay_action_value {
+					delay_minutes = 1
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestRegion(), acctest.TestSqsQueue(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rule_type", "sqs_v2"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "sqs_v2_rule_value.0.sqs_aws_account_id", acctest.TestAwsAccountId()),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "sqs_v2_rule_value.0.sqs_region", acctest.TestRegion()),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "sqs_v2_rule_value.0.queue", acctest.TestSqsQueue()),
 			},
 		},
-	})
-}
+		{
+			name:    "AmazonSnsRule",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
 
-func TestAccCloudAutomatorJob_AmazonSnsRule(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "amazon_sns"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigAmazonSnsRule(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "rule_type", "amazon_sns"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "delay"
+				delay_action_value {
+					delay_minutes = 1
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rule_type", "amazon_sns"),
 			},
 		},
-	})
-}
+		{
+			name:    "NoRule",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
 
-func TestAccCloudAutomatorJob_AttachUserPolicyAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				for_workflow = true
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigAttachUserPolicyAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "attach_user_policy"),
-					resource.TestCheckResourceAttr(
-						resourceName, "attach_user_policy_action_value.0.user_name", "example-user"),
-					resource.TestCheckResourceAttr(
-						resourceName, "attach_user_policy_action_value.0.policy_arn", "arn:aws:iam::123456789012:policy/example-policy"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				rule_type = "no_rule"
+
+				action_type = "delay"
+				delay_action_value {
+					delay_minutes = 1
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rule_type", "no_rule"),
 			},
 		},
-	})
-}
+		{
+			name:    "AttachUserPolicyAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_AuthorizeSecurityGroupIngressAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigAuthorizeSecurityGroupIngressAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "authorize_security_group_ingress"),
-					resource.TestCheckResourceAttr(
-						resourceName, "authorize_security_group_ingress_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "authorize_security_group_ingress_action_value.0.specify_security_group", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "authorize_security_group_ingress_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "authorize_security_group_ingress_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "authorize_security_group_ingress_action_value.0.ip_protocol", "tcp"),
-					resource.TestCheckResourceAttr(
-						resourceName, "authorize_security_group_ingress_action_value.0.to_port", "80"),
-					resource.TestCheckResourceAttr(
-						resourceName, "authorize_security_group_ingress_action_value.0.cidr_ip", "172.31.0.0/16"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "attach_user_policy"
+				attach_user_policy_action_value {
+					user_name = "example-user"
+					policy_arn = "arn:aws:iam::123456789012:policy/example-policy"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "attach_user_policy"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "attach_user_policy_action_value.0.user_name", "example-user"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "attach_user_policy_action_value.0.policy_arn", "arn:aws:iam::123456789012:policy/example-policy"),
 			},
 		},
-	})
-}
+		{
+			name:    "AuthorizeSecurityGroupIngressAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_BulkDeleteImagesAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigBulkDeleteImagesAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "bulk_delete_images"),
-					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_images_action_value.0.exclude_by_tag_bulk_delete_images", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_images_action_value.0.exclude_by_tag_key_bulk_delete_images", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_images_action_value.0.exclude_by_tag_value_bulk_delete_images", "production"),
-					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_images_action_value.0.specify_base_date", "before_days"),
-					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_images_action_value.0.before_days", "365"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "authorize_security_group_ingress"
+				authorize_security_group_ingress_action_value {
+					region = "ap-northeast-1"
+					specify_security_group = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					ip_protocol = "tcp"
+					to_port = "80"
+					cidr_ip = "172.31.0.0/16"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "authorize_security_group_ingress"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "authorize_security_group_ingress_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "authorize_security_group_ingress_action_value.0.specify_security_group", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "authorize_security_group_ingress_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "authorize_security_group_ingress_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "authorize_security_group_ingress_action_value.0.ip_protocol", "tcp"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "authorize_security_group_ingress_action_value.0.to_port", "80"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "authorize_security_group_ingress_action_value.0.cidr_ip", "172.31.0.0/16"),
 			},
 		},
-	})
-}
+		{
+			name:    "BulkDeleteEBSSnapshotsAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_ids = [%s]
 
-func TestAccCloudAutomatorJob_BulkDeleteEBSSnapshotsAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigBulkDeleteEBSSnapshotsAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "bulk_delete_ebs_snapshots"),
-					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_ebs_snapshots_action_value.0.exclude_by_tag_bulk_delete_ebs_snapshots", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_ebs_snapshots_action_value.0.exclude_by_tag_key_bulk_delete_ebs_snapshots", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_ebs_snapshots_action_value.0.exclude_by_tag_value_bulk_delete_ebs_snapshots", "production"),
-					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_ebs_snapshots_action_value.0.specify_base_date", "before_days"),
-					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_ebs_snapshots_action_value.0.before_days", "365"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "bulk_delete_ebs_snapshots"
+				bulk_delete_ebs_snapshots_action_value {
+					exclude_by_tag_bulk_delete_ebs_snapshots = true
+					exclude_by_tag_key_bulk_delete_ebs_snapshots = "env"
+					exclude_by_tag_value_bulk_delete_ebs_snapshots = "production"
+					specify_base_date = "before_days"
+					before_days = 365
+				}
+
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "bulk_delete_ebs_snapshots"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_ebs_snapshots_action_value.0.exclude_by_tag_bulk_delete_ebs_snapshots", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_ebs_snapshots_action_value.0.exclude_by_tag_key_bulk_delete_ebs_snapshots", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_ebs_snapshots_action_value.0.exclude_by_tag_value_bulk_delete_ebs_snapshots", "production"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_ebs_snapshots_action_value.0.specify_base_date", "before_days"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_ebs_snapshots_action_value.0.before_days", "365"),
 			},
 		},
-	})
-}
+		{
+			name:    "BulkDeleteImagesAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_ids = [%s]
 
-func TestAccCloudAutomatorJob_BulkDeleteRdsClusterSnapshotsAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigBulkDeleteRdsClusterSnapshotsAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "bulk_delete_rds_cluster_snapshots"),
-					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_rds_cluster_snapshots_action_value.0.exclude_by_tag_bulk_delete_rds_cluster_snapshots", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_rds_cluster_snapshots_action_value.0.exclude_by_tag_key_bulk_delete_rds_cluster_snapshots", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_rds_cluster_snapshots_action_value.0.exclude_by_tag_value_bulk_delete_rds_cluster_snapshots", "production"),
-					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_rds_cluster_snapshots_action_value.0.specify_base_date", "before_days"),
-					resource.TestCheckResourceAttr(
-						resourceName, "bulk_delete_rds_cluster_snapshots_action_value.0.before_days", "365"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "bulk_delete_images"
+				bulk_delete_images_action_value {
+					exclude_by_tag_bulk_delete_images = true
+					exclude_by_tag_key_bulk_delete_images = "env"
+					exclude_by_tag_value_bulk_delete_images = "production"
+					specify_base_date = "before_days"
+					before_days = 365
+				}
+
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "bulk_delete_images"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_images_action_value.0.exclude_by_tag_bulk_delete_images", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_images_action_value.0.exclude_by_tag_key_bulk_delete_images", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_images_action_value.0.exclude_by_tag_value_bulk_delete_images", "production"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_images_action_value.0.specify_base_date", "before_days"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_images_action_value.0.before_days", "365"),
 			},
 		},
-	})
-}
+		{
+			name:    "BulkDeleteRdsClusterSnapshotsAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_ids = [%s]
 
-func TestAccCloudAutomatorJob_BulkStopInstancesAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigBulkStopInstancesAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "bulk_stop_instances"),
-					resource.TestCheckResourceAttr(
-						resourceName, "bulk_stop_instances_action_value.0.exclude_by_tag", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "bulk_stop_instances_action_value.0.exclude_by_tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "bulk_stop_instances_action_value.0.exclude_by_tag_value", "production"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "bulk_delete_rds_cluster_snapshots"
+				bulk_delete_rds_cluster_snapshots_action_value {
+					exclude_by_tag_bulk_delete_rds_cluster_snapshots = true
+					exclude_by_tag_key_bulk_delete_rds_cluster_snapshots = "env"
+					exclude_by_tag_value_bulk_delete_rds_cluster_snapshots = "production"
+					specify_base_date = "before_days"
+					before_days = 365
+				}
+
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "bulk_delete_rds_cluster_snapshots"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_rds_cluster_snapshots_action_value.0.exclude_by_tag_bulk_delete_rds_cluster_snapshots", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_rds_cluster_snapshots_action_value.0.exclude_by_tag_key_bulk_delete_rds_cluster_snapshots", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_rds_cluster_snapshots_action_value.0.exclude_by_tag_value_bulk_delete_rds_cluster_snapshots", "production"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_rds_cluster_snapshots_action_value.0.specify_base_date", "before_days"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_rds_cluster_snapshots_action_value.0.before_days", "365"),
 			},
 		},
-	})
-}
+		{
+			name:    "BulkStopInstancesAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_ids = [%s]
 
-func TestAccCloudAutomatorJob_ChangeRdsClusterInstanceClassAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigChangeRdsClusterInstanceClassAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "change_rds_cluster_instance_class"),
-					resource.TestCheckResourceAttr(
-						resourceName, "change_rds_cluster_instance_class_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "change_rds_cluster_instance_class_action_value.0.specify_rds_instance", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "change_rds_cluster_instance_class_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "change_rds_cluster_instance_class_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "change_rds_cluster_instance_class_action_value.0.db_instance_class", "db.t3.micro"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "bulk_stop_instances"
+				bulk_stop_instances_action_value {
+					exclude_by_tag = true
+					exclude_by_tag_key = "env"
+					exclude_by_tag_value = "production"
+				}
+
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "bulk_stop_instances"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_stop_instances_action_value.0.exclude_by_tag", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_stop_instances_action_value.0.exclude_by_tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_stop_instances_action_value.0.exclude_by_tag_value", "production"),
 			},
 		},
-	})
-}
+		{
+			name:    "ChangeRdsClusterInstanceClassAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_ChangeRdsInstanceClassAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigChangeRdsInstanceClassAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "change_rds_instance_class"),
-					resource.TestCheckResourceAttr(
-						resourceName, "change_rds_instance_class_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "change_rds_instance_class_action_value.0.specify_rds_instance", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "change_rds_instance_class_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "change_rds_instance_class_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "change_rds_instance_class_action_value.0.db_instance_class", "db.t3.micro"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "change_rds_cluster_instance_class"
+				change_rds_cluster_instance_class_action_value {
+					region = "ap-northeast-1"
+					specify_rds_instance = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					db_instance_class = "db.t3.micro"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "change_rds_cluster_instance_class"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "change_rds_cluster_instance_class_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "change_rds_cluster_instance_class_action_value.0.specify_rds_instance", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "change_rds_cluster_instance_class_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "change_rds_cluster_instance_class_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "change_rds_cluster_instance_class_action_value.0.db_instance_class", "db.t3.micro"),
 			},
 		},
-	})
-}
+		{
+			name:    "ChangeRdsInstanceClassAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_ChangeInstanceTypeAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigChangeInstanceTypeAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "change_instance_type"),
-					resource.TestCheckResourceAttr(
-						resourceName, "change_instance_type_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "change_instance_type_action_value.0.specify_instance", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "change_instance_type_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "change_instance_type_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "change_instance_type_action_value.0.instance_type", "t2.medium"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "change_rds_instance_class"
+				change_rds_instance_class_action_value {
+					region = "ap-northeast-1"
+					specify_rds_instance = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					db_instance_class = "db.t3.micro"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "change_rds_instance_class"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "change_rds_instance_class_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "change_rds_instance_class_action_value.0.specify_rds_instance", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "change_rds_instance_class_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "change_rds_instance_class_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "change_rds_instance_class_action_value.0.db_instance_class", "db.t3.micro"),
 			},
 		},
-	})
-}
+		{
+			name:    "ChangeInstanceTypeAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_CopyEbsSnapshotAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigCopyEbsSnapshotAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "copy_ebs_snapshot"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_ebs_snapshot_action_value.0.source_region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_ebs_snapshot_action_value.0.destination_region", "us-east-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_ebs_snapshot_action_value.0.specify_ebs_snapshot", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_ebs_snapshot_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_ebs_snapshot_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_ebs_snapshot_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "change_instance_type"
+				change_instance_type_action_value {
+					region = "ap-northeast-1"
+					specify_instance = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					instance_type = "t2.medium"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "change_instance_type"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "change_instance_type_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "change_instance_type_action_value.0.specify_instance", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "change_instance_type_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "change_instance_type_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "change_instance_type_action_value.0.instance_type", "t2.medium"),
 			},
 		},
-	})
-}
+		{
+			name:    "CopyEbsSnapshotAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_CopyImageAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigCopyImageAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "copy_image"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_image_action_value.0.source_region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_image_action_value.0.destination_region", "us-east-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_image_action_value.0.specify_image", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_image_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_image_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_image_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "copy_ebs_snapshot"
+				copy_ebs_snapshot_action_value {
+					source_region = "ap-northeast-1"
+					destination_region = "us-east-1"
+					specify_ebs_snapshot = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					trace_status = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "copy_ebs_snapshot"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_ebs_snapshot_action_value.0.source_region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_ebs_snapshot_action_value.0.destination_region", "us-east-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_ebs_snapshot_action_value.0.specify_ebs_snapshot", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_ebs_snapshot_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_ebs_snapshot_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_ebs_snapshot_action_value.0.trace_status", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "CopyImageAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_CopyRdsClusterSnapshotAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigCopyRdsClusterSnapshotAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "copy_rds_cluster_snapshot"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_rds_cluster_snapshot_action_value.0.source_region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_rds_cluster_snapshot_action_value.0.destination_region", "ap-southeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_rds_cluster_snapshot_action_value.0.specify_rds_cluster_snapshot", "rds_cluster_snapshot_id"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_rds_cluster_snapshot_action_value.0.rds_cluster_snapshot_id", "test-snapshot"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_rds_cluster_snapshot_action_value.0.kms_key_id", "1234abcd-12ab-34cd-56ef-1234567890ab"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "copy_image"
+				copy_image_action_value {
+					source_region = "ap-northeast-1"
+					destination_region = "us-east-1"
+					specify_image = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					trace_status = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "copy_image"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_image_action_value.0.source_region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_image_action_value.0.destination_region", "us-east-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_image_action_value.0.specify_image", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_image_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_image_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_image_action_value.0.trace_status", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "CopyRdsClusterSnapshotAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_CopyRdsSnapshotAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigCopyRdsSnapshotAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "copy_rds_snapshot"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_rds_snapshot_action_value.0.source_region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_rds_snapshot_action_value.0.destination_region", "us-east-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_rds_snapshot_action_value.0.specify_rds_snapshot", "identifier"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_rds_snapshot_action_value.0.rds_snapshot_id", "test-db"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_rds_snapshot_action_value.0.option_group_name", "default:mysql-5-6"),
-					resource.TestCheckResourceAttr(
-						resourceName, "copy_rds_snapshot_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "copy_rds_cluster_snapshot"
+				copy_rds_cluster_snapshot_action_value {
+				  source_region = "ap-northeast-1"
+				  destination_region = "ap-southeast-1"
+				  specify_rds_cluster_snapshot = "rds_cluster_snapshot_id"
+				  rds_cluster_snapshot_id = "test-snapshot"
+				  kms_key_id = "1234abcd-12ab-34cd-56ef-1234567890ab"
+				}
+
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "copy_rds_cluster_snapshot"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_rds_cluster_snapshot_action_value.0.source_region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_rds_cluster_snapshot_action_value.0.destination_region", "ap-southeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_rds_cluster_snapshot_action_value.0.specify_rds_cluster_snapshot", "rds_cluster_snapshot_id"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_rds_cluster_snapshot_action_value.0.rds_cluster_snapshot_id", "test-snapshot"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_rds_cluster_snapshot_action_value.0.kms_key_id", "1234abcd-12ab-34cd-56ef-1234567890ab"),
 			},
 		},
-	})
-}
+		{
+			name:    "CopyRdsSnapshotAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_CreateFSxBackupAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigCreateFSxBackupAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "create_fsx_backup"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_fsx_backup_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_fsx_backup_action_value.0.specify_file_system", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_fsx_backup_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_fsx_backup_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_fsx_backup_action_value.0.generation", "10"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_fsx_backup_action_value.0.backup_name", "example-backup"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "copy_rds_snapshot"
+				copy_rds_snapshot_action_value {
+					source_region = "ap-northeast-1"
+					destination_region = "us-east-1"
+					specify_rds_snapshot = "identifier"
+					rds_snapshot_id = "test-db"
+					option_group_name = "default:mysql-5-6"
+					trace_status = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "copy_rds_snapshot"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_rds_snapshot_action_value.0.source_region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_rds_snapshot_action_value.0.destination_region", "us-east-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_rds_snapshot_action_value.0.specify_rds_snapshot", "identifier"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_rds_snapshot_action_value.0.rds_snapshot_id", "test-db"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_rds_snapshot_action_value.0.option_group_name", "default:mysql-5-6"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_rds_snapshot_action_value.0.trace_status", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "CreateFSxBackupAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_CreateEbsSnapshotAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigCreateEbsSnapshotAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "create_ebs_snapshot"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_ebs_snapshot_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_ebs_snapshot_action_value.0.specify_volume", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_ebs_snapshot_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_ebs_snapshot_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_ebs_snapshot_action_value.0.generation", "10"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_ebs_snapshot_action_value.0.description", "test db"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_ebs_snapshot_action_value.0.additional_tag_key", "example-key"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_ebs_snapshot_action_value.0.additional_tag_value", "example-value"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_ebs_snapshot_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "create_fsx_backup"
+				create_fsx_backup_action_value {
+					region = "ap-northeast-1"
+					specify_file_system = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					generation = 10
+					backup_name = "example-backup"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "create_fsx_backup"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_fsx_backup_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_fsx_backup_action_value.0.specify_file_system", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_fsx_backup_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_fsx_backup_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_fsx_backup_action_value.0.generation", "10"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_fsx_backup_action_value.0.backup_name", "example-backup"),
 			},
 		},
-	})
-}
+		{
+			name:    "CreateEbsSnapshotAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_CreateImageAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigCreateImageAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "create_image"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_image_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_image_action_value.0.specify_image_instance", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_image_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_image_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_image_action_value.0.generation", "10"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_image_action_value.0.image_name", "test-image"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_image_action_value.0.description", "test image"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_image_action_value.0.reboot_instance", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_image_action_value.0.additional_tags.0.key", "key-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_image_action_value.0.additional_tags.0.value", "value-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_image_action_value.0.additional_tags.1.key", "key-2"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_image_action_value.0.additional_tags.1.value", "value-2"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_image_action_value.0.add_same_tag_to_snapshot", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_image_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_image_action_value.0.recreate_image_if_ami_status_failed", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "create_ebs_snapshot"
+				create_ebs_snapshot_action_value {
+					region = "ap-northeast-1"
+					specify_volume = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					generation = 10
+					description = "test db"
+					additional_tag_key = "example-key"
+					additional_tag_value = "example-value"
+					trace_status = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "create_ebs_snapshot"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_ebs_snapshot_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_ebs_snapshot_action_value.0.specify_volume", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_ebs_snapshot_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_ebs_snapshot_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_ebs_snapshot_action_value.0.generation", "10"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_ebs_snapshot_action_value.0.description", "test db"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_ebs_snapshot_action_value.0.additional_tag_key", "example-key"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_ebs_snapshot_action_value.0.additional_tag_value", "example-value"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_ebs_snapshot_action_value.0.trace_status", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "CreateImageAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_CreateRdsClusterSnapshotAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigCreateRdsClusterSnapshotAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "create_rds_cluster_snapshot"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_rds_cluster_snapshot_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_rds_cluster_snapshot_action_value.0.specify_rds_cluster", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_rds_cluster_snapshot_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_rds_cluster_snapshot_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_rds_cluster_snapshot_action_value.0.generation", "10"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_rds_cluster_snapshot_action_value.0.db_cluster_snapshot_identifier", "test"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_rds_cluster_snapshot_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "create_image"
+				create_image_action_value {
+					region = "ap-northeast-1"
+					specify_image_instance = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					generation = 10
+					image_name = "test-image"
+					description = "test image"
+					reboot_instance = "true"
+					additional_tags {
+						key = "key-1"
+						value = "value-1"
+					}
+					additional_tags {
+						key = "key-2"
+						value = "value-2"
+					}
+					add_same_tag_to_snapshot = "true"
+					trace_status = "true"
+					recreate_image_if_ami_status_failed	 = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "create_image"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.specify_image_instance", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.generation", "10"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.image_name", "test-image"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.description", "test image"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.reboot_instance", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.additional_tags.0.key", "key-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.additional_tags.0.value", "value-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.additional_tags.1.key", "key-2"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.additional_tags.1.value", "value-2"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.add_same_tag_to_snapshot", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.trace_status", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.recreate_image_if_ami_status_failed", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "CreateRdsClusterSnapshotAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_CreateRdsSnapshotAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigCreateRdsSnapshotAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "create_rds_snapshot"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_rds_snapshot_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_rds_snapshot_action_value.0.specify_rds_instance", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_rds_snapshot_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_rds_snapshot_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_rds_snapshot_action_value.0.generation", "10"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_rds_snapshot_action_value.0.rds_snapshot_id", "test"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_rds_snapshot_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "create_rds_cluster_snapshot"
+				create_rds_cluster_snapshot_action_value {
+					region = "ap-northeast-1"
+					specify_rds_cluster = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					generation = 10
+					db_cluster_snapshot_identifier = "test"
+					trace_status = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "create_rds_cluster_snapshot"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_rds_cluster_snapshot_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_rds_cluster_snapshot_action_value.0.specify_rds_cluster", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_rds_cluster_snapshot_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_rds_cluster_snapshot_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_rds_cluster_snapshot_action_value.0.generation", "10"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_rds_cluster_snapshot_action_value.0.db_cluster_snapshot_identifier", "test"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_rds_cluster_snapshot_action_value.0.trace_status", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "CreateRdsSnapshotAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_CreateRedshiftSnapshotAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigCreateRedshiftSnapshotAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "create_redshift_snapshot"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_redshift_snapshot_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_redshift_snapshot_action_value.0.specify_cluster", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_redshift_snapshot_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_redshift_snapshot_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_redshift_snapshot_action_value.0.generation", "10"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_redshift_snapshot_action_value.0.cluster_snapshot_identifier", "test"),
-					resource.TestCheckResourceAttr(
-						resourceName, "create_redshift_snapshot_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "create_rds_snapshot"
+				create_rds_snapshot_action_value {
+					region = "ap-northeast-1"
+					specify_rds_instance = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					generation = 10
+					rds_snapshot_id = "test"
+					trace_status = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "create_rds_snapshot"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_rds_snapshot_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_rds_snapshot_action_value.0.specify_rds_instance", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_rds_snapshot_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_rds_snapshot_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_rds_snapshot_action_value.0.generation", "10"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_rds_snapshot_action_value.0.rds_snapshot_id", "test"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_rds_snapshot_action_value.0.trace_status", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "CreateRedshiftSnapshotAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_DelayAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigDelayAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "delay"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delay_action_value.0.delay_minutes", "30"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "create_redshift_snapshot"
+				create_redshift_snapshot_action_value {
+					region = "ap-northeast-1"
+					specify_cluster = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					generation = 10
+					cluster_snapshot_identifier = "test"
+					trace_status = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "create_redshift_snapshot"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_redshift_snapshot_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_redshift_snapshot_action_value.0.specify_cluster", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_redshift_snapshot_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_redshift_snapshot_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_redshift_snapshot_action_value.0.generation", "10"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_redshift_snapshot_action_value.0.cluster_snapshot_identifier", "test"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_redshift_snapshot_action_value.0.trace_status", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "DelayAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
 
-func TestAccCloudAutomatorJob_DeleteClusterAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigDeleteClusterAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "delete_cluster"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_cluster_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_cluster_action_value.0.cluster_identifier", "test-cluster"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_cluster_action_value.0.final_cluster_snapshot_identifier", "test-snapshot"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_cluster_action_value.0.skip_final_cluster_snapshot", "false"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_cluster_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "delay"
+				delay_action_value {
+					delay_minutes = 30
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "delay"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delay_action_value.0.delay_minutes", "30"),
 			},
 		},
-	})
-}
+		{
+			name:    "DeleteClusterAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_DeleteRdsClusterAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigDeleteRdsClusterAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "delete_rds_cluster"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_rds_cluster_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_rds_cluster_action_value.0.specify_rds_cluster", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_rds_cluster_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_rds_cluster_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_rds_cluster_action_value.0.final_db_snapshot_identifier", "test-snapshot"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_rds_cluster_action_value.0.skip_final_snapshot", "false"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_rds_cluster_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "delete_cluster"
+				delete_cluster_action_value {
+					region = "ap-northeast-1"
+					cluster_identifier = "test-cluster"
+					final_cluster_snapshot_identifier = "test-snapshot"
+					skip_final_cluster_snapshot = "false"
+					trace_status = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "delete_cluster"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_cluster_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_cluster_action_value.0.cluster_identifier", "test-cluster"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_cluster_action_value.0.final_cluster_snapshot_identifier", "test-snapshot"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_cluster_action_value.0.skip_final_cluster_snapshot", "false"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_cluster_action_value.0.trace_status", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "DeleteRdsClusterAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_DeleteRdsInstanceAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigDeleteRdsInstanceAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "delete_rds_instance"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_rds_instance_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_rds_instance_action_value.0.specify_rds_instance", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_rds_instance_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_rds_instance_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_rds_instance_action_value.0.final_rds_snapshot_id", "test-snapshot"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_rds_instance_action_value.0.skip_final_rds_snapshot", "false"),
-					resource.TestCheckResourceAttr(
-						resourceName, "delete_rds_instance_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "delete_rds_cluster"
+				delete_rds_cluster_action_value {
+					region = "ap-northeast-1"
+					specify_rds_cluster = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					final_db_snapshot_identifier = "test-snapshot"
+					skip_final_snapshot = "false"
+					trace_status = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "delete_rds_cluster"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_rds_cluster_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_rds_cluster_action_value.0.specify_rds_cluster", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_rds_cluster_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_rds_cluster_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_rds_cluster_action_value.0.final_db_snapshot_identifier", "test-snapshot"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_rds_cluster_action_value.0.skip_final_snapshot", "false"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_rds_cluster_action_value.0.trace_status", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "DeleteRdsInstanceAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_DeregisterInstancesAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigDeregisterInstancesAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "deregister_instances"),
-					resource.TestCheckResourceAttr(
-						resourceName, "deregister_instances_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "deregister_instances_action_value.0.specify_instance", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "deregister_instances_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "deregister_instances_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "deregister_instances_action_value.0.load_balancer_name", "test"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "delete_rds_instance"
+				delete_rds_instance_action_value {
+					region = "ap-northeast-1"
+					specify_rds_instance = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					final_rds_snapshot_id = "test-snapshot"
+					skip_final_rds_snapshot = "false"
+					trace_status = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "delete_rds_instance"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_rds_instance_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_rds_instance_action_value.0.specify_rds_instance", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_rds_instance_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_rds_instance_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_rds_instance_action_value.0.final_rds_snapshot_id", "test-snapshot"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_rds_instance_action_value.0.skip_final_rds_snapshot", "false"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_rds_instance_action_value.0.trace_status", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "DeregisterInstancesAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_DeregisterTargetInstancesAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigDeregisterTargetInstancesAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "deregister_target_instances"),
-					resource.TestCheckResourceAttr(
-						resourceName, "deregister_target_instances_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "deregister_target_instances_action_value.0.target_group_arn", "arn:aws:elasticloadbalancing:ap-northeast-1:123456789012:targetgroup/t1/c8a1987f0402f55a"),
-					resource.TestCheckResourceAttr(
-						resourceName, "deregister_target_instances_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "deregister_target_instances_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "deregister_instances"
+				deregister_instances_action_value {
+					region = "ap-northeast-1"
+					specify_instance = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					load_balancer_name = "test"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "deregister_instances"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "deregister_instances_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "deregister_instances_action_value.0.specify_instance", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "deregister_instances_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "deregister_instances_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "deregister_instances_action_value.0.load_balancer_name", "test"),
 			},
 		},
-	})
-}
+		{
+			name:    "DeregisterTargetInstancesAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_DetachUserPolicyAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigDetachUserPolicyAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "detach_user_policy"),
-					resource.TestCheckResourceAttr(
-						resourceName, "detach_user_policy_action_value.0.user_name", "example-user"),
-					resource.TestCheckResourceAttr(
-						resourceName, "detach_user_policy_action_value.0.policy_arn", "arn:aws:iam::123456789012:policy/example-policy"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "deregister_target_instances"
+				deregister_target_instances_action_value {
+					region = "ap-northeast-1"
+					target_group_arn = "arn:aws:elasticloadbalancing:ap-northeast-1:123456789012:targetgroup/t1/c8a1987f0402f55a"
+					tag_key = "env"
+					tag_value = "develop"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "deregister_target_instances"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "deregister_target_instances_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "deregister_target_instances_action_value.0.target_group_arn", "arn:aws:elasticloadbalancing:ap-northeast-1:123456789012:targetgroup/t1/c8a1987f0402f55a"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "deregister_target_instances_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "deregister_target_instances_action_value.0.tag_value", "develop"),
 			},
 		},
-	})
-}
+		{
+			name:    "DetachUserPolicyAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_DynamodbStartBackupJobAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigDynamodbStartBackupJobAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "dynamodb_start_backup_job"),
-					resource.TestCheckResourceAttr(
-						resourceName, "dynamodb_start_backup_job_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "dynamodb_start_backup_job_action_value.0.dynamodb_table_name", "example-table"),
-					resource.TestCheckResourceAttr(
-						resourceName, "dynamodb_start_backup_job_action_value.0.lifecycle_delete_after_days", "7"),
-					resource.TestCheckResourceAttr(
-						resourceName, "dynamodb_start_backup_job_action_value.0.backup_vault_name", "example-vault"),
-					resource.TestCheckResourceAttr(
-						resourceName, "dynamodb_start_backup_job_action_value.0.iam_role_arn", "arn:aws:iam::123456789012:role/example-role"),
-					resource.TestCheckResourceAttr(
-						resourceName, "dynamodb_start_backup_job_action_value.0.additional_tags.0.key", "key1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "dynamodb_start_backup_job_action_value.0.additional_tags.0.value", "value1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "dynamodb_start_backup_job_action_value.0.additional_tags.1.key", "key2"),
-					resource.TestCheckResourceAttr(
-						resourceName, "dynamodb_start_backup_job_action_value.0.additional_tags.1.value", "value2"),
-					resource.TestCheckResourceAttr(
-						resourceName, "dynamodb_start_backup_job_action_value.0.additional_tags.2.key", "key3"),
-					resource.TestCheckResourceAttr(
-						resourceName, "dynamodb_start_backup_job_action_value.0.additional_tags.2.value", "value3"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "detach_user_policy"
+				detach_user_policy_action_value {
+					user_name = "example-user"
+					policy_arn = "arn:aws:iam::123456789012:policy/example-policy"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "detach_user_policy"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "detach_user_policy_action_value.0.user_name", "example-user"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "detach_user_policy_action_value.0.policy_arn", "arn:aws:iam::123456789012:policy/example-policy"),
 			},
 		},
-	})
-}
+		{
+			name:    "DynamodbStartBackupJobAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_GoogleComputeInsertMachineImageAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigGoogleComputeInsertMachineImageAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "google_compute_insert_machine_image"),
-					resource.TestCheckResourceAttr(
-						resourceName, "google_compute_insert_machine_image_action_value.0.region", "asia-northeast1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "google_compute_insert_machine_image_action_value.0.project_id", "example-project"),
-					resource.TestCheckResourceAttr(
-						resourceName, "google_compute_insert_machine_image_action_value.0.specify_vm_instance", "label"),
-					resource.TestCheckResourceAttr(
-						resourceName, "google_compute_insert_machine_image_action_value.0.vm_instance_label_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "google_compute_insert_machine_image_action_value.0.vm_instance_label_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "google_compute_insert_machine_image_action_value.0.machine_image_storage_location", "asia-northeast1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "google_compute_insert_machine_image_action_value.0.machine_image_basename", "example-daily"),
-					resource.TestCheckResourceAttr(
-						resourceName, "google_compute_insert_machine_image_action_value.0.generation", "10"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "dynamodb_start_backup_job"
+				dynamodb_start_backup_job_action_value {
+				  region                      = "ap-northeast-1"
+				  dynamodb_table_name         = "example-table"
+				  lifecycle_delete_after_days = 7
+				  backup_vault_name           = "example-vault"
+				  iam_role_arn                = "arn:aws:iam::123456789012:role/example-role"
+
+				  additional_tags {
+					key   = "key1"
+					value = "value1"
+				  }
+
+				  additional_tags {
+					key   = "key2"
+					value = "value2"
+				  }
+
+				  additional_tags {
+					key   = "key3"
+					value = "value3"
+				  }
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "dynamodb_start_backup_job"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "dynamodb_start_backup_job_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "dynamodb_start_backup_job_action_value.0.dynamodb_table_name", "example-table"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "dynamodb_start_backup_job_action_value.0.lifecycle_delete_after_days", "7"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "dynamodb_start_backup_job_action_value.0.backup_vault_name", "example-vault"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "dynamodb_start_backup_job_action_value.0.iam_role_arn", "arn:aws:iam::123456789012:role/example-role"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "dynamodb_start_backup_job_action_value.0.additional_tags.0.key", "key1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "dynamodb_start_backup_job_action_value.0.additional_tags.0.value", "value1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "dynamodb_start_backup_job_action_value.0.additional_tags.1.key", "key2"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "dynamodb_start_backup_job_action_value.0.additional_tags.1.value", "value2"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "dynamodb_start_backup_job_action_value.0.additional_tags.2.key", "key3"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "dynamodb_start_backup_job_action_value.0.additional_tags.2.value", "value3"),
 			},
 		},
-	})
-}
+		{
+			name:    "GoogleComputeInsertMachineImageAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				google_cloud_account_id = "%s"
 
-func TestAccCloudAutomatorJob_GoogleComputeStartVmInstancesAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigGoogleComputeStartVmInstancesAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "google_compute_start_vm_instances"),
-					resource.TestCheckResourceAttr(
-						resourceName, "google_compute_start_vm_instances_action_value.0.region", "asia-northeast1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "google_compute_start_vm_instances_action_value.0.project_id", "example-project"),
-					resource.TestCheckResourceAttr(
-						resourceName, "google_compute_start_vm_instances_action_value.0.specify_vm_instance", "label"),
-					resource.TestCheckResourceAttr(
-						resourceName, "google_compute_start_vm_instances_action_value.0.vm_instance_label_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "google_compute_start_vm_instances_action_value.0.vm_instance_label_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "google_compute_insert_machine_image"
+				google_compute_insert_machine_image_action_value {
+					region = "asia-northeast1"
+					project_id = "example-project"
+					specify_vm_instance = "label"
+					vm_instance_label_key = "env"
+					vm_instance_label_value = "develop"
+					machine_image_storage_location = "asia-northeast1"
+					machine_image_basename = "example-daily"
+					generation = 10
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestGoogleCloudAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "google_compute_insert_machine_image"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "google_compute_insert_machine_image_action_value.0.region", "asia-northeast1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "google_compute_insert_machine_image_action_value.0.project_id", "example-project"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "google_compute_insert_machine_image_action_value.0.specify_vm_instance", "label"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "google_compute_insert_machine_image_action_value.0.vm_instance_label_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "google_compute_insert_machine_image_action_value.0.vm_instance_label_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "google_compute_insert_machine_image_action_value.0.machine_image_storage_location", "asia-northeast1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "google_compute_insert_machine_image_action_value.0.machine_image_basename", "example-daily"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "google_compute_insert_machine_image_action_value.0.generation", "10"),
 			},
 		},
-	})
-}
+		{
+			name:    "GoogleComputeStartVmInstancesAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+			  name = "%s"
+			  group_id = "%s"
+			  google_cloud_account_id = "%s"
 
-func TestAccCloudAutomatorJob_GoogleComputeStopVmInstancesAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+			  rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigGoogleComputeStopVmInstancesAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "google_compute_stop_vm_instances"),
-					resource.TestCheckResourceAttr(
-						resourceName, "google_compute_stop_vm_instances_action_value.0.region", "asia-northeast1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "google_compute_stop_vm_instances_action_value.0.project_id", "example-project"),
-					resource.TestCheckResourceAttr(
-						resourceName, "google_compute_stop_vm_instances_action_value.0.specify_vm_instance", "label"),
-					resource.TestCheckResourceAttr(
-						resourceName, "google_compute_stop_vm_instances_action_value.0.vm_instance_label_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "google_compute_stop_vm_instances_action_value.0.vm_instance_label_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+			  action_type = "google_compute_start_vm_instances"
+			  google_compute_start_vm_instances_action_value {
+				region = "asia-northeast1"
+				project_id = "example-project"
+				specify_vm_instance = "label"
+					vm_instance_label_key = "env"
+				vm_instance_label_value = "develop"
+			  }
+			  completed_post_process_id = [%s]
+			  failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestGoogleCloudAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "google_compute_start_vm_instances"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "google_compute_start_vm_instances_action_value.0.region", "asia-northeast1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "google_compute_start_vm_instances_action_value.0.project_id", "example-project"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "google_compute_start_vm_instances_action_value.0.specify_vm_instance", "label"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "google_compute_start_vm_instances_action_value.0.vm_instance_label_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "google_compute_start_vm_instances_action_value.0.vm_instance_label_value", "develop"),
 			},
 		},
-	})
-}
+		{
+			name:    "GoogleComputeStopVmInstancesAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+			  name = "%s"
+			  group_id = "%s"
+			  google_cloud_account_id = "%s"
 
-func TestAccCloudAutomatorJob_InvokeLambdaFunctionAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+			  rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigInvokeLambdaFunctionAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "invoke_lambda_function"),
-					resource.TestCheckResourceAttr(
-						resourceName, "invoke_lambda_function_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "invoke_lambda_function_action_value.0.function_name", "test-function"),
-					resource.TestCheckResourceAttr(
-						resourceName, "invoke_lambda_function_action_value.0.payload", "{}"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+			  action_type = "google_compute_stop_vm_instances"
+			  google_compute_stop_vm_instances_action_value {
+				region = "asia-northeast1"
+				project_id = "example-project"
+				specify_vm_instance = "label"
+					vm_instance_label_key = "env"
+				vm_instance_label_value = "develop"
+			  }
+			  completed_post_process_id = [%s]
+			  failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestGoogleCloudAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "google_compute_stop_vm_instances"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "google_compute_stop_vm_instances_action_value.0.region", "asia-northeast1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "google_compute_stop_vm_instances_action_value.0.project_id", "example-project"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "google_compute_stop_vm_instances_action_value.0.specify_vm_instance", "label"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "google_compute_stop_vm_instances_action_value.0.vm_instance_label_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "google_compute_stop_vm_instances_action_value.0.vm_instance_label_value", "develop"),
 			},
 		},
-	})
-}
+		{
+			name:    "InvokeLambdaFunctionAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_RebootRdsInstancesAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigRebootRdsInstancesAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "reboot_rds_instances"),
-					resource.TestCheckResourceAttr(
-						resourceName, "reboot_rds_instances_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "reboot_rds_instances_action_value.0.specify_rds_instance", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "reboot_rds_instances_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "reboot_rds_instances_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "invoke_lambda_function"
+				invoke_lambda_function_action_value {
+					region = "ap-northeast-1"
+					function_name = "test-function"
+					payload = "{}"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "invoke_lambda_function"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "invoke_lambda_function_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "invoke_lambda_function_action_value.0.function_name", "test-function"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "invoke_lambda_function_action_value.0.payload", "{}"),
 			},
 		},
-	})
-}
+		{
+			name:    "RebootRdsInstancesAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_RebootWorkspacesAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigRebootWorkspacesAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "reboot_workspaces"),
-					resource.TestCheckResourceAttr(
-						resourceName, "reboot_workspaces_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "reboot_workspaces_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "reboot_workspaces_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "reboot_rds_instances"
+				reboot_rds_instances_action_value {
+					region = "ap-northeast-1"
+					specify_rds_instance = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "reboot_rds_instances"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "reboot_rds_instances_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "reboot_rds_instances_action_value.0.specify_rds_instance", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "reboot_rds_instances_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "reboot_rds_instances_action_value.0.tag_value", "develop"),
 			},
 		},
-	})
-}
+		{
+			name:    "RebootWorkspacesAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_RebuildWorkspacesAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigRebuildWorkspacesAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "rebuild_workspaces"),
-					resource.TestCheckResourceAttr(
-						resourceName, "rebuild_workspaces_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "rebuild_workspaces_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "rebuild_workspaces_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "reboot_workspaces"
+				reboot_workspaces_action_value {
+					region = "ap-northeast-1"
+					tag_key = "env"
+					tag_value = "develop"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "reboot_workspaces"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "reboot_workspaces_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "reboot_workspaces_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "reboot_workspaces_action_value.0.tag_value", "develop"),
 			},
 		},
-	})
-}
+		{
+			name:    "RebuildWorkspacesAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_RegisterInstancesAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigRegisterInstancesAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "register_instances"),
-					resource.TestCheckResourceAttr(
-						resourceName, "register_instances_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "register_instances_action_value.0.specify_instance", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "register_instances_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "register_instances_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "register_instances_action_value.0.load_balancer_name", "test"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "rebuild_workspaces"
+				rebuild_workspaces_action_value {
+					region = "ap-northeast-1"
+					tag_key = "env"
+					tag_value = "develop"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "rebuild_workspaces"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rebuild_workspaces_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rebuild_workspaces_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rebuild_workspaces_action_value.0.tag_value", "develop"),
 			},
 		},
-	})
-}
+		{
+			name:    "RegisterInstancesAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_RegisterTargetInstancesAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigRegisterTargetInstancesAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "register_target_instances"),
-					resource.TestCheckResourceAttr(
-						resourceName, "register_target_instances_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "register_target_instances_action_value.0.target_group_arn", "arn:aws:elasticloadbalancing:ap-northeast-1:123456789012:targetgroup/t1/c8a1987f0402f55a"),
-					resource.TestCheckResourceAttr(
-						resourceName, "register_target_instances_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "register_target_instances_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "register_instances"
+				register_instances_action_value {
+					region = "ap-northeast-1"
+					specify_instance = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					load_balancer_name = "test"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "register_instances"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "register_instances_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "register_instances_action_value.0.specify_instance", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "register_instances_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "register_instances_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "register_instances_action_value.0.load_balancer_name", "test"),
 			},
 		},
-	})
-}
+		{
+			name:    "RegisterTargetInstancesAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_RestoreFromClusterSnapshotAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigRestoreFromClusterSnapshotAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "restore_from_cluster_snapshot"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_from_cluster_snapshot_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_from_cluster_snapshot_action_value.0.cluster_identifier", "test-cluster"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_from_cluster_snapshot_action_value.0.snapshot_identifier", "test-snapshot"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_from_cluster_snapshot_action_value.0.cluster_parameter_group_name", "test-parameter-group"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_from_cluster_snapshot_action_value.0.cluster_subnet_group_name", "test-subnet-group"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_from_cluster_snapshot_action_value.0.port", "5432"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_from_cluster_snapshot_action_value.0.publicly_accessible", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_from_cluster_snapshot_action_value.0.availability_zone", "ap-northeast-1a"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_from_cluster_snapshot_action_value.0.vpc_security_group_ids.0", "sg-00000001"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_from_cluster_snapshot_action_value.0.vpc_security_group_ids.1", "sg-00000002"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_from_cluster_snapshot_action_value.0.allow_version_upgrade", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_from_cluster_snapshot_action_value.0.delete_cluster_snapshot", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "register_target_instances"
+				register_target_instances_action_value {
+					region = "ap-northeast-1"
+					target_group_arn = "arn:aws:elasticloadbalancing:ap-northeast-1:123456789012:targetgroup/t1/c8a1987f0402f55a"
+					tag_key = "env"
+					tag_value = "develop"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "register_target_instances"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "register_target_instances_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "register_target_instances_action_value.0.target_group_arn", "arn:aws:elasticloadbalancing:ap-northeast-1:123456789012:targetgroup/t1/c8a1987f0402f55a"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "register_target_instances_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "register_target_instances_action_value.0.tag_value", "develop"),
 			},
 		},
-	})
-}
+		{
+			name:    "RestoreFromClusterSnapshotAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_RestoreRdsClusterAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigRestoreRdsClusterAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "restore_rds_cluster"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_cluster_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_cluster_action_value.0.db_instance_identifier", "test-db-instance"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_cluster_action_value.0.db_cluster_identifier", "test-cluster"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_cluster_action_value.0.snapshot_identifier", "test-snapshot"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_cluster_action_value.0.engine", "aurora"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_cluster_action_value.0.engine_version", "1.2.3.4"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_cluster_action_value.0.db_instance_class", "db.t2.micro"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_cluster_action_value.0.db_subnet_group_name", "test-subnet-group"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_cluster_action_value.0.publicly_accessible", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_cluster_action_value.0.availability_zone", "ap-northeast-1a"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_cluster_action_value.0.vpc_security_group_ids.0", "sg-00000001"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_cluster_action_value.0.vpc_security_group_ids.1", "sg-00000002"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_cluster_action_value.0.port", "5432"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_cluster_action_value.0.db_cluster_parameter_group_name", "test-cluster-parameter-group"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_cluster_action_value.0.db_parameter_group_name", "test-parameter-group"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_cluster_action_value.0.option_group_name", "test-option-group"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_cluster_action_value.0.auto_minor_version_upgrade", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_cluster_action_value.0.delete_db_cluster_snapshot", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "restore_from_cluster_snapshot"
+				restore_from_cluster_snapshot_action_value {
+					region = "ap-northeast-1"
+					cluster_identifier = "test-cluster"
+					snapshot_identifier = "test-snapshot"
+					cluster_parameter_group_name = "test-parameter-group"
+					cluster_subnet_group_name = "test-subnet-group"
+					port = 5432
+					publicly_accessible = "true"
+					availability_zone = "ap-northeast-1a"
+					vpc_security_group_ids = [
+						"sg-00000001",
+						"sg-00000002"
+					]
+					allow_version_upgrade = "true"
+					delete_cluster_snapshot = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "restore_from_cluster_snapshot"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_from_cluster_snapshot_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_from_cluster_snapshot_action_value.0.cluster_identifier", "test-cluster"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_from_cluster_snapshot_action_value.0.snapshot_identifier", "test-snapshot"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_from_cluster_snapshot_action_value.0.cluster_parameter_group_name", "test-parameter-group"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_from_cluster_snapshot_action_value.0.cluster_subnet_group_name", "test-subnet-group"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_from_cluster_snapshot_action_value.0.port", "5432"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_from_cluster_snapshot_action_value.0.publicly_accessible", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_from_cluster_snapshot_action_value.0.availability_zone", "ap-northeast-1a"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_from_cluster_snapshot_action_value.0.vpc_security_group_ids.0", "sg-00000001"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_from_cluster_snapshot_action_value.0.vpc_security_group_ids.1", "sg-00000002"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_from_cluster_snapshot_action_value.0.allow_version_upgrade", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_from_cluster_snapshot_action_value.0.delete_cluster_snapshot", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "RestoreRdsClusterAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_RestoreRdsInstanceAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigRestoreRdsInstanceAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "restore_rds_instance"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.rds_instance_id", "test-db-instance"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.rds_snapshot_id", "test-snapshot"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.db_engine", "mysql"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.license_model", "license-included"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.db_instance_class", "db.t2.micro"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.multi_az", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.storage_type", "gp2"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.iops", "30000"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.vpc", "vpc-00000001"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.subnet_group", "test-subnet-group"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.publicly_accessible", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.vpc_security_group_ids.0", "sg-00000001"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.vpc_security_group_ids.1", "sg-00000002"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.db_name", "testdb"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.port", "5432"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.parameter_group", "test-parameter-group"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.option_group", "test-option-group"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.auto_minor_version_upgrade", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.delete_rds_snapshot", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.additional_tag_key", "test-key"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.additional_tag_value", "test-value"),
-					resource.TestCheckResourceAttr(
-						resourceName, "restore_rds_instance_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "restore_rds_cluster"
+				restore_rds_cluster_action_value {
+					region = "ap-northeast-1"
+					db_instance_identifier = "test-db-instance"
+					db_cluster_identifier = "test-cluster"
+					snapshot_identifier = "test-snapshot"
+					engine = "aurora"
+					engine_version = "1.2.3.4"
+					db_instance_class = "db.t2.micro"
+					db_subnet_group_name = "test-subnet-group"
+					publicly_accessible = "true"
+					availability_zone = "ap-northeast-1a"
+					vpc_security_group_ids = [
+						"sg-00000001",
+						"sg-00000002"
+					]
+					port = 5432
+					db_cluster_parameter_group_name = "test-cluster-parameter-group"
+					db_parameter_group_name = "test-parameter-group"
+					option_group_name = "test-option-group"
+					auto_minor_version_upgrade = "true"
+					delete_db_cluster_snapshot = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "restore_rds_cluster"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_cluster_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_cluster_action_value.0.db_instance_identifier", "test-db-instance"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_cluster_action_value.0.db_cluster_identifier", "test-cluster"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_cluster_action_value.0.snapshot_identifier", "test-snapshot"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_cluster_action_value.0.engine", "aurora"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_cluster_action_value.0.engine_version", "1.2.3.4"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_cluster_action_value.0.db_instance_class", "db.t2.micro"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_cluster_action_value.0.db_subnet_group_name", "test-subnet-group"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_cluster_action_value.0.publicly_accessible", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_cluster_action_value.0.availability_zone", "ap-northeast-1a"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_cluster_action_value.0.vpc_security_group_ids.0", "sg-00000001"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_cluster_action_value.0.vpc_security_group_ids.1", "sg-00000002"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_cluster_action_value.0.port", "5432"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_cluster_action_value.0.db_cluster_parameter_group_name", "test-cluster-parameter-group"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_cluster_action_value.0.db_parameter_group_name", "test-parameter-group"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_cluster_action_value.0.option_group_name", "test-option-group"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_cluster_action_value.0.auto_minor_version_upgrade", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_cluster_action_value.0.delete_db_cluster_snapshot", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "RestoreRdsInstanceAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_RevokeSecurityGroupIngressAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigRevokeSecurityGroupIngressAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "revoke_security_group_ingress"),
-					resource.TestCheckResourceAttr(
-						resourceName, "revoke_security_group_ingress_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "revoke_security_group_ingress_action_value.0.specify_security_group", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "revoke_security_group_ingress_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "revoke_security_group_ingress_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "revoke_security_group_ingress_action_value.0.ip_protocol", "tcp"),
-					resource.TestCheckResourceAttr(
-						resourceName, "revoke_security_group_ingress_action_value.0.to_port", "80"),
-					resource.TestCheckResourceAttr(
-						resourceName, "revoke_security_group_ingress_action_value.0.cidr_ip", "172.31.0.0/16"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "restore_rds_instance"
+				restore_rds_instance_action_value {
+					region = "ap-northeast-1"
+					rds_instance_id = "test-db-instance"
+					rds_snapshot_id = "test-snapshot"
+					db_engine = "mysql"
+					license_model = "license-included"
+					db_instance_class = "db.t2.micro"
+					multi_az = "true"
+					storage_type = "gp2"
+					iops = 30000
+					vpc = "vpc-00000001"
+					subnet_group = "test-subnet-group"
+					publicly_accessible = "true"
+					vpc_security_group_ids = [
+						"sg-00000001",
+						"sg-00000002"
+					]
+					db_name = "testdb"
+					port = 5432
+					parameter_group = "test-parameter-group"
+					option_group = "test-option-group"
+					auto_minor_version_upgrade = "true"
+					delete_rds_snapshot = "true"
+					additional_tag_key = "test-key"
+					additional_tag_value = "test-value"
+					trace_status = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "restore_rds_instance"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.rds_instance_id", "test-db-instance"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.rds_snapshot_id", "test-snapshot"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.db_engine", "mysql"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.license_model", "license-included"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.db_instance_class", "db.t2.micro"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.multi_az", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.storage_type", "gp2"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.iops", "30000"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.vpc", "vpc-00000001"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.subnet_group", "test-subnet-group"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.publicly_accessible", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.vpc_security_group_ids.0", "sg-00000001"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.vpc_security_group_ids.1", "sg-00000002"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.db_name", "testdb"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.port", "5432"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.parameter_group", "test-parameter-group"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.option_group", "test-option-group"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.auto_minor_version_upgrade", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.delete_rds_snapshot", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.additional_tag_key", "test-key"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.additional_tag_value", "test-value"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "restore_rds_instance_action_value.0.trace_status", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "RevokeSecurityGroupIngressAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_RunEcsTasksFargateAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigRunEcsTasksFargateAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "run_ecs_tasks_fargate"),
-					resource.TestCheckResourceAttr(
-						resourceName, "run_ecs_tasks_fargate_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_cluster", "example-cluster"),
-					resource.TestCheckResourceAttr(
-						resourceName, "run_ecs_tasks_fargate_action_value.0.platform_version", "LATEST"),
-					resource.TestCheckResourceAttr(
-						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_task_definition_family", "example-service"),
-					resource.TestCheckResourceAttr(
-						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_task_count", "1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "run_ecs_tasks_fargate_action_value.0.propagate_tags", "TASK_DEFINITION"),
-					resource.TestCheckResourceAttr(
-						resourceName, "run_ecs_tasks_fargate_action_value.0.enable_ecs_managed_tags", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_vpc", "vpc-00000001"),
-					resource.TestCheckResourceAttr(
-						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_subnets.#", "2"),
-					resource.TestCheckResourceAttr(
-						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_subnets.0", "subnet-00000001"),
-					resource.TestCheckResourceAttr(
-						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_subnets.1", "subnet-00000002"),
-					resource.TestCheckResourceAttr(
-						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_security_groups.#", "2"),
-					resource.TestCheckResourceAttr(
-						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_security_groups.0", "sg-00000001"),
-					resource.TestCheckResourceAttr(
-						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_security_groups.1", "sg-00000002"),
-					resource.TestCheckResourceAttr(
-						resourceName, "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_assign_public_ip", "ENABLED"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "revoke_security_group_ingress"
+				revoke_security_group_ingress_action_value {
+					region = "ap-northeast-1"
+					specify_security_group = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					ip_protocol = "tcp"
+					to_port = "80"
+					cidr_ip = "172.31.0.0/16"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "revoke_security_group_ingress"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "revoke_security_group_ingress_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "revoke_security_group_ingress_action_value.0.specify_security_group", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "revoke_security_group_ingress_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "revoke_security_group_ingress_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "revoke_security_group_ingress_action_value.0.ip_protocol", "tcp"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "revoke_security_group_ingress_action_value.0.to_port", "80"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "revoke_security_group_ingress_action_value.0.cidr_ip", "172.31.0.0/16"),
 			},
 		},
-	})
-}
+		{
+			name:    "RunEcsTasksFargateAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_S3StartBackupJobAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	region := acctest.TestRegion()
-	postProcessId := acctest.TestPostProcessId()
-	s3BucketName := acctest.TestS3BucketName()
-	iamRoleArn := fmt.Sprintf("arn:aws:iam::%s:role/service-role/AWSBackupDefaultServiceRole", acctest.TestAwsAccountNumber())
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigS3StartBackupJobAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "s3_start_backup_job"),
-					resource.TestCheckResourceAttr(
-						resourceName, "s3_start_backup_job_action_value.0.region", region),
-					resource.TestCheckResourceAttr(
-						resourceName, "s3_start_backup_job_action_value.0.bucket_name", s3BucketName),
-					resource.TestCheckResourceAttr(
-						resourceName, "s3_start_backup_job_action_value.0.backup_vault_name", "Default"),
-					resource.TestCheckResourceAttr(
-						resourceName, "s3_start_backup_job_action_value.0.lifecycle_delete_after_days", "7"),
-					resource.TestCheckResourceAttr(
-						resourceName, "s3_start_backup_job_action_value.0.iam_role_arn", iamRoleArn),
-					resource.TestCheckResourceAttr(
-						resourceName, "s3_start_backup_job_action_value.0.additional_tags.0.key", "key-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "s3_start_backup_job_action_value.0.additional_tags.0.value", "value-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "s3_start_backup_job_action_value.0.additional_tags.1.key", "key-2"),
-					resource.TestCheckResourceAttr(
-						resourceName, "s3_start_backup_job_action_value.0.additional_tags.1.value", "value-2"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "run_ecs_tasks_fargate"
+				run_ecs_tasks_fargate_action_value {
+					region = "ap-northeast-1"
+					ecs_cluster = "example-cluster"
+					platform_version = "LATEST"
+					ecs_task_definition_family = "example-service"
+					ecs_task_count = 1
+					propagate_tags = "TASK_DEFINITION"
+					enable_ecs_managed_tags = true
+					ecs_awsvpc_vpc = "vpc-00000001"
+					ecs_awsvpc_subnets = ["subnet-00000001", "subnet-00000002"]
+					ecs_awsvpc_security_groups = ["sg-00000001", "sg-00000002"]
+					ecs_awsvpc_assign_public_ip = "ENABLED"
+				}
+
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "run_ecs_tasks_fargate"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "run_ecs_tasks_fargate_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "run_ecs_tasks_fargate_action_value.0.ecs_cluster", "example-cluster"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "run_ecs_tasks_fargate_action_value.0.platform_version", "LATEST"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "run_ecs_tasks_fargate_action_value.0.ecs_task_definition_family", "example-service"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "run_ecs_tasks_fargate_action_value.0.ecs_task_count", "1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "run_ecs_tasks_fargate_action_value.0.propagate_tags", "TASK_DEFINITION"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "run_ecs_tasks_fargate_action_value.0.enable_ecs_managed_tags", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_vpc", "vpc-00000001"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_subnets.#", "2"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_subnets.0", "subnet-00000001"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_subnets.1", "subnet-00000002"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_security_groups.#", "2"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_security_groups.0", "sg-00000001"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_security_groups.1", "sg-00000002"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "run_ecs_tasks_fargate_action_value.0.ecs_awsvpc_assign_public_ip", "ENABLED"),
 			},
 		},
-	})
-}
+		{
+			name:    "S3StartBackupJobAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_SendCommandAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigSendCommandAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "send_command"),
-					resource.TestCheckResourceAttr(
-						resourceName, "send_command_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "send_command_action_value.0.specify_instance", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "send_command_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "send_command_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "send_command_action_value.0.command", "whoami"),
-					resource.TestCheckResourceAttr(
-						resourceName, "send_command_action_value.0.comment", "test"),
-					resource.TestCheckResourceAttr(
-						resourceName, "send_command_action_value.0.document_name", "AWS-RunShellScript"),
-					resource.TestCheckResourceAttr(
-						resourceName, "send_command_action_value.0.output_s3_bucket_name", "test-s3-bucket"),
-					resource.TestCheckResourceAttr(
-						resourceName, "send_command_action_value.0.output_s3_key_prefix", "test-key"),
-					resource.TestCheckResourceAttr(
-						resourceName, "send_command_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "send_command_action_value.0.timeout_seconds", "60"),
-					resource.TestCheckResourceAttr(
-						resourceName, "send_command_action_value.0.execution_timeout_seconds", "60"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "s3_start_backup_job"
+				s3_start_backup_job_action_value {
+					region = "%s"
+					bucket_name = "%s"
+					backup_vault_name = "Default"
+					lifecycle_delete_after_days = 7
+					iam_role_arn = "arn:aws:iam::%s:role/service-role/AWSBackupDefaultServiceRole"
+					additional_tags {
+						key = "key-1"
+						value= "value-1"
+					}
+					additional_tags {
+						key = "key-2"
+						value= "value-2"
+					}
+				}
+
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestRegion(), acctest.TestS3BucketName(), acctest.TestAwsAccountNumber(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], "cloudautomator_job.test"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "s3_start_backup_job"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "s3_start_backup_job_action_value.0.region", acctest.TestRegion()),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "s3_start_backup_job_action_value.0.bucket_name", acctest.TestS3BucketName()),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "s3_start_backup_job_action_value.0.backup_vault_name", "Default"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "s3_start_backup_job_action_value.0.lifecycle_delete_after_days", "7"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "s3_start_backup_job_action_value.0.iam_role_arn", fmt.Sprintf("arn:aws:iam::%s:role/service-role/AWSBackupDefaultServiceRole", acctest.TestAwsAccountNumber())),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "s3_start_backup_job_action_value.0.additional_tags.0.key", "key-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "s3_start_backup_job_action_value.0.additional_tags.0.value", "value-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "s3_start_backup_job_action_value.0.additional_tags.1.key", "key-2"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "s3_start_backup_job_action_value.0.additional_tags.1.value", "value-2"),
 			},
 		},
-	})
-}
+		{
+			name:    "SendCommandAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_StartInstancesAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigStartInstancesAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "start_instances"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_instances_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_instances_action_value.0.specify_instance", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_instances_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_instances_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_instances_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_instances_action_value.0.status_checks_enable", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "send_command"
+				send_command_action_value {
+					region = "ap-northeast-1"
+					specify_instance = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					command = "whoami"
+					comment = "test"
+					document_name = "AWS-RunShellScript"
+					output_s3_bucket_name = "test-s3-bucket"
+					output_s3_key_prefix = "test-key"
+					trace_status = "true"
+					timeout_seconds = "60"
+					execution_timeout_seconds = "60"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "send_command"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "send_command_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "send_command_action_value.0.specify_instance", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "send_command_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "send_command_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "send_command_action_value.0.command", "whoami"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "send_command_action_value.0.comment", "test"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "send_command_action_value.0.document_name", "AWS-RunShellScript"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "send_command_action_value.0.output_s3_bucket_name", "test-s3-bucket"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "send_command_action_value.0.output_s3_key_prefix", "test-key"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "send_command_action_value.0.trace_status", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "send_command_action_value.0.timeout_seconds", "60"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "send_command_action_value.0.execution_timeout_seconds", "60"),
 			},
 		},
-	})
-}
+		{
+			name:    "StartInstancesAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_StartRdsClustersAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigStartRdsClustersAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "start_rds_clusters"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_rds_clusters_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_rds_clusters_action_value.0.specify_rds_cluster", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_rds_clusters_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_rds_clusters_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_rds_clusters_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "start_instances"
+				start_instances_action_value {
+					region = "ap-northeast-1"
+					specify_instance = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					trace_status = "true"
+					status_checks_enable = "true"
+				}
+
+				allow_runtime_action_values = false
+
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "start_instances"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_instances_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_instances_action_value.0.specify_instance", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_instances_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_instances_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_instances_action_value.0.trace_status", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_instances_action_value.0.status_checks_enable", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "StartRdsClustersAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_StartRdsInstancesAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigStartRdsInstancesAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "start_rds_instances"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_rds_instances_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_rds_instances_action_value.0.specify_rds_instance", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_rds_instances_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_rds_instances_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_rds_instances_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "start_rds_clusters"
+				start_rds_clusters_action_value {
+					region = "ap-northeast-1"
+					specify_rds_cluster = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					trace_status = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "start_rds_clusters"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_rds_clusters_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_rds_clusters_action_value.0.specify_rds_cluster", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_rds_clusters_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_rds_clusters_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_rds_clusters_action_value.0.trace_status", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "StartRdsInstancesAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_StopEcsTasksAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigStopEcsTasksAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "stop_ecs_tasks"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_ecs_tasks_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_ecs_tasks_action_value.0.ecs_cluster", "example-cluster"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_ecs_tasks_action_value.0.specify_ecs_task", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_ecs_tasks_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_ecs_tasks_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "start_rds_instances"
+				start_rds_instances_action_value {
+					region = "ap-northeast-1"
+					specify_rds_instance = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					trace_status = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "start_rds_instances"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_rds_instances_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_rds_instances_action_value.0.specify_rds_instance", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_rds_instances_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_rds_instances_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_rds_instances_action_value.0.trace_status", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "StopEcsTasksAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_StopInstancesAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigStopInstancesAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "stop_instances"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_instances_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_instances_action_value.0.specify_instance", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_instances_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_instances_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_instances_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "stop_ecs_tasks"
+				stop_ecs_tasks_action_value {
+					region = "ap-northeast-1"
+					ecs_cluster = "example-cluster"
+					specify_ecs_task = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+				}
+
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "stop_ecs_tasks"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_ecs_tasks_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_ecs_tasks_action_value.0.ecs_cluster", "example-cluster"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_ecs_tasks_action_value.0.specify_ecs_task", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_ecs_tasks_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_ecs_tasks_action_value.0.tag_value", "develop"),
 			},
 		},
-	})
-}
+		{
+			name:    "StopInstancesAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_StopRdsClustersAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigStopRdsClustersAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "stop_rds_clusters"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_rds_clusters_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_rds_clusters_action_value.0.specify_rds_cluster", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_rds_clusters_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_rds_clusters_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_rds_clusters_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "stop_instances"
+				stop_instances_action_value {
+					region = "ap-northeast-1"
+					specify_instance = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					trace_status = "true"
+				}
+
+				allow_runtime_action_values = false
+
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "stop_instances"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_instances_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_instances_action_value.0.specify_instance", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_instances_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_instances_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_instances_action_value.0.trace_status", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "StopRdsClustersAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_StopRdsInstancesAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigStopRdsInstancesAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "stop_rds_instances"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_rds_instances_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_rds_instances_action_value.0.specify_rds_instance", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_rds_instances_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_rds_instances_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "stop_rds_instances_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "stop_rds_clusters"
+				stop_rds_clusters_action_value {
+					region = "ap-northeast-1"
+					specify_rds_cluster = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					trace_status = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "stop_rds_clusters"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_rds_clusters_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_rds_clusters_action_value.0.specify_rds_cluster", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_rds_clusters_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_rds_clusters_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_rds_clusters_action_value.0.trace_status", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "StopRdsInstancesAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_StartWorkspacesAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigStartWorkspacesAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "start_workspaces"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_workspaces_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_workspaces_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "start_workspaces_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "stop_rds_instances"
+				stop_rds_instances_action_value {
+					region = "ap-northeast-1"
+					specify_rds_instance = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					trace_status = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "stop_rds_instances"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_rds_instances_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_rds_instances_action_value.0.specify_rds_instance", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_rds_instances_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_rds_instances_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "stop_rds_instances_action_value.0.trace_status", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "StartWorkspacesAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_TerminateWorkspacesAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigTerminateWorkspacesAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "terminate_workspaces"),
-					resource.TestCheckResourceAttr(
-						resourceName, "terminate_workspaces_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "terminate_workspaces_action_value.0.specify_workspace", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "terminate_workspaces_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "terminate_workspaces_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "terminate_workspaces_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "start_workspaces"
+				start_workspaces_action_value {
+					region = "ap-northeast-1"
+					tag_key = "env"
+					tag_value = "develop"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "start_workspaces"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_workspaces_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_workspaces_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "start_workspaces_action_value.0.tag_value", "develop"),
 			},
 		},
-	})
-}
+		{
+			name:    "TerminateWorkspacesAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_UpdateRecordSetAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigUpdateRecordSetAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "update_record_set"),
-					resource.TestCheckResourceAttr(
-						resourceName, "update_record_set_action_value.0.zone_name", "test.local."),
-					resource.TestCheckResourceAttr(
-						resourceName, "update_record_set_action_value.0.record_set_name", "aaa.test.local."),
-					resource.TestCheckResourceAttr(
-						resourceName, "update_record_set_action_value.0.record_set_type", "A"),
-					resource.TestCheckResourceAttr(
-						resourceName, "update_record_set_action_value.0.record_set_value", "1.2.3.4"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "terminate_workspaces"
+				terminate_workspaces_action_value {
+					region = "ap-northeast-1"
+					specify_workspace = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					trace_status = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "terminate_workspaces"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "terminate_workspaces_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "terminate_workspaces_action_value.0.specify_workspace", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "terminate_workspaces_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "terminate_workspaces_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "terminate_workspaces_action_value.0.trace_status", "true"),
 			},
 		},
-	})
-}
+		{
+			name:    "UpdateRecordSetAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_WindowsUpdateAction(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigWindowsUpdateAction(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "windows_update"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_action_value.0.specify_instance", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_action_value.0.comment", "test"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_action_value.0.document_name", "AWS-InstallMissingWindowsUpdates"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_action_value.0.kb_article_ids", "KB1111111,KB2222222"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_action_value.0.output_s3_bucket_name", "test-s3-bucket"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_action_value.0.output_s3_key_prefix", "test-key"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_action_value.0.update_level", "All"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_action_value.0.timeout_seconds", "60"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "update_record_set"
+				update_record_set_action_value {
+					zone_name = "test.local."
+					record_set_name = "aaa.test.local."
+					record_set_type = "A"
+					record_set_value = "1.2.3.4"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "update_record_set"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "update_record_set_action_value.0.zone_name", "test.local."),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "update_record_set_action_value.0.record_set_name", "aaa.test.local."),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "update_record_set_action_value.0.record_set_type", "A"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "update_record_set_action_value.0.record_set_value", "1.2.3.4"),
 			},
 		},
-	})
-}
+		{
+			name:    "WindowsUpdateAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
 
-func TestAccCloudAutomatorJob_WindowsUpdateV2Action(t *testing.T) {
-	resourceName := "cloudautomator_job.test"
-	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
-	postProcessId := acctest.TestPostProcessId()
+				rule_type = "webhook"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorJobConfigWindowsUpdateV2Action(jobName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", jobName),
-					resource.TestCheckResourceAttr(
-						resourceName, "action_type", "windows_update_v2"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_v2_action_value.0.region", "ap-northeast-1"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_v2_action_value.0.specify_instance", "tag"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_v2_action_value.0.tag_key", "env"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_v2_action_value.0.tag_value", "develop"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_v2_action_value.0.allow_reboot", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_v2_action_value.0.severity_levels.0", "Critical"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_v2_action_value.0.severity_levels.1", "Low"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_v2_action_value.0.output_s3_bucket_name", "test-s3-bucket"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_v2_action_value.0.output_s3_key_prefix", "test-key"),
-					resource.TestCheckResourceAttr(
-						resourceName, "windows_update_v2_action_value.0.trace_status", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "completed_post_process_id.0", postProcessId),
-					resource.TestCheckResourceAttr(
-						resourceName, "failed_post_process_id.0", postProcessId),
-				),
+				action_type = "windows_update"
+				windows_update_action_value {
+					region = "ap-northeast-1"
+					specify_instance = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					comment = "test"
+					document_name = "AWS-InstallMissingWindowsUpdates"
+					kb_article_ids = "KB1111111,KB2222222"
+					output_s3_bucket_name = "test-s3-bucket"
+					output_s3_key_prefix = "test-key"
+					update_level = "All"
+					timeout_seconds = "60"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "windows_update"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_action_value.0.specify_instance", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_action_value.0.comment", "test"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_action_value.0.document_name", "AWS-InstallMissingWindowsUpdates"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_action_value.0.kb_article_ids", "KB1111111,KB2222222"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_action_value.0.output_s3_bucket_name", "test-s3-bucket"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_action_value.0.output_s3_key_prefix", "test-key"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_action_value.0.update_level", "All"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_action_value.0.timeout_seconds", "60"),
 			},
 		},
-	})
+		{
+			name:    "WindowsUpdateV2Action",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
+
+				rule_type = "webhook"
+
+				action_type = "windows_update_v2"
+				windows_update_v2_action_value {
+					region = "ap-northeast-1"
+					specify_instance = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					allow_reboot = "true"
+					specify_severity = "select"
+					severity_levels = [
+						"Critical",
+						"Low"
+					]
+					output_s3_bucket_name = "test-s3-bucket"
+					output_s3_key_prefix = "test-key"
+					trace_status = "true"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "windows_update_v2"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_v2_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_v2_action_value.0.specify_instance", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_v2_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_v2_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_v2_action_value.0.allow_reboot", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_v2_action_value.0.severity_levels.0", "Critical"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_v2_action_value.0.severity_levels.1", "Low"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_v2_action_value.0.output_s3_bucket_name", "test-s3-bucket"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_v2_action_value.0.output_s3_key_prefix", "test-key"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "windows_update_v2_action_value.0.trace_status", "true"),
+			},
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			resource.Test(t, resource.TestCase{
+				PreCheck:          func() { testAccPreCheck(t) },
+				ProviderFactories: testAccProviderFactories,
+				CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
+				Steps: []resource.TestStep{
+					{
+						Config: tc.configFunc(tc.jobName),
+						Check: resource.ComposeTestCheckFunc(
+							append([]resource.TestCheckFunc{
+								testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], "cloudautomator_job.test"),
+								resource.TestCheckResourceAttr("cloudautomator_job.test", "name", tc.jobName),
+								resource.TestCheckResourceAttr("cloudautomator_job.test", "completed_post_process_id.0", acctest.TestPostProcessId()),
+								resource.TestCheckResourceAttr("cloudautomator_job.test", "failed_post_process_id.0", acctest.TestPostProcessId()),
+							}, tc.checks...)...,
+						),
+					},
+				},
+			})
+		})
+	}
 }
 
-func testAccCheckCloudAutomatorJobExists(accProvider *schema.Provider, n string) resource.TestCheckFunc {
+func testAccCheckCloudAutomatorJobExists(_ *schema.Provider, n string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		c := testAccProvider.Meta().(*client.Client)
 
@@ -2577,1514 +2368,4 @@ func testAccCheckCloudAutomatorJobDestroy(s *terraform.State) error {
 	}
 
 	return nil
-}
-
-func testAccCheckCloudAutomatorJobConfigCronRuleOneTime(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-
-	rule_type = "cron"
-	cron_rule_value {
-		hour = "3"
-		minutes = "30"
-		schedule_type = "one_time"
-		one_time_schedule = "2099/01/01"
-		time_zone = "Tokyo"
-	}
-
-	action_type = "delay"
-	delay_action_value {
-		delay_minutes = 1
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigCronRuleWeekly(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-
-	rule_type = "cron"
-	cron_rule_value {
-		hour = "3"
-		minutes = "30"
-		schedule_type = "weekly"
-		weekly_schedule = [
-			"monday",
-			"sunday"
-		]
-		time_zone = "Tokyo"
-		dates_to_skip = ["2099-12-31"]
-		national_holiday_schedule = "true"
-	}
-
-	action_type = "delay"
-	delay_action_value {
-		delay_minutes = 1
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigCronRuleMonthlyDayOfWeek(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-
-	rule_type = "cron"
-	cron_rule_value {
-		hour = "3"
-		minutes = "30"
-		schedule_type = "monthly_day_of_week"
-		monthly_day_of_week_schedule {
-		  friday = [2]
-		}
-		time_zone = "Tokyo"
-		dates_to_skip = ["2099-12-31"]
-		national_holiday_schedule = "true"
-	}
-
-	action_type = "delay"
-	delay_action_value {
-		delay_minutes = 1
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigWebhookRule(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "delay"
-	delay_action_value {
-		delay_minutes = 1
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigScheduleRule(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-
-	rule_type = "schedule"
-	schedule_rule_value {
-		schedule = "2099-12-31 10:10:00\n2099-01-01 22:40:00"
-		time_zone = "Tokyo"
-	}
-
-	action_type = "delay"
-	delay_action_value {
-		delay_minutes = 1
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigSqsV2Rule(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-
-	rule_type = "sqs_v2"
-	sqs_v2_rule_value {
-		sqs_aws_account_id = "%s"
-		sqs_region = "%s"
-		queue = "%s"
-	}
-
-	action_type = "delay"
-	delay_action_value {
-		delay_minutes = 1
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestRegion(), acctest.TestSqsQueue(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigAmazonSnsRule(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-
-	rule_type = "amazon_sns"
-
-	action_type = "delay"
-	delay_action_value {
-		delay_minutes = 1
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigNoRule(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-
-	for_workflow = true
-
-	rule_type = "no_rule"
-
-	action_type = "delay"
-	delay_action_value {
-		delay_minutes = 1
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigAttachUserPolicyAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "attach_user_policy"
-	attach_user_policy_action_value {
-		user_name = "example-user"
-		policy_arn = "arn:aws:iam::123456789012:policy/example-policy"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigAuthorizeSecurityGroupIngressAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "authorize_security_group_ingress"
-	authorize_security_group_ingress_action_value {
-		region = "ap-northeast-1"
-		specify_security_group = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		ip_protocol = "tcp"
-		to_port = "80"
-		cidr_ip = "172.31.0.0/16"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigBulkDeleteImagesAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_ids = [%s]
-
-	rule_type = "webhook"
-
-	action_type = "bulk_delete_images"
-	bulk_delete_images_action_value {
-		exclude_by_tag_bulk_delete_images = true
-		exclude_by_tag_key_bulk_delete_images = "env"
-		exclude_by_tag_value_bulk_delete_images = "production"
-		specify_base_date = "before_days"
-		before_days = 365
-	}
-
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigBulkDeleteEBSSnapshotsAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_ids = [%s]
-
-	rule_type = "webhook"
-
-	action_type = "bulk_delete_ebs_snapshots"
-	bulk_delete_ebs_snapshots_action_value {
-		exclude_by_tag_bulk_delete_ebs_snapshots = true
-		exclude_by_tag_key_bulk_delete_ebs_snapshots = "env"
-		exclude_by_tag_value_bulk_delete_ebs_snapshots = "production"
-		specify_base_date = "before_days"
-		before_days = 365
-	}
-
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigBulkDeleteRdsClusterSnapshotsAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_ids = [%s]
-
-	rule_type = "webhook"
-
-	action_type = "bulk_delete_rds_cluster_snapshots"
-	bulk_delete_rds_cluster_snapshots_action_value {
-		exclude_by_tag_bulk_delete_rds_cluster_snapshots = true
-		exclude_by_tag_key_bulk_delete_rds_cluster_snapshots = "env"
-		exclude_by_tag_value_bulk_delete_rds_cluster_snapshots = "production"
-		specify_base_date = "before_days"
-		before_days = 365
-	}
-
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigBulkStopInstancesAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_ids = [%s]
-
-	rule_type = "webhook"
-
-	action_type = "bulk_stop_instances"
-	bulk_stop_instances_action_value {
-		exclude_by_tag = true
-		exclude_by_tag_key = "env"
-		exclude_by_tag_value = "production"
-	}
-
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigChangeRdsClusterInstanceClassAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "change_rds_cluster_instance_class"
-	change_rds_cluster_instance_class_action_value {
-		region = "ap-northeast-1"
-		specify_rds_instance = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		db_instance_class = "db.t3.micro"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigChangeRdsInstanceClassAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "change_rds_instance_class"
-	change_rds_instance_class_action_value {
-		region = "ap-northeast-1"
-		specify_rds_instance = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		db_instance_class = "db.t3.micro"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigChangeInstanceTypeAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "change_instance_type"
-	change_instance_type_action_value {
-		region = "ap-northeast-1"
-		specify_instance = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		instance_type = "t2.medium"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigCopyEbsSnapshotAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "copy_ebs_snapshot"
-	copy_ebs_snapshot_action_value {
-		source_region = "ap-northeast-1"
-		destination_region = "us-east-1"
-		specify_ebs_snapshot = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		trace_status = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigCopyImageAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "copy_image"
-	copy_image_action_value {
-		source_region = "ap-northeast-1"
-		destination_region = "us-east-1"
-		specify_image = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		trace_status = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigCopyRdsClusterSnapshotAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "copy_rds_cluster_snapshot"
-	copy_rds_cluster_snapshot_action_value {
-	  source_region = "ap-northeast-1"
-	  destination_region = "ap-southeast-1"
-	  specify_rds_cluster_snapshot = "rds_cluster_snapshot_id"
-	  rds_cluster_snapshot_id = "test-snapshot"
-	  kms_key_id = "1234abcd-12ab-34cd-56ef-1234567890ab"
-	}
-
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigCopyRdsSnapshotAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "copy_rds_snapshot"
-	copy_rds_snapshot_action_value {
-		source_region = "ap-northeast-1"
-		destination_region = "us-east-1"
-		specify_rds_snapshot = "identifier"
-		rds_snapshot_id = "test-db"
-		option_group_name = "default:mysql-5-6"
-		trace_status = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigCreateFSxBackupAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "create_fsx_backup"
-	create_fsx_backup_action_value {
-		region = "ap-northeast-1"
-		specify_file_system = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		generation = 10
-		backup_name = "example-backup"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigCreateEbsSnapshotAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "create_ebs_snapshot"
-	create_ebs_snapshot_action_value {
-		region = "ap-northeast-1"
-		specify_volume = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		generation = 10
-		description = "test db"
-		additional_tag_key = "example-key"
-		additional_tag_value = "example-value"
-		trace_status = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigCreateImageAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "create_image"
-	create_image_action_value {
-		region = "ap-northeast-1"
-		specify_image_instance = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		generation = 10
-		image_name = "test-image"
-		description = "test image"
-		reboot_instance = "true"
-		additional_tags {
-			key = "key-1"
-			value = "value-1"
-		}
-		additional_tags {
-			key = "key-2"
-			value = "value-2"
-		}
-		add_same_tag_to_snapshot = "true"
-		trace_status = "true"
-		recreate_image_if_ami_status_failed	 = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigCreateRdsClusterSnapshotAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "create_rds_cluster_snapshot"
-	create_rds_cluster_snapshot_action_value {
-		region = "ap-northeast-1"
-		specify_rds_cluster = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		generation = 10
-		db_cluster_snapshot_identifier = "test"
-		trace_status = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigCreateRdsSnapshotAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "create_rds_snapshot"
-	create_rds_snapshot_action_value {
-		region = "ap-northeast-1"
-		specify_rds_instance = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		generation = 10
-		rds_snapshot_id = "test"
-		trace_status = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigCreateRedshiftSnapshotAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "create_redshift_snapshot"
-	create_redshift_snapshot_action_value {
-		region = "ap-northeast-1"
-		specify_cluster = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		generation = 10
-		cluster_snapshot_identifier = "test"
-		trace_status = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigDelayAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "delay"
-	delay_action_value {
-		delay_minutes = 30
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigDeleteClusterAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "delete_cluster"
-	delete_cluster_action_value {
-		region = "ap-northeast-1"
-		cluster_identifier = "test-cluster"
-		final_cluster_snapshot_identifier = "test-snapshot"
-		skip_final_cluster_snapshot = "false"
-		trace_status = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigDeleteRdsClusterAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "delete_rds_cluster"
-	delete_rds_cluster_action_value {
-		region = "ap-northeast-1"
-		specify_rds_cluster = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		final_db_snapshot_identifier = "test-snapshot"
-		skip_final_snapshot = "false"
-		trace_status = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigDeleteRdsInstanceAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "delete_rds_instance"
-	delete_rds_instance_action_value {
-		region = "ap-northeast-1"
-		specify_rds_instance = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		final_rds_snapshot_id = "test-snapshot"
-		skip_final_rds_snapshot = "false"
-		trace_status = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigDeregisterInstancesAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "deregister_instances"
-	deregister_instances_action_value {
-		region = "ap-northeast-1"
-		specify_instance = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		load_balancer_name = "test"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigDeregisterTargetInstancesAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "deregister_target_instances"
-	deregister_target_instances_action_value {
-		region = "ap-northeast-1"
-		target_group_arn = "arn:aws:elasticloadbalancing:ap-northeast-1:123456789012:targetgroup/t1/c8a1987f0402f55a"
-		tag_key = "env"
-		tag_value = "develop"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigDetachUserPolicyAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "detach_user_policy"
-	detach_user_policy_action_value {
-		user_name = "example-user"
-		policy_arn = "arn:aws:iam::123456789012:policy/example-policy"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigDynamodbStartBackupJobAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "dynamodb_start_backup_job"
-	dynamodb_start_backup_job_action_value {
-	  region                      = "ap-northeast-1"
-	  dynamodb_table_name         = "example-table"
-	  lifecycle_delete_after_days = 7
-	  backup_vault_name           = "example-vault"
-	  iam_role_arn                = "arn:aws:iam::123456789012:role/example-role"
-
-	  additional_tags {
-		key   = "key1"
-		value = "value1"
-	  }
-
-	  additional_tags {
-		key   = "key2"
-		value = "value2"
-	  }
-
-	  additional_tags {
-		key   = "key3"
-		value = "value3"
-	  }
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigGoogleComputeInsertMachineImageAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	google_cloud_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "google_compute_insert_machine_image"
-	google_compute_insert_machine_image_action_value {
-		region = "asia-northeast1"
-		project_id = "example-project"
-		specify_vm_instance = "label"
-        vm_instance_label_key = "env"
-		vm_instance_label_value = "develop"
-		machine_image_storage_location = "asia-northeast1"
-		machine_image_basename = "example-daily"
-		generation = 10
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestGoogleCloudAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigGoogleComputeStartVmInstancesAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-  name = "%s"
-  group_id = "%s"
-  google_cloud_account_id = "%s"
-
-  rule_type = "webhook"
-
-  action_type = "google_compute_start_vm_instances"
-  google_compute_start_vm_instances_action_value {
-    region = "asia-northeast1"
-    project_id = "example-project"
-    specify_vm_instance = "label"
-        vm_instance_label_key = "env"
-    vm_instance_label_value = "develop"
-  }
-  completed_post_process_id = [%s]
-  failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestGoogleCloudAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigGoogleComputeStopVmInstancesAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-  name = "%s"
-  group_id = "%s"
-  google_cloud_account_id = "%s"
-
-  rule_type = "webhook"
-
-  action_type = "google_compute_stop_vm_instances"
-  google_compute_stop_vm_instances_action_value {
-    region = "asia-northeast1"
-    project_id = "example-project"
-    specify_vm_instance = "label"
-        vm_instance_label_key = "env"
-    vm_instance_label_value = "develop"
-  }
-  completed_post_process_id = [%s]
-  failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestGoogleCloudAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigRebootRdsInstancesAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "reboot_rds_instances"
-	reboot_rds_instances_action_value {
-		region = "ap-northeast-1"
-		specify_rds_instance = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigInvokeLambdaFunctionAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "invoke_lambda_function"
-	invoke_lambda_function_action_value {
-		region = "ap-northeast-1"
-		function_name = "test-function"
-		payload = "{}"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigRebootWorkspacesAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "reboot_workspaces"
-	reboot_workspaces_action_value {
-		region = "ap-northeast-1"
-		tag_key = "env"
-		tag_value = "develop"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigRebuildWorkspacesAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "rebuild_workspaces"
-	rebuild_workspaces_action_value {
-		region = "ap-northeast-1"
-		tag_key = "env"
-		tag_value = "develop"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigRegisterInstancesAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "register_instances"
-	register_instances_action_value {
-		region = "ap-northeast-1"
-		specify_instance = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		load_balancer_name = "test"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigRegisterTargetInstancesAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "register_target_instances"
-	register_target_instances_action_value {
-		region = "ap-northeast-1"
-		target_group_arn = "arn:aws:elasticloadbalancing:ap-northeast-1:123456789012:targetgroup/t1/c8a1987f0402f55a"
-		tag_key = "env"
-		tag_value = "develop"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigRestoreFromClusterSnapshotAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "restore_from_cluster_snapshot"
-	restore_from_cluster_snapshot_action_value {
-		region = "ap-northeast-1"
-		cluster_identifier = "test-cluster"
-		snapshot_identifier = "test-snapshot"
-		cluster_parameter_group_name = "test-parameter-group"
-		cluster_subnet_group_name = "test-subnet-group"
-		port = 5432
-		publicly_accessible = "true"
-		availability_zone = "ap-northeast-1a"
-		vpc_security_group_ids = [
-			"sg-00000001",
-			"sg-00000002"
-		]
-		allow_version_upgrade = "true"
-		delete_cluster_snapshot = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigRestoreRdsClusterAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "restore_rds_cluster"
-	restore_rds_cluster_action_value {
-		region = "ap-northeast-1"
-		db_instance_identifier = "test-db-instance"
-		db_cluster_identifier = "test-cluster"
-		snapshot_identifier = "test-snapshot"
-		engine = "aurora"
-		engine_version = "1.2.3.4"
-		db_instance_class = "db.t2.micro"
-		db_subnet_group_name = "test-subnet-group"
-		publicly_accessible = "true"
-		availability_zone = "ap-northeast-1a"
-		vpc_security_group_ids = [
-			"sg-00000001",
-			"sg-00000002"
-		]
-		port = 5432
-		db_cluster_parameter_group_name = "test-cluster-parameter-group"
-		db_parameter_group_name = "test-parameter-group"
-		option_group_name = "test-option-group"
-		auto_minor_version_upgrade = "true"
-		delete_db_cluster_snapshot = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigRestoreRdsInstanceAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "restore_rds_instance"
-	restore_rds_instance_action_value {
-		region = "ap-northeast-1"
-		rds_instance_id = "test-db-instance"
-		rds_snapshot_id = "test-snapshot"
-		db_engine = "mysql"
-		license_model = "license-included"
-		db_instance_class = "db.t2.micro"
-		multi_az = "true"
-		storage_type = "gp2"
-		iops = 30000
-		vpc = "vpc-00000001"
-		subnet_group = "test-subnet-group"
-		publicly_accessible = "true"
-		vpc_security_group_ids = [
-			"sg-00000001",
-			"sg-00000002"
-		]
-		db_name = "testdb"
-		port = 5432
-		parameter_group = "test-parameter-group"
-		option_group = "test-option-group"
-		auto_minor_version_upgrade = "true"
-		delete_rds_snapshot = "true"
-		additional_tag_key = "test-key"
-		additional_tag_value = "test-value"
-		trace_status = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigRevokeSecurityGroupIngressAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "revoke_security_group_ingress"
-	revoke_security_group_ingress_action_value {
-		region = "ap-northeast-1"
-		specify_security_group = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		ip_protocol = "tcp"
-		to_port = "80"
-		cidr_ip = "172.31.0.0/16"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigRunEcsTasksFargateAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "run_ecs_tasks_fargate"
-	run_ecs_tasks_fargate_action_value {
-		region = "ap-northeast-1"
-		ecs_cluster = "example-cluster"
-		platform_version = "LATEST"
-		ecs_task_definition_family = "example-service"
-		ecs_task_count = 1
-		propagate_tags = "TASK_DEFINITION"
-		enable_ecs_managed_tags = true
-		ecs_awsvpc_vpc = "vpc-00000001"
-		ecs_awsvpc_subnets = ["subnet-00000001", "subnet-00000002"]
-		ecs_awsvpc_security_groups = ["sg-00000001", "sg-00000002"]
-		ecs_awsvpc_assign_public_ip = "ENABLED"
-	}
-
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigSendCommandAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "send_command"
-	send_command_action_value {
-		region = "ap-northeast-1"
-		specify_instance = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		command = "whoami"
-		comment = "test"
-		document_name = "AWS-RunShellScript"
-		output_s3_bucket_name = "test-s3-bucket"
-		output_s3_key_prefix = "test-key"
-		trace_status = "true"
-		timeout_seconds = "60"
-		execution_timeout_seconds = "60"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigS3StartBackupJobAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "s3_start_backup_job"
-	s3_start_backup_job_action_value {
-		region = "%s"
-		bucket_name = "%s"
-		backup_vault_name = "Default"
-		lifecycle_delete_after_days = 7
-		iam_role_arn = "arn:aws:iam::%s:role/service-role/AWSBackupDefaultServiceRole"
-		additional_tags {
-			key = "key-1"
-			value= "value-1"
-		}
-		additional_tags {
-			key = "key-2"
-			value= "value-2"
-		}
-	}
-
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestRegion(), acctest.TestS3BucketName(), acctest.TestAwsAccountNumber(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigStartInstancesAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "start_instances"
-	start_instances_action_value {
-		region = "ap-northeast-1"
-		specify_instance = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		trace_status = "true"
-		status_checks_enable = "true"
-	}
-
-	allow_runtime_action_values = false
-
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigStartRdsClustersAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "start_rds_clusters"
-	start_rds_clusters_action_value {
-		region = "ap-northeast-1"
-		specify_rds_cluster = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		trace_status = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigStartRdsInstancesAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "start_rds_instances"
-	start_rds_instances_action_value {
-		region = "ap-northeast-1"
-		specify_rds_instance = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		trace_status = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigStopEcsTasksAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "stop_ecs_tasks"
-	stop_ecs_tasks_action_value {
-		region = "ap-northeast-1"
-		ecs_cluster = "example-cluster"
-		specify_ecs_task = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-	}
-
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigStopInstancesAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "stop_instances"
-	stop_instances_action_value {
-		region = "ap-northeast-1"
-		specify_instance = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		trace_status = "true"
-	}
-
-	allow_runtime_action_values = false
-
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigStopRdsClustersAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "stop_rds_clusters"
-	stop_rds_clusters_action_value {
-		region = "ap-northeast-1"
-		specify_rds_cluster = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		trace_status = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigStopRdsInstancesAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "stop_rds_instances"
-	stop_rds_instances_action_value {
-		region = "ap-northeast-1"
-		specify_rds_instance = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		trace_status = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigStartWorkspacesAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "start_workspaces"
-	start_workspaces_action_value {
-		region = "ap-northeast-1"
-		tag_key = "env"
-		tag_value = "develop"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigTerminateWorkspacesAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "terminate_workspaces"
-	terminate_workspaces_action_value {
-		region = "ap-northeast-1"
-		specify_workspace = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		trace_status = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigUpdateRecordSetAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "update_record_set"
-	update_record_set_action_value {
-		zone_name = "test.local."
-		record_set_name = "aaa.test.local."
-		record_set_type = "A"
-		record_set_value = "1.2.3.4"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigWindowsUpdateAction(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "windows_update"
-	windows_update_action_value {
-		region = "ap-northeast-1"
-		specify_instance = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		comment = "test"
-		document_name = "AWS-InstallMissingWindowsUpdates"
-		kb_article_ids = "KB1111111,KB2222222"
-		output_s3_bucket_name = "test-s3-bucket"
-		output_s3_key_prefix = "test-key"
-		update_level = "All"
-		timeout_seconds = "60"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
-}
-
-func testAccCheckCloudAutomatorJobConfigWindowsUpdateV2Action(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_job" "test" {
-	name = "%s"
-	group_id = "%s"
-	aws_account_id = "%s"
-
-	rule_type = "webhook"
-
-	action_type = "windows_update_v2"
-	windows_update_v2_action_value {
-		region = "ap-northeast-1"
-		specify_instance = "tag"
-		tag_key = "env"
-		tag_value = "develop"
-		allow_reboot = "true"
-		specify_severity = "select"
-		severity_levels = [
-			"Critical",
-			"Low"
-		]
-		output_s3_bucket_name = "test-s3-bucket"
-		output_s3_key_prefix = "test-key"
-		trace_status = "true"
-	}
-	completed_post_process_id = [%s]
-	failed_post_process_id = [%s]
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 }
