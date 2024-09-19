@@ -508,9 +508,8 @@ func resourceJob() *schema.Resource {
 			"amazon_sns_rule_value": {
 				Description: "SNS trigger value",
 				Type:        schema.TypeList,
-				Computed:    true,
-				MaxItems:    1,
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: schemes.AmazonSnsRuleValueFields(),
 				},
@@ -608,9 +607,8 @@ func resourceJob() *schema.Resource {
 			"webhook_rule_value": {
 				Description: "HTTP trigger value",
 				Type:        schema.TypeList,
-				Computed:    true,
-				MaxItems:    1,
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: schemes.WebhookRuleValueFields(),
 				},

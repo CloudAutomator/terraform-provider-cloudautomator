@@ -32,3 +32,5 @@ data "cloudautomator_job_workflow" "example-job-workflow" {
 - `following_job_ids` (List of Number) Following Job IDs
 - `group_id` (Number) Group ID
 - `name` (String) Name
+
+

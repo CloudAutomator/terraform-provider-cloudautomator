@@ -125,12 +125,12 @@ func AmazonSnsRuleValueFields() map[string]*schema.Schema {
 		"amazon_sns_token": {
 			Description: "Amazon SNS token",
 			Type:        schema.TypeString,
-			Required:    true,
+			Computed:    true,
 		},
 		"time_zone": {
 			Description: "Time zone",
 			Type:        schema.TypeString,
-			Optional:    true,
+			Computed:    true,
 		},
 	}
 }
