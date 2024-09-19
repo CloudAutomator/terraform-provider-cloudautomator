@@ -15,7 +15,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.21"
+          go-version: "1.23.1"
         id: go
 
       - name: Check out code into the Go module directory
@@ -38,7 +38,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.21"
+          go-version: "1.23.1"
         id: go
 
       - name: Check out code into the Go module directory
@@ -53,17 +53,40 @@ jobs:
 
   terraform-fmt:
     name: terraform-fmt
-    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
         uses: actions/checkout@v4.1.7
       - uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.2.*"
+          terraform_version: "1.9.6"
           terraform_wrapper: false
       - name: terraform-fmt
         run: |
           terraform fmt -recursive examples
           git diff --exit-code examples \
           || (echo 'Seems like you forgot run `terraform fmt -recursive examples`.' && exit 1)
+
+  docs-validation:
+    name: docs-validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23.1"
+        id: go
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.6"
+          terraform_wrapper: false
+      - name: Check out code
+        uses: actions/checkout@v4.1.7
+      - name: Get dependencies
+        run: |
+          go mod download
+      - name: Add Go bin to PATH
+        run: echo "$HOME/go/bin" >> $GITHUB_PATH
+      - name: Run test-docs
+        run: make test-docs

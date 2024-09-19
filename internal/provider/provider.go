@@ -10,8 +10,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-const ApiEndpoint = "CLOUD_AUTOMATOR_API_ENDPOINT"
-const ApiKeyEnvName = "CLOUD_AUTOMATOR_API_KEY"
+const apiEndpointEnvName = "CLOUD_AUTOMATOR_API_ENDPOINT"
+const apiKeyEnvName = "CLOUD_AUTOMATOR_API_KEY"
 
 func Provider() *schema.Provider {
 	return &schema.Provider{
@@ -19,14 +19,14 @@ func Provider() *schema.Provider {
 			"api_endpoint": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc(ApiEndpoint, client.ApiEndpoint),
-				Description: fmt.Sprintf("Cloud Automator API Endpoint. This can also be set via the %s environment variable.", ApiEndpoint),
+				DefaultFunc: schema.EnvDefaultFunc(apiEndpointEnvName, nil),
+				Description: fmt.Sprintf("Cloud Automator API Endpoint. This can also be set via the %s environment variable.", apiEndpointEnvName),
 			},
 			"api_key": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc(ApiKeyEnvName, nil),
-				Description: fmt.Sprintf("Cloud Automator API key. This can also be set via the %s environment variable.", ApiKeyEnvName),
+				DefaultFunc: schema.EnvDefaultFunc(apiKeyEnvName, nil),
+				Description: fmt.Sprintf("Cloud Automator API key. This can also be set via the %s environment variable.", apiKeyEnvName),
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
@@ -54,8 +54,16 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	}
 
 	apiEndPoint := d.Get("api_endpoint").(string)
-	clientOption := client.WithAPIEndpoint(apiEndPoint)
 
-	c, _ = client.New(apiKey, clientOption)
+	var clientOptions []client.ClientOptions
+	if apiEndPoint != "" {
+		clientOptions = append(clientOptions, client.WithAPIEndpoint(apiEndPoint))
+	}
+
+	c, err := client.New(apiKey, clientOptions...)
+	if err != nil {
+		return nil, diag.FromErr(fmt.Errorf("failed to create Cloud Automator client: %w", err))
+	}
+
 	return c, diags
 }

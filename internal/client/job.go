@@ -84,33 +84,6 @@ type JobAttributes struct {
 	UpdatedAt                time.Time              `json:"updated_at"`
 }
 
-var TRACE_STATUS_NOT_SUPPORTED_ACTION_TYPES = []string{
-	"attach_user_policy",
-	"detach_user_policy",
-	"authorize_security_group_ingress",
-	"copy_rds_cluster_snapshot",
-	"create_fsx_backup",
-	"stop_ecs_tasks",
-	"change_instance_type",
-	"deregister_instances",
-	"deregister_target_instances",
-	"describe_metadata",
-	"dynamodb_start_backup_job",
-	"google_compute_insert_machine_image",
-	"google_compute_stop_vm_instances",
-	"google_compute_start_vm_instances",
-	"invoke_lambda_function",
-	"reboot_rds_instances",
-	"register_instances",
-	"register_target_instances",
-	"restore_from_cluster_snapshot",
-	"restore_rds_cluster",
-	"revoke_security_group_ingress",
-	"start_workspaces",
-	"update_record_set",
-	"windows_update",
-}
-
 func (c *Client) GetJob(jobId string) (*Job, *http.Response, error) {
 	requestUrl := fmt.Sprintf("jobs/%s", jobId)
 
@@ -262,18 +235,7 @@ func readActionValues(rawJob *JobAttributes) map[string]interface{} {
 		delete(rawJob.ActionValue, "specify_workspace")
 	}
 
-	deleteTraceStatus(rawJob)
-
 	return rawJob.ActionValue
-}
-
-// リソースの終了ステータスチェックに対応していないアクションでも、
-// レスポンスのJSONに trace_status が含まれる場合があるため
-// Unmarshal のタイミングで削除します。
-func deleteTraceStatus(rawJob *JobAttributes) {
-	if utils.Contains(TRACE_STATUS_NOT_SUPPORTED_ACTION_TYPES, rawJob.ActionType) {
-		delete(rawJob.ActionValue, "trace_status")
-	}
 }
 
 func (j *Job) UnmarshalJSON(data []byte) error {

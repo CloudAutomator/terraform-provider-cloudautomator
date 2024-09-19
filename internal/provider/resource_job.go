@@ -508,9 +508,8 @@ func resourceJob() *schema.Resource {
 			"amazon_sns_rule_value": {
 				Description: "SNS trigger value",
 				Type:        schema.TypeList,
-				Computed:    true,
-				MaxItems:    1,
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: schemes.AmazonSnsRuleValueFields(),
 				},
@@ -608,9 +607,8 @@ func resourceJob() *schema.Resource {
 			"webhook_rule_value": {
 				Description: "HTTP trigger value",
 				Type:        schema.TypeList,
-				Computed:    true,
-				MaxItems:    1,
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: schemes.WebhookRuleValueFields(),
 				},
@@ -777,7 +775,7 @@ func resourceJobRead(ctx context.Context, d *schema.ResourceData, m interface{})
 	d.Set("action_type", job.ActionType)
 	if job.ActionType != "no_action" {
 		actionValueBlockName := fmt.Sprintf("%s_action_value", job.ActionType)
-		if err := d.Set(actionValueBlockName, []interface{}{job.ActionValue}); err != nil {
+		if err := d.Set(actionValueBlockName, []interface{}{buildActionValue(d, job)}); err != nil {
 			return append(diags, diag.FromErr(err)...)
 		}
 	}
@@ -926,6 +924,13 @@ func buildActionValue(d *schema.ResourceData, job *client.Job) map[string]interf
 	}
 
 	actionValue := v.([]interface{})[0].(map[string]interface{})
+
+	schemaFields := resourceJob().Schema[blockName].Elem.(*schema.Resource).Schema
+	for key := range job.ActionValue {
+		if _, exists := schemaFields[key]; !exists {
+			delete(actionValue, key)
+		}
+	}
 
 	switch job.ActionType {
 	case "dynamodb_start_backup_job":

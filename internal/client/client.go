@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"runtime"
@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	ApiEndpoint       = "https://manager.cloudautomator.com/api/v1/"
+	apiEndpoint       = "https://manager.cloudautomator.com/api/v1/"
 	defaultRetryCount = 5
 	delayBaseSecond   = 1
 	retryLimit        = 5
@@ -24,20 +24,20 @@ const (
 var (
 	userAgentHeader = fmt.Sprintf(
 		"go-http/v%s (%s/%s; +go-cloudautomator-client)",
-		Version,
+		version,
 		runtime.GOOS,
 		runtime.GOARCH,
 	)
 
-	BadRequest          = errors.New("Bad Request")
-	Unauthorized        = errors.New("Unauthorized")
-	Forbidden           = errors.New("Forbidden")
-	NotFound            = errors.New("Not Found")
-	MethodNotAllowed    = errors.New("Method Not Allowed")
-	InternalServerError = errors.New("Internal Server Error")
-	BadGateway          = errors.New("Bad Gateway")
-	ServiceUnavailable  = errors.New("Service Unavailable")
-	GatewayTimeout      = errors.New("Gateway Timeout")
+	errBadRequest          = errors.New("bad request")
+	errUnauthorized        = errors.New("unauthorized")
+	errForbidden           = errors.New("forbidden")
+	errNotFound            = errors.New("not found")
+	errMethodNotAllowed    = errors.New("method not allowed")
+	errInternalServerError = errors.New("internal server error")
+	errBadGateway          = errors.New("bad gateway")
+	errServiceUnavailable  = errors.New("service unavailable")
+	errGatewayTimeout      = errors.New("gateway timeout")
 )
 
 type Client struct {
@@ -48,7 +48,7 @@ type Client struct {
 }
 
 func New(authToken string, options ...ClientOptions) (*Client, error) {
-	parsedApiEndpoint, _ := url.Parse(ApiEndpoint)
+	parsedApiEndpoint, _ := url.Parse(apiEndpoint)
 
 	c := &Client{
 		httpClient:      &http.Client{Timeout: timeoutSeconds},
@@ -91,13 +91,13 @@ func (c *Client) requestWithRetry(method, urlStr string, requestBody, v interfac
 	buf := new(bytes.Buffer)
 	if requestBody != nil {
 		if err := json.NewEncoder(buf).Encode(requestBody); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to encode request body: %w", err)
 		}
 	}
 
 	req, err := http.NewRequest(method, u.String(), buf)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.token))
 	req.Header.Set("Content-Type", "application/json")
@@ -105,21 +105,20 @@ func (c *Client) requestWithRetry(method, urlStr string, requestBody, v interfac
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
+	defer resp.Body.Close()
 
 	if v == nil {
 		return resp, nil
 	}
 
-	defer resp.Body.Close()
-
-	responseBody, err := ioutil.ReadAll(resp.Body)
+	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return resp, errors.New("read data failed")
+		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
-	if c.shouldRetry(c.getError(resp), retry) {
+	if c.shouldRetry(c.parseHTTPError(resp), retry) {
 		time.Sleep(c.delayTime(retry))
 		return c.requestWithRetry(method, urlStr, requestBody, v, retry-1)
 	}
@@ -134,9 +133,8 @@ func (c *Client) requestWithRetry(method, urlStr string, requestBody, v interfac
 
 	if err := json.Unmarshal(responseBody, v); err != nil {
 		return resp, fmt.Errorf(
-			"request failed. StatusCode=%d Reason=%s",
+			"failed to unmarshal response. StatusCode=%d Reason=unmarshal failed",
 			resp.StatusCode,
-			"unmarshal failed",
 		)
 	}
 	time.Sleep(time.Second * 1)
@@ -150,36 +148,36 @@ func (c *Client) shouldRetry(err error, retry int) bool {
 	}
 
 	switch err {
-	case InternalServerError,
-		BadGateway,
-		ServiceUnavailable,
-		GatewayTimeout:
+	case errInternalServerError,
+		errBadGateway,
+		errServiceUnavailable,
+		errGatewayTimeout:
 		return true
 	default:
 		return false
 	}
 }
 
-func (c *Client) getError(res *http.Response) error {
+func (c *Client) parseHTTPError(res *http.Response) error {
 	switch res.StatusCode {
 	case http.StatusBadRequest: // 400
-		return BadRequest
+		return errBadRequest
 	case http.StatusUnauthorized: // 401
-		return Unauthorized
+		return errUnauthorized
 	case http.StatusForbidden: // 403
-		return Forbidden
+		return errForbidden
 	case http.StatusNotFound: // 404
-		return NotFound
+		return errNotFound
 	case http.StatusMethodNotAllowed: // 405
-		return MethodNotAllowed
+		return errMethodNotAllowed
 	case http.StatusInternalServerError: // 500
-		return InternalServerError
+		return errInternalServerError
 	case http.StatusBadGateway: // 502
-		return BadGateway
+		return errBadGateway
 	case http.StatusServiceUnavailable: // 503
-		return ServiceUnavailable
+		return errServiceUnavailable
 	case http.StatusGatewayTimeout: // 504
-		return GatewayTimeout
+		return errGatewayTimeout
 	default:
 		return nil
 	}

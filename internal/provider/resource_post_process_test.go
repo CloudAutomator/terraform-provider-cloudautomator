@@ -13,185 +13,170 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccCloudAutomatorPostProcess_Email(t *testing.T) {
-	resourceName := "cloudautomator_post_process.test"
-	postProcessName := fmt.Sprintf("tf-testacc-post-process-%s", utils.RandomString(12))
+func TestAccCloudAutomatorPostProcess(t *testing.T) {
+	cases := []struct {
+		name            string
+		postProcessName string
+		configFunc      func(string) string
+		checks          []resource.TestCheckFunc
+	}{
+		{
+			name:            "Email",
+			postProcessName: fmt.Sprintf("tf-testacc-post-process-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+				resource "cloudautomator_post_process" "test" {
+					name = "%s"
+					group_id = "%s"
+					service = "email"
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorPostProcessDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorPostProcessConfigEmail(postProcessName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorPostProcessExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", postProcessName),
-					resource.TestCheckResourceAttr(
-						resourceName, "service", "email"),
-					resource.TestCheckResourceAttr(
-						resourceName, "group_id", acctest.TestGroupId()),
-					resource.TestCheckResourceAttr(
-						resourceName, "shared_by_group", "false"),
-					resource.TestCheckResourceAttr(
-						resourceName, "email_parameters.0.email_recipient", "test@example.com"),
-				),
+					email_parameters {
+						email_recipient = "test@example.com"
+					}
+				}`, resourceName, acctest.TestGroupId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "service", "email"),
+				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "email_parameters.0.email_recipient", "test@example.com"),
 			},
 		},
-	})
-}
+		{
+			name:            "Slack",
+			postProcessName: fmt.Sprintf("tf-testacc-post-process-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+				resource "cloudautomator_post_process" "test" {
+					name = "%s"
+					group_id = "%s"
+					service = "slack"
 
-func TestAccCloudAutomatorPostProcess_Slack(t *testing.T) {
-	resourceName := "cloudautomator_post_process.test"
-	postProcessName := fmt.Sprintf("tf-testacc-post-process-%s", utils.RandomString(12))
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorPostProcessDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorPostProcessConfigSlack(postProcessName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorPostProcessExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", postProcessName),
-					resource.TestCheckResourceAttr(
-						resourceName, "service", "slack"),
-					resource.TestCheckResourceAttr(
-						resourceName, "group_id", acctest.TestGroupId()),
-					resource.TestCheckResourceAttr(
-						resourceName, "shared_by_group", "false"),
-					resource.TestCheckResourceAttr(
-						resourceName, "slack_parameters.0.slack_channel_name", "ca-test-info-notification"),
-					resource.TestCheckResourceAttr(
-						resourceName, "slack_parameters.0.slack_language", "ja"),
-					resource.TestCheckResourceAttr(
-						resourceName, "slack_parameters.0.slack_time_zone", "Tokyo"),
-				),
+					slack_parameters {
+						slack_channel_name = "ca-test-info-notification"
+						slack_language = "ja"
+						slack_time_zone = "Tokyo"
+					}
+				}`, resourceName, acctest.TestGroupId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "service", "slack"),
+				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "slack_parameters.0.slack_channel_name", "ca-test-info-notification"),
+				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "slack_parameters.0.slack_language", "ja"),
+				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "slack_parameters.0.slack_time_zone", "Tokyo"),
 			},
 		},
-	})
-}
+		{
+			name:            "Sqs",
+			postProcessName: fmt.Sprintf("tf-testacc-post-process-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+				resource "cloudautomator_post_process" "test" {
+					name = "%s"
+					group_id = "%s"
+					service = "sqs"
 
-func TestAccCloudAutomatorPostProcess_Sqs(t *testing.T) {
-	resourceName := "cloudautomator_post_process.test"
-	postProcessName := fmt.Sprintf("tf-testacc-post-process-%s", utils.RandomString(12))
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorPostProcessDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorPostProcessConfigSqs(postProcessName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorPostProcessExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", postProcessName),
-					resource.TestCheckResourceAttr(
-						resourceName, "service", "sqs"),
-					resource.TestCheckResourceAttr(
-						resourceName, "shared_by_group", "false"),
-					resource.TestCheckResourceAttr(
-						resourceName, "sqs_parameters.0.sqs_aws_account_id", acctest.TestAwsAccountId()),
-					resource.TestCheckResourceAttr(
-						resourceName, "sqs_parameters.0.sqs_queue", "test-queue"),
-					resource.TestCheckResourceAttr(
-						resourceName, "sqs_parameters.0.sqs_region", "ap-northeast-1"),
-				),
+					sqs_parameters {
+						sqs_aws_account_id = "%s"
+						sqs_queue = "test-queue"
+						sqs_region = "ap-northeast-1"
+					}
+				}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "service", "sqs"),
+				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "sqs_parameters.0.sqs_queue", "test-queue"),
+				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "sqs_parameters.0.sqs_region", "ap-northeast-1"),
 			},
 		},
-	})
-}
+		{
+			name:            "Webhook",
+			postProcessName: fmt.Sprintf("tf-testacc-post-process-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+				resource "cloudautomator_post_process" "test" {
+					name = "%s"
+					group_id = "%s"
+					service = "webhook"
 
-func TestAccCloudAutomatorPostProcess_Webhook(t *testing.T) {
-	resourceName := "cloudautomator_post_process.test"
-	postProcessName := fmt.Sprintf("tf-testacc-post-process-%s", utils.RandomString(12))
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorPostProcessDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorPostProcessConfigWebhook(postProcessName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorPostProcessExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", postProcessName),
-					resource.TestCheckResourceAttr(
-						resourceName, "service", "webhook"),
-					resource.TestCheckResourceAttr(
-						resourceName, "shared_by_group", "false"),
-					resource.TestCheckResourceAttr(
-						resourceName, "webhook_parameters.0.webhook_authorization_header", "test-authorization-header"),
-					resource.TestCheckResourceAttr(
-						resourceName, "webhook_parameters.0.webhook_url", "http://example.com"),
-				),
+					webhook_parameters {
+						webhook_authorization_header = "test-authorization-header"
+						webhook_url = "http://example.com"
+					}
+				}`, resourceName, acctest.TestGroupId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "service", "webhook"),
+				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "webhook_parameters.0.webhook_authorization_header", "test-authorization-header"),
+				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "webhook_parameters.0.webhook_url", "http://example.com"),
 			},
 		},
-	})
-}
+		{
+			name:            "SharedByGroupTrue",
+			postProcessName: fmt.Sprintf("tf-testacc-post-process-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+				resource "cloudautomator_post_process" "test" {
+					name = "%s"
+					service = "email"
+					shared_by_group = true
 
-func TestAccCloudAutomatorPostProcess_SharedByGroupTrue(t *testing.T) {
-	resourceName := "cloudautomator_post_process.test"
-	postProcessName := fmt.Sprintf("tf-testacc-post-process-%s", utils.RandomString(12))
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorPostProcessDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorPostProcessConfigSharedByGroupTrue(postProcessName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorPostProcessExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", postProcessName),
-					resource.TestCheckResourceAttr(
-						resourceName, "service", "email"),
-					resource.TestCheckResourceAttr(
-						resourceName, "shared_by_group", "true"),
-					resource.TestCheckResourceAttr(
-						resourceName, "email_parameters.0.email_recipient", "test@example.com"),
-				),
+					email_parameters {
+						email_recipient = "test@example.com"
+					}
+				}`, resourceName)
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "service", "email"),
+				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "shared_by_group", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "email_parameters.0.email_recipient", "test@example.com"),
 			},
 		},
-	})
-}
+		{
+			name:            "SharedByGroupFalse",
+			postProcessName: fmt.Sprintf("tf-testacc-post-process-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+				resource "cloudautomator_post_process" "test" {
+					name = "%s"
+					group_id = "%s"
+					service = "email"
+					shared_by_group = false
 
-func TestAccCloudAutomatorPostProcess_SharedByGroupFalse(t *testing.T) {
-	resourceName := "cloudautomator_post_process.test"
-	postProcessName := fmt.Sprintf("tf-testacc-post-process-%s", utils.RandomString(12))
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckCloudAutomatorPostProcessDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccCheckCloudAutomatorPostProcessConfigSharedByGroupFalse(postProcessName),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckCloudAutomatorPostProcessExists(testAccProviders["cloudautomator"], resourceName),
-					resource.TestCheckResourceAttr(
-						resourceName, "name", postProcessName),
-					resource.TestCheckResourceAttr(
-						resourceName, "service", "email"),
-					resource.TestCheckResourceAttr(
-						resourceName, "group_id", acctest.TestGroupId()),
-					resource.TestCheckResourceAttr(
-						resourceName, "shared_by_group", "false"),
-					resource.TestCheckResourceAttr(
-						resourceName, "email_parameters.0.email_recipient", "test@example.com"),
-				),
+					email_parameters {
+						email_recipient = "test@example.com"
+					}
+				}`, resourceName, acctest.TestGroupId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "service", "email"),
+				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "shared_by_group", "false"),
+				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "email_parameters.0.email_recipient", "test@example.com"),
 			},
 		},
-	})
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			resource.Test(t, resource.TestCase{
+				PreCheck:          func() { testAccPreCheck(t) },
+				ProviderFactories: testAccProviderFactories,
+				CheckDestroy:      testAccCheckCloudAutomatorPostProcessDestroy,
+				Steps: []resource.TestStep{
+					{
+						Config: tc.configFunc(tc.postProcessName),
+						Check: resource.ComposeTestCheckFunc(
+							append([]resource.TestCheckFunc{
+								testAccCheckCloudAutomatorPostProcessExists(testAccProviders["cloudautomator"], "cloudautomator_post_process.test"),
+								resource.TestCheckResourceAttr("cloudautomator_post_process.test", "name", tc.postProcessName),
+							}, tc.checks...)...,
+						),
+					},
+				},
+			})
+		})
+	}
 }
 
-func testAccCheckCloudAutomatorPostProcessExists(accProvider *schema.Provider, n string) resource.TestCheckFunc {
+func testAccCheckCloudAutomatorPostProcessExists(_ *schema.Provider, n string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		c := testAccProvider.Meta().(*client.Client)
 
@@ -235,87 +220,4 @@ func testAccCheckCloudAutomatorPostProcessDestroy(s *terraform.State) error {
 	}
 
 	return nil
-}
-
-func testAccCheckCloudAutomatorPostProcessConfigEmail(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_post_process" "test" {
-	name = "%s"
-	group_id = "%s"
-	service = "email"
-
-	email_parameters {
-		email_recipient = "test@example.com"
-	}
-}`, rName, acctest.TestGroupId())
-}
-
-func testAccCheckCloudAutomatorPostProcessConfigSlack(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_post_process" "test" {
-	name = "%s"
-	group_id = "%s"
-	service = "slack"
-
-	slack_parameters {
-		slack_channel_name = "ca-test-info-notification"
-		slack_language = "ja"
-		slack_time_zone = "Tokyo"
-	}
-}`, rName, acctest.TestGroupId())
-}
-
-func testAccCheckCloudAutomatorPostProcessConfigSqs(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_post_process" "test" {
-	name = "%s"
-	group_id = "%s"
-	service = "sqs"
-
-	sqs_parameters {
-		sqs_aws_account_id = "%s"
-		sqs_queue = "test-queue"
-		sqs_region = "ap-northeast-1"
-	}
-}`, rName, acctest.TestGroupId(), acctest.TestAwsAccountId())
-}
-
-func testAccCheckCloudAutomatorPostProcessConfigWebhook(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_post_process" "test" {
-	name = "%s"
-	group_id = "%s"
-	service = "webhook"
-
-	webhook_parameters {
-		webhook_authorization_header = "test-authorization-header"
-		webhook_url = "http://example.com"
-	}
-}`, rName, acctest.TestGroupId())
-}
-
-func testAccCheckCloudAutomatorPostProcessConfigSharedByGroupTrue(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_post_process" "test" {
-	name = "%s"
-	service = "email"
-	shared_by_group = true
-
-	email_parameters {
-		email_recipient = "test@example.com"
-	}
-}`, rName)
-}
-
-func testAccCheckCloudAutomatorPostProcessConfigSharedByGroupFalse(rName string) string {
-	return fmt.Sprintf(`
-resource "cloudautomator_post_process" "test" {
-	name = "%s"
-	group_id = "%s"
-	service = "email"
-
-	email_parameters {
-		email_recipient = "test@example.com"
-	}
-}`, rName, acctest.TestGroupId())
 }

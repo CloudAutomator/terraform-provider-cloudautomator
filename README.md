@@ -5,10 +5,6 @@ Terraform provider for Cloud Automator
 - Cloud Automator: https://cloudautomator.com
 - Cloud Automator API Document: https://api.cloudautomator.com
 
-## Requirements
-
--	[Terraform](https://www.terraform.io/downloads.html) >= 0.12.x
-
 ## Building The Provider
 
 Clone repository to: $GOPATH/src/github.com/CloudAutomator/terraform-provider-cloudautomator
