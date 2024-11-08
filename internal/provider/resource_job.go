@@ -933,7 +933,7 @@ func buildActionValue(d *schema.ResourceData, job *client.Job) map[string]interf
 	}
 
 	switch job.ActionType {
-	case "dynamodb_start_backup_job":
+	case "dynamodb_start_backup_job", "s3_start_backup_job":
 		if actionValue["lifecycle_delete_after_days"] == 0 {
 			actionValue["lifecycle_delete_after_days"] = nil
 		}
