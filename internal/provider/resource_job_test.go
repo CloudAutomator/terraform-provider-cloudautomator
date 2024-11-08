@@ -1226,6 +1226,64 @@ func TestAccCloudAutomatorJob(t *testing.T) {
 			},
 		},
 		{
+			name:    "Ec2StartBackupJobAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
+
+				rule_type = "webhook"
+
+				action_type = "ec2_start_backup_job"
+				ec2_start_backup_job_action_value {
+				  region                      = "ap-northeast-1"
+				  specify_instance            = "tag"
+          tag_key                     = "env"
+          tag_value                   = "production"
+				  lifecycle_delete_after_days = 7
+				  backup_vault_name           = "example-vault"
+				  iam_role_arn                = "arn:aws:iam::123456789012:role/example-role"
+
+				  additional_tags {
+					key   = "key1"
+					value = "value1"
+				  }
+
+				  additional_tags {
+					key   = "key2"
+					value = "value2"
+				  }
+
+				  additional_tags {
+					key   = "key3"
+					value = "value3"
+				  }
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "ec2_start_backup_job"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "ec2_start_backup_job_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "ec2_start_backup_job_action_value.0.specify_instance", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "ec2_start_backup_job_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "ec2_start_backup_job_action_value.0.tag_value", "production"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "ec2_start_backup_job_action_value.0.lifecycle_delete_after_days", "7"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "ec2_start_backup_job_action_value.0.backup_vault_name", "example-vault"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "ec2_start_backup_job_action_value.0.iam_role_arn", "arn:aws:iam::123456789012:role/example-role"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "ec2_start_backup_job_action_value.0.additional_tags.0.key", "key1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "ec2_start_backup_job_action_value.0.additional_tags.0.value", "value1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "ec2_start_backup_job_action_value.0.additional_tags.1.key", "key2"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "ec2_start_backup_job_action_value.0.additional_tags.1.value", "value2"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "ec2_start_backup_job_action_value.0.additional_tags.2.key", "key3"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "ec2_start_backup_job_action_value.0.additional_tags.2.value", "value3"),
+			},
+		},
+		{
 			name:    "GoogleComputeInsertMachineImageAction",
 			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
 			configFunc: func(resourceName string) string {

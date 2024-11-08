@@ -339,6 +339,15 @@ func dataSourceJob() *schema.Resource {
 					Schema: aws.DynamodbStartBackupJobActionValueFields(),
 				},
 			},
+			"ec2_start_backup_job_action_value": {
+				Description: "\"EC2: Backup instance\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.Ec2StartBackupJobActionValueFields(),
+				},
+			},
 			"google_compute_insert_machine_image_action_value": {
 				Description: "\"Compute Engine: create machine image\" action value",
 				Type:        schema.TypeList,
