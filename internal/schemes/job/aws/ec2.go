@@ -418,6 +418,68 @@ func CreateImageActionValueFields() map[string]*schema.Schema {
 	}
 }
 
+func Ec2StartBackupJobActionValueFields() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"region": {
+			Description: "AWS Region",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"specify_instance": {
+			Description: "How to identify target resources",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"instance_id": {
+			Description: "Target EC2 instance ID",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"tag_key": {
+			Description: "Tag key used to identify the target resource",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"tag_value": {
+			Description: "Tag value used to identify the target resource",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"backup_vault_name": {
+			Description: "Backup Vault Name",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"lifecycle_delete_after_days": {
+			Description: "Number of days to hold recovery point",
+			Type:        schema.TypeInt,
+			Optional:    true,
+		},
+		"iam_role_arn": {
+			Description: "IAM Role ARN",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"additional_tags": {
+			Description: "Array of tags to be added to the recovery point",
+			Type:        schema.TypeSet,
+			Optional:    true,
+			Elem: &schema.Resource{
+				Schema: map[string]*schema.Schema{
+					"key": {
+						Type:     schema.TypeString,
+						Required: true,
+					},
+					"value": {
+						Type:     schema.TypeString,
+						Required: true,
+					},
+				},
+			},
+		},
+	}
+}
+
 func RevokeSecurityGroupIngressActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {

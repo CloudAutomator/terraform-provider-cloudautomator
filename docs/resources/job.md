@@ -113,6 +113,7 @@ resource "cloudautomator_job" "example-create-image-job" {
 - `detach_user_policy_action_value` (Block List, Max: 1) "IAM: Detach Policy to IAM User" action value (see [below for nested schema](#nestedblock--detach_user_policy_action_value))
 - `disaster_recovery_action_value` (Block List, Max: 1) "DR: Launch EC2 instance" action value (see [below for nested schema](#nestedblock--disaster_recovery_action_value))
 - `dynamodb_start_backup_job_action_value` (Block List, Max: 1) "DynamoDB: Backup table" action value (see [below for nested schema](#nestedblock--dynamodb_start_backup_job_action_value))
+- `ec2_start_backup_job_action_value` (Block List, Max: 1) "EC2: Backup instance" action value (see [below for nested schema](#nestedblock--ec2_start_backup_job_action_value))
 - `effective_date` (String) Effective date
 - `expiration_date` (String) Expiration date
 - `failed_post_process_id` (List of Number) Array containing post-process IDs to be executed if the job fails
@@ -654,6 +655,34 @@ Optional:
 
 <a id="nestedblock--dynamodb_start_backup_job_action_value--additional_tags"></a>
 ### Nested Schema for `dynamodb_start_backup_job_action_value.additional_tags`
+
+Required:
+
+- `key` (String)
+- `value` (String)
+
+
+
+<a id="nestedblock--ec2_start_backup_job_action_value"></a>
+### Nested Schema for `ec2_start_backup_job_action_value`
+
+Required:
+
+- `backup_vault_name` (String) Backup Vault Name
+- `iam_role_arn` (String) IAM Role ARN
+- `region` (String) AWS Region
+- `specify_instance` (String) How to identify target resources
+
+Optional:
+
+- `additional_tags` (Block Set) Array of tags to be added to the recovery point (see [below for nested schema](#nestedblock--ec2_start_backup_job_action_value--additional_tags))
+- `instance_id` (String) Target EC2 instance ID
+- `lifecycle_delete_after_days` (Number) Number of days to hold recovery point
+- `tag_key` (String) Tag key used to identify the target resource
+- `tag_value` (String) Tag value used to identify the target resource
+
+<a id="nestedblock--ec2_start_backup_job_action_value--additional_tags"></a>
+### Nested Schema for `ec2_start_backup_job_action_value.additional_tags`
 
 Required:
 
