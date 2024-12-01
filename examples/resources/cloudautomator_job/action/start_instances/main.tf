@@ -6,9 +6,9 @@
 #     - ap-northeast-1
 #   - タグで対象のEC2インスタンスを指定
 #     - タグのキー
-#     - env
-#   - タグの値
-#     - production
+#       - env
+#     - タグの値
+#       - production
 # ----------------------------------------------------------
 
 resource "cloudautomator_job" "example-start-instances-job" {

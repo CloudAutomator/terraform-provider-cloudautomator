@@ -6,9 +6,9 @@
 #     - ap-northeast-1
 #   - タグで対象のセキュリティグループを指定
 #     - タグのキー
-#     - env
-#   - タグの値
-#     - production
+#       - env
+#     - タグの値
+#       - production
 #   - 通信プロトコル
 #     - TCP
 #   - ポート番号
