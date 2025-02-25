@@ -115,6 +115,7 @@ resource "cloudautomator_job" "example-create-image-job" {
 - `dynamodb_start_backup_job_action_value` (Block List, Max: 1) "DynamoDB: Backup table" action value (see [below for nested schema](#nestedblock--dynamodb_start_backup_job_action_value))
 - `ec2_start_backup_job_action_value` (Block List, Max: 1) "EC2: Backup instance" action value (see [below for nested schema](#nestedblock--ec2_start_backup_job_action_value))
 - `effective_date` (String) Effective date
+- `efs_start_backup_job_action_value` (Block List, Max: 1) "EFS: Backup file system" action value (see [below for nested schema](#nestedblock--efs_start_backup_job_action_value))
 - `expiration_date` (String) Expiration date
 - `failed_post_process_id` (List of Number) Array containing post-process IDs to be executed if the job fails
 - `for_workflow` (Boolean) for workflow
@@ -683,6 +684,31 @@ Optional:
 
 <a id="nestedblock--ec2_start_backup_job_action_value--additional_tags"></a>
 ### Nested Schema for `ec2_start_backup_job_action_value.additional_tags`
+
+Required:
+
+- `key` (String)
+- `value` (String)
+
+
+
+<a id="nestedblock--efs_start_backup_job_action_value"></a>
+### Nested Schema for `efs_start_backup_job_action_value`
+
+Required:
+
+- `backup_vault_name` (String) Backup Vault Name
+- `file_system_id` (String) Target file system ID
+- `iam_role_arn` (String) IAM Role ARN
+- `region` (String) AWS Region
+
+Optional:
+
+- `additional_tags` (Block Set) Array of tags to be added to the recovery point (see [below for nested schema](#nestedblock--efs_start_backup_job_action_value--additional_tags))
+- `lifecycle_delete_after_days` (Number) Number of days to hold recovery point
+
+<a id="nestedblock--efs_start_backup_job_action_value--additional_tags"></a>
+### Nested Schema for `efs_start_backup_job_action_value.additional_tags`
 
 Required:
 

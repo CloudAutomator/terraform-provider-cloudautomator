@@ -370,6 +370,15 @@ func resourceJob() *schema.Resource {
 					Schema: aws.Ec2StartBackupJobActionValueFields(),
 				},
 			},
+			"efs_start_backup_job_action_value": {
+				Description: "\"EFS: Backup file system\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.EfsStartBackupJobActionValueFields(),
+				},
+			},
 			"google_compute_insert_machine_image_action_value": {
 				Description: "\"Compute Engine: create machine image\" action value",
 				Type:        schema.TypeList,
@@ -942,7 +951,7 @@ func buildActionValue(d *schema.ResourceData, job *client.Job) map[string]interf
 	}
 
 	switch job.ActionType {
-	case "dynamodb_start_backup_job", "ec2_start_backup_job", "s3_start_backup_job":
+	case "dynamodb_start_backup_job", "ec2_start_backup_job", "s3_start_backup_job", "efs_start_backup_job":
 		if actionValue["lifecycle_delete_after_days"] == 0 {
 			actionValue["lifecycle_delete_after_days"] = nil
 		}
