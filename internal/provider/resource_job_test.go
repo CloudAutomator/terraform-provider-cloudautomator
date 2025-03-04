@@ -1295,8 +1295,8 @@ func TestAccCloudAutomatorJob(t *testing.T) {
 
 				rule_type = "webhook"
 
-				action_type = "ec2_start_backup_job"
-				ec2_start_backup_job_action_value {
+				action_type = "efs_start_backup_job"
+				efs_start_backup_job_action_value {
 					region                      = "ap-northeast-1"
 					file_system_id              = "fs-abcdefg1234567890"
 					lifecycle_delete_after_days = 7
