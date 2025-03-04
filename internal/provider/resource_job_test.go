@@ -1323,7 +1323,7 @@ func TestAccCloudAutomatorJob(t *testing.T) {
 			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
 			},
 			checks: []resource.TestCheckFunc{
-				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "ec2_start_backup_job"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "efs_start_backup_job"),
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "efs_start_backup_job_action_value.0.region", "ap-northeast-1"),
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "efs_start_backup_job_action_value.0.file_system_id", "fs-abcdefg1234567890"),
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "efs_start_backup_job_action_value.0.lifecycle_delete_after_days", "7"),
