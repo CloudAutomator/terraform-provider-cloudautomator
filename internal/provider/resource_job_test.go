@@ -1297,26 +1297,26 @@ func TestAccCloudAutomatorJob(t *testing.T) {
 
 				action_type = "ec2_start_backup_job"
 				ec2_start_backup_job_action_value {
-				  region                      = "ap-northeast-1"
+					region                      = "ap-northeast-1"
 					file_system_id              = "fs-abcdefg1234567890"
-				  lifecycle_delete_after_days = 7
-				  backup_vault_name           = "example-vault"
-				  iam_role_arn                = "arn:aws:iam::123456789012:role/example-role"
+					lifecycle_delete_after_days = 7
+					backup_vault_name           = "example-vault"
+					iam_role_arn                = "arn:aws:iam::123456789012:role/example-role"
 
-				  additional_tags {
-					key   = "key1"
-					value = "value1"
-				  }
+					additional_tags {
+						key   = "key1"
+						value = "value1"
+					}
 
-				  additional_tags {
-					key   = "key2"
-					value = "value2"
-				  }
+					additional_tags {
+						key   = "key2"
+						value = "value2"
+					}
 
-				  additional_tags {
-					key   = "key3"
-					value = "value3"
-				  }
+					additional_tags {
+						key   = "key3"
+						value = "value3"
+					}
 				}
 				completed_post_process_id = [%s]
 				failed_post_process_id = [%s]
