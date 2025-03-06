@@ -348,6 +348,15 @@ func dataSourceJob() *schema.Resource {
 					Schema: aws.Ec2StartBackupJobActionValueFields(),
 				},
 			},
+			"efs_start_backup_job_action_value": {
+				Description: "\"EFS: Backup file system\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.EfsStartBackupJobActionValueFields(),
+				},
+			},
 			"google_compute_insert_machine_image_action_value": {
 				Description: "\"Compute Engine: create machine image\" action value",
 				Type:        schema.TypeList,
