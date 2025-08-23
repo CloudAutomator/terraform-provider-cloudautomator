@@ -620,6 +620,7 @@ func TestAccCloudAutomatorJob(t *testing.T) {
 					specify_image = "tag"
 					tag_key = "env"
 					tag_value = "develop"
+					generation = 10
 					trace_status = "true"
 				}
 				completed_post_process_id = [%s]
@@ -633,6 +634,7 @@ func TestAccCloudAutomatorJob(t *testing.T) {
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_image_action_value.0.specify_image", "tag"),
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_image_action_value.0.tag_key", "env"),
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_image_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_image_action_value.0.generation", "10"),
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "copy_image_action_value.0.trace_status", "true"),
 			},
 		},
