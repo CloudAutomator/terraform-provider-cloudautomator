@@ -246,10 +246,15 @@ func CopyImageActionValueFields() map[string]*schema.Schema {
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
+		"generation": {
+			Description: "Number of AMI generations to be managed (0-10). Required when specify_image is 'tag'",
+			Type:        schema.TypeInt,
+			Optional:    true,
+		},
 		"trace_status": {
 			Description: "Whether to Verify completion status of the resource",
 			Type:        schema.TypeString,
-			Required:    true,
+			Optional:    true,
 		},
 	}
 }

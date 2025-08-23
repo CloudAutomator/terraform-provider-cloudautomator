@@ -262,13 +262,14 @@ Required:
 - `destination_region` (String) AWS Region to copy to
 - `source_region` (String) AWS Region from which the copy was made
 - `specify_image` (String) How to identify target resources
-- `trace_status` (String) Whether to Verify completion status of the resource
 
 Optional:
 
+- `generation` (Number) Number of AMI generations to be managed (0-10). Required when specify_image is 'tag'
 - `source_image_id` (String) 対象のAMIのID
 - `tag_key` (String) Tag key used to identify the target resource
 - `tag_value` (String) Tag value used to identify the target resource
+- `trace_status` (String) Whether to Verify completion status of the resource
 
 
 <a id="nestedblock--copy_rds_cluster_snapshot_action_value"></a>
