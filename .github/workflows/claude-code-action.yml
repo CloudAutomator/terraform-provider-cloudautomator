@@ -68,6 +68,8 @@ env:
     Bash(nmap:*)
     Bash(ssh:*)
     Bash(scp:*)
+    Bash(wget:*)
+    Bash(nc:*)
 
 jobs:
   claude-code:
