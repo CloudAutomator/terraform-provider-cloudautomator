@@ -12,7 +12,7 @@ on:
   pull_request_review_comment:
     types: [created]
   issues:
-    types: [opened, assigned]
+    types: [opened]
 
 env:
   AWS_REGION: "us-east-1"
@@ -27,28 +27,28 @@ env:
     Bash(find:*)
     Bash(ls:*)
     Bash(mkdir:*)
-    Bash(make:build)
-    Bash(make:test)
-    Bash(make:fmt)
-    Bash(make:docs-generate)
-    Bash(go:build)
-    Bash(go:test)
-    Bash(go:mod)
+    Bash(make build:*)
+    Bash(make test:*)
+    Bash(make fmt:*)
+    Bash(make docs-generate:*)
+    Bash(go build:*)
+    Bash(go test:*)
+    Bash(go mod:*)
     Bash(tail:*)
-    Bash(terraform:init)
-    Bash(terraform:plan)
-    Bash(terraform:validate)
-    Bash(terraform:fmt)
+    Bash(terraform init:*)
+    Bash(terraform plan:*)
+    Bash(terraform validate:*)
+    Bash(terraform fmt:*)
   disallowed_tools: >-
     Bash(sudo:*)
     Bash(rm:*)
     Bash(rm -rf:*)
     Bash(mv:*)
-    Bash(cp:*/etc/*)
+    Bash(cp:*)
     Bash(chmod:*)
     Bash(chown:*)
-    Bash(git:push)
-    Bash(git:commit)
+    Bash(git push:*)
+    Bash(git commit:*)
     Bash(docker:*)
     Bash(kubectl:*)
     Read(.env.*)
@@ -68,36 +68,24 @@ env:
     Bash(nmap:*)
     Bash(ssh:*)
     Bash(scp:*)
-    Bash(wget:*)
-    Bash(nc:*)
 
 jobs:
-  check-permissions:
-    runs-on: ubuntu-latest
-    outputs:
-      has-permission: ${{ steps.check.outputs.result }}
-    steps:
-      - id: check
-        run: |
-          if [[ "${{ github.event.comment.author_association }}" == "MEMBER" || \
-                "${{ github.event.comment.author_association }}" == "OWNER" || \
-                "${{ github.event.comment.author_association }}" == "COLLABORATOR" || \
-                "${{ github.event.issue.author_association }}" == "MEMBER" || \
-                "${{ github.event.issue.author_association }}" == "OWNER" || \
-                "${{ github.event.issue.author_association }}" == "COLLABORATOR" ]]; then
-            echo "result=true" >> $GITHUB_OUTPUT
-          else
-            echo "result=false" >> $GITHUB_OUTPUT
-          fi
-
   claude-code:
-    needs: check-permissions
     if: |
-      needs.check-permissions.outputs.has-permission == 'true' &&
       (
-        (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
-        (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
-        (github.event_name == 'issues' && contains(github.event.issue.body, '@claude') && github.event.issue.user.type == 'User')
+        (github.event_name == 'issue_comment' &&
+         contains(github.event.comment.body, '@claude') &&
+         contains(fromJSON('["MEMBER","OWNER","COLLABORATOR"]'), github.event.comment.author_association)
+        ) ||
+        (github.event_name == 'pull_request_review_comment' &&
+         contains(github.event.comment.body, '@claude') &&
+         contains(fromJSON('["MEMBER","OWNER","COLLABORATOR"]'), github.event.comment.author_association)
+        ) ||
+        (github.event_name == 'issues' &&
+         github.event.action == 'opened' &&
+         contains(github.event.issue.body, '@claude') &&
+         contains(fromJSON('["MEMBER","OWNER","COLLABORATOR"]'), github.event.issue.author_association)
+        )
       )
     runs-on: ubuntu-latest
     timeout-minutes: 20
