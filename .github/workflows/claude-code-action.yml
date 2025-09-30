@@ -1,0 +1,117 @@
+name: Claude Code Action
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+
+env:
+  AWS_REGION: "us-east-1"
+  BEDROCK_CLAUDE_SONNET_4: "us.anthropic.claude-sonnet-4-20250514-v1:0"
+  branch_prefix: "claude-bedrock/"
+  custom_instructions: |
+    Please speak to humans in Japanese.
+  allowed_tools: >-
+    Bash(echo:*)
+    Bash(gh:*)
+    Bash(grep:*)
+    Bash(find:*)
+    Bash(ls:*)
+    Bash(mkdir:*)
+    Bash(make:*)
+    Bash(go:*)
+    Bash(tail:*)
+    Bash(terraform:*)
+  disallowed_tools: >-
+    Bash(sudo:*)
+    Bash(rm:*)
+    Bash(rm -rf:*)
+    Read(.env.*)
+    Read(id_rsa)
+    Read(id_ed25519)
+    Read(**/*token*)
+    Read(**/*key*)
+    Write(.env*)
+    Write(**/secrets/**)
+    Bash(curl:*)
+    Bash(wget:*)
+    Bash(nc:*)
+
+jobs:
+  claude-code:
+    if: |
+      (
+        (
+          github.event_name == 'issue_comment' &&
+          contains(github.event.comment.body, '@claude') &&
+          (
+            github.event.comment.author_association == 'MEMBER' ||
+            github.event.comment.author_association == 'OWNER' ||
+            github.event.comment.author_association == 'COLLABORATOR'
+          )
+        ) ||
+        (
+          github.event_name == 'pull_request_review_comment' &&
+          contains(github.event.comment.body, '@claude') &&
+          (
+            github.event.comment.author_association == 'MEMBER' ||
+            github.event.comment.author_association == 'OWNER' ||
+            github.event.comment.author_association == 'COLLABORATOR'
+          )
+        ) ||
+        (
+          github.event_name == 'issues' &&
+          contains(github.event.issue.body, '@claude') &&
+          github.event.issue.user.type == 'User' &&
+          (
+            github.event.issue.author_association == 'MEMBER' ||
+            github.event.issue.author_association == 'OWNER' ||
+            github.event.issue.author_association == 'COLLABORATOR'
+          )
+        )
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION}}
+
+      - name: Setup Go
+        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: latest
+
+      - name: Run Claude Code Action (Claude Sonnet 4)
+        uses: anthropics/claude-code-action@426380f01bad0a17200865605a85cb28926dccbf # v1.0.9
+        with:
+          trigger_phrase: "@claude"
+          use_bedrock: "true"
+          use_commit_signing: "true"
+          branch_prefix: ${{ env.branch_prefix }}
+          github_token: ${{ github.token }}
+          claude_args: >-
+            --model ${{ env.BEDROCK_CLAUDE_SONNET_4 }}
+            --system-prompt "${{ env.custom_instructions }}"
+            --allowedTools "${{ env.allowed_tools }}"
+            --disallowedTools "${{ env.disallowed_tools }}"
