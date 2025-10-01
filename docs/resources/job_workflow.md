@@ -42,5 +42,3 @@ resource "cloudautomator_job_workflow" "example-job-workflow" {
 ### Read-Only
 
 - `id` (String) Job Workflow ID
-
-
