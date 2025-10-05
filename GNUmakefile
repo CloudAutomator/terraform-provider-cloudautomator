@@ -6,7 +6,7 @@ NAMESPACE=CloudAutomator
 NAME=cloudautomator
 BINARY=terraform-provider-${NAME}
 GENERATED_DIR ?= docs
-TERRAFORM_PLUGIN_DOCS_VERSION ?= 0.13.0
+TERRAFORM_PLUGIN_DOCS_VERSION ?= 0.23.0
 
 GO_OS ?= $(shell go env GOOS)
 GO_ARCH ?= $(shell go env GOARCH)
@@ -31,8 +31,8 @@ clean:
 docs-diff:
 	git diff --exit-code --relative $(GENERATED_DIR)
 
-docs-generate:
-	tfplugindocs
+docs-generate: install-tfplugindocs
+	go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@v$(TERRAFORM_PLUGIN_DOCS_VERSION)
 
 fmt:
 	terraform fmt -recursive examples
@@ -42,7 +42,12 @@ install: build
 	@mv "${BUILD_DIR}/${BINARY}_v$(VERSION)" "${HOME}/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/$(VERSION)/${GO_OS}_${GO_ARCH}"
 
 install-tfplugindocs:
-	which tfplugindocs || go install github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@v$(TERRAFORM_PLUGIN_DOCS_VERSION)
+	@if ! tfplugindocs --version 2>/dev/null | grep -Eq '(^| )v?$(TERRAFORM_PLUGIN_DOCS_VERSION)($$| )'; then \
+	  echo "Installing tfplugindocs v$(TERRAFORM_PLUGIN_DOCS_VERSION)"; \
+	  go install github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@v$(TERRAFORM_PLUGIN_DOCS_VERSION); \
+	else \
+	  echo "tfplugindocs v$(TERRAFORM_PLUGIN_DOCS_VERSION) already installed"; \
+	fi
 
 test:
 	TF_ACC= go test $(TEST) -v $(TESTARGS) -timeout 3m -parallel=4

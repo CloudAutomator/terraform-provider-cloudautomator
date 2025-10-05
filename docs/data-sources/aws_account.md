@@ -30,5 +30,3 @@ data "cloudautomator_aws_account" "example-aws-account" {
 ### Read-Only
 
 - `name` (String) AWS account name
-
-

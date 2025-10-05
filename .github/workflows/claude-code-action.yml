@@ -16,7 +16,7 @@ on:
 
 env:
   AWS_REGION: "us-east-1"
-  BEDROCK_CLAUDE_SONNET_4: "us.anthropic.claude-sonnet-4-20250514-v1:0"
+  BEDROCK_CLAUDE_SONNET_4_5: "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
   branch_prefix: "claude-bedrock/"
   custom_instructions: |
     Please speak to humans in Japanese.
@@ -121,7 +121,7 @@ jobs:
           branch_prefix: ${{ env.branch_prefix }}
           github_token: ${{ github.token }}
           claude_args: >-
-            --model ${{ env.BEDROCK_CLAUDE_SONNET_4 }}
+            --model ${{ env.BEDROCK_CLAUDE_SONNET_4_5 }}
             --system-prompt "${{ env.custom_instructions }}"
             --allowedTools "${{ env.allowed_tools }}"
             --disallowedTools "${{ env.disallowed_tools }}"

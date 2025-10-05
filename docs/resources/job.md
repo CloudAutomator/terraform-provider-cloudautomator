@@ -99,6 +99,7 @@ resource "cloudautomator_job" "example-create-image-job" {
 - `create_ebs_snapshot_action_value` (Block List, Max: 1) "EC2: Create EBS snapshot" action value (see [below for nested schema](#nestedblock--create_ebs_snapshot_action_value))
 - `create_fsx_backup_action_value` (Block List, Max: 1) "FSx: Create a backup" action value (see [below for nested schema](#nestedblock--create_fsx_backup_action_value))
 - `create_image_action_value` (Block List, Max: 1) "EC2: Create AMI" action value (see [below for nested schema](#nestedblock--create_image_action_value))
+- `create_nat_gateway_action_value` (Block List, Max: 1) "VPC: Create NAT Gateway" action value (see [below for nested schema](#nestedblock--create_nat_gateway_action_value))
 - `create_rds_cluster_snapshot_action_value` (Block List, Max: 1) "RDS(Aurora): Create DB cluster snapshot" action value (see [below for nested schema](#nestedblock--create_rds_cluster_snapshot_action_value))
 - `create_rds_snapshot_action_value` (Block List, Max: 1) "RDS: Create DB snapshot" action value (see [below for nested schema](#nestedblock--create_rds_snapshot_action_value))
 - `create_redshift_snapshot_action_value` (Block List, Max: 1) "Redshift: Create cluster snapshot" action value (see [below for nested schema](#nestedblock--create_redshift_snapshot_action_value))
@@ -434,6 +435,31 @@ Optional:
 
 <a id="nestedblock--create_image_action_value--additional_tags"></a>
 ### Nested Schema for `create_image_action_value.additional_tags`
+
+Required:
+
+- `key` (String)
+- `value` (String)
+
+
+
+<a id="nestedblock--create_nat_gateway_action_value"></a>
+### Nested Schema for `create_nat_gateway_action_value`
+
+Required:
+
+- `additional_tags` (Block Set, Min: 1) Array of tags to be assigned to the NAT Gateway (see [below for nested schema](#nestedblock--create_nat_gateway_action_value--additional_tags))
+- `allocation_id` (String) Allocation ID of the Elastic IP to assign to the NAT Gateway
+- `region` (String) AWS Region where the NAT Gateway will be created
+- `route_table_id` (String) Route table ID to add a route targeting the NAT Gateway
+- `subnet_id` (String) Subnet ID where the NAT Gateway will be created
+
+Optional:
+
+- `nat_gateway_name` (String) Name tag value for the NAT Gateway
+
+<a id="nestedblock--create_nat_gateway_action_value--additional_tags"></a>
+### Nested Schema for `create_nat_gateway_action_value.additional_tags`
 
 Required:
 
@@ -1242,5 +1268,3 @@ Read-Only:
 - `access_token` (String) Access token
 - `time_zone` (String) Timezone
 - `token` (String) Token
-
-
