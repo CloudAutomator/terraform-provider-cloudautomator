@@ -112,8 +112,8 @@ jobs:
         with:
           terraform_version: latest
 
-      - name: Run Claude Code Action (Claude Sonnet 4.5)
-        uses: anthropics/claude-code-action@426380f01bad0a17200865605a85cb28926dccbf # v1.0.9
+      - name: Run Claude Code Action (Claude Sonnet 4)
+        uses: anthropics/claude-code-action@90d189f3abd48655ec3e2c67c552cc23e92d6028 # v1.0.10
         with:
           trigger_phrase: "@claude"
           use_bedrock: "true"
