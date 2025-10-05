@@ -7,18 +7,28 @@ Terraform provider for Cloud Automator
 
 ## Building The Provider
 
-Clone repository to: $GOPATH/src/github.com/CloudAutomator/terraform-provider-cloudautomator
+### Prerequisites
+
+- Go 1.25 or later
+- GNU Make
+
+Clone the repository:
 
 ```sh
-$ mkdir -p $GOPATH/src/github.com/CloudAutomator; cd $GOPATH/src/github.com/CloudAutomator
-$ git clone git@github.com:CloudAutomator/terraform-provider-cloudautomator
+$ git clone git@github.com:CloudAutomator/terraform-provider-cloudautomator.git
+$ cd terraform-provider-cloudautomator
 ```
 
-Enter the provider directory and build the provider
+Build the provider binary. The build writes `terraform-provider-cloudautomator_v<VERSION>` into `./bin/`:
 
 ```sh
-$ cd $GOPATH/src/github.com/CloudAutomator/terraform-provider-cloudautomator
-$ make install VERSION=0.3.1
+$ make build VERSION=<release-version>
+```
+
+Install the built binary into the Terraform plugin directory for your OS/architecture:
+
+```sh
+$ make install VERSION=<release-version>
 ```
 
 ## Authentication and Configuration
