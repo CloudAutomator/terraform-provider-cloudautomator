@@ -126,3 +126,20 @@ resource "cloudautomator_job" "example-job" {
   failed_post_process_id    = [200]
 }
 ```
+
+## Provider Documentation
+
+The provider ships with auto-generated documentation under `docs/`. Run `make docs-generate` after updating schemas to refresh the content.
+
+### Resources
+
+- `cloudautomator_job` – Manage Cloud Automator jobs. See `docs/resources/job.md` for the complete schema.
+- `cloudautomator_job_workflow` – Manage job workflows. See `docs/resources/job_workflow.md`.
+- `cloudautomator_post_process` – Manage post-process definitions. See `docs/resources/post_process.md`.
+
+### Data Sources
+
+- `cloudautomator_job` – Retrieve job details. See `docs/data-sources/job.md`.
+- `cloudautomator_job_workflow` – Retrieve job workflow details. See `docs/data-sources/job_workflow.md`.
+- `cloudautomator_post_process` – Retrieve post-process definitions. See `docs/data-sources/post_process.md`.
+- `cloudautomator_aws_account` – Retrieve Cloud Automator AWS account metadata. See `docs/data-sources/aws_account.md`.
