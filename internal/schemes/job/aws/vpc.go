@@ -50,3 +50,24 @@ func CreateNatGatewayActionValueFields() map[string]*schema.Schema {
 		},
 	}
 }
+
+func DeleteNatGatewayActionValueFields() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"region": {
+			Description: "AWS Region",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"tag_key": {
+			Description: "Tag key used to identify the target NAT Gateway",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"tag_value": {
+			Description: "Tag value used to identify the target NAT Gateway",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+	}
+}
+

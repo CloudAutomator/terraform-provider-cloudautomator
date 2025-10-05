@@ -895,6 +895,35 @@ func TestAccCloudAutomatorJob(t *testing.T) {
 			},
 		},
 		{
+			name:    "DeleteNatGatewayAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
+
+				rule_type = "webhook"
+
+				action_type = "delete_nat_gateway"
+				delete_nat_gateway_action_value {
+				  region    = "ap-northeast-1"
+				  tag_key   = "Name"
+				  tag_value = "test-nat-gateway"
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "delete_nat_gateway"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_nat_gateway_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_nat_gateway_action_value.0.tag_key", "Name"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "delete_nat_gateway_action_value.0.tag_value", "test-nat-gateway"),
+			},
+		},
+		{
 			name:    "CreateRdsClusterSnapshotAction",
 			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
 			configFunc: func(resourceName string) string {
