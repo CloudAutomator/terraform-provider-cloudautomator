@@ -1,0 +1,350 @@
+name: Triggered by Cloud Automator API Repository
+
+on:
+  repository_dispatch:
+    types:
+      - add-new-action
+
+env:
+  AWS_REGION: "us-east-1"
+  BEDROCK_CLAUDE_SONNET_4_5: "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+  branch_prefix: "claude-bedrock/"
+  custom_instructions: |
+    Please speak to humans in Japanese.
+  allowed_tools: >-
+    Edit
+    Read
+    Write
+    Bash(cat:*)
+    Bash(echo:*)
+    Bash(find:*)
+    Bash(gh pr:*)
+    Bash(git add:*)
+    Bash(git checkout:*)
+    Bash(git commit:*)
+    Bash(git push:*)
+    Bash(git reset:*)
+    Bash(git restore:*)
+    Bash(git rm:*)
+    Bash(git status:*)
+    Bash(go build:*)
+    Bash(go mod:*)
+    Bash(go test:*)
+    Bash(grep:*)
+    Bash(head:*)
+    Bash(ls:*)
+    Bash(make build:*)
+    Bash(make docs-generate:*)
+    Bash(make fmt:*)
+    Bash(make test:*)
+    Bash(mkdir:*)
+    Bash(sed -n:*)
+    Bash(tail:*)
+    Bash(terraform fmt:*)
+    Bash(terraform init:*)
+    Bash(terraform plan:*)
+    Bash(terraform validate:*)
+    mcp__github_file_ops__commit_files
+  disallowed_tools: >-
+    Bash(chmod:*)
+    Bash(chown:*)
+    Bash(cp:*)
+    Bash(curl:*)
+    Bash(docker:*)
+    Bash(git push -f:*)
+    Bash(git push --force:*)
+    Bash(git push --force-with-lease:*)
+    Bash(kubectl:*)
+    Bash(mv:*)
+    Bash(nc:*)
+    Bash(nmap:*)
+    Bash(rm:*)
+    Bash(rm -rf:*)
+    Bash(scp:*)
+    Bash(ssh:*)
+    Bash(sudo:*)
+    Bash(wget:*)
+    Read(.env.*)
+    Read(**/*key*)
+    Read(**/*password*)
+    Read(**/*secret*)
+    Read(**/*token*)
+    Read(id_ed25519)
+    Read(id_rsa)
+    Write(.env*)
+    Write(**/*key*)
+    Write(**/*token*)
+    Write(**/secrets/**)
+
+jobs:
+  update-provider:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Save diff content to file
+        run: |
+          # ペイロードの存在確認をする
+          if [ -z "${{ github.event.client_payload.diff_content }}" ]; then
+            echo "Error: No diff_content provided in payload"
+            exit 1
+          fi
+
+          # エラーハンドリング付きでデコードする
+          if ! echo "${{ github.event.client_payload.diff_content }}" | base64 -d > claude_input_tmp 2>/dev/null; then
+            echo "Error: Failed to decode base64 content"
+            exit 1
+          fi
+
+      - name: Display diff file content
+        run: |
+          echo "=== PR Diff Content ==="
+          cat claude_input_tmp
+          echo ""
+          echo "=== File Statistics ==="
+          wc -l claude_input_tmp
+          echo ""
+          echo "=== Files Changed ==="
+          grep -E '^\+\+\+|^---' claude_input_tmp || true
+
+      - name: Upload diff as artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: api-diff
+          path: claude_input_tmp
+          retention-days: 30
+
+      - name: Setup Go
+        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
+        with:
+          go-version-file: "go.mod"
+          cache: true
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: latest
+
+      - name: Configure Git
+        run: |
+          git config user.name "Claude Code"
+          git config user.email "noreply@anthropic.com"
+
+      - name: Implement new actions with Claude Code
+        uses: anthropics/claude-code-action@90d189f3abd48655ec3e2c67c552cc23e92d6028 # v1.0.10
+        with:
+          use_bedrock: "true"
+          use_commit_signing: "true"
+          branch_prefix: ${{ env.branch_prefix }}
+          github_token: ${{ github.token }}
+          claude_args: >-
+            --model ${{ env.BEDROCK_CLAUDE_SONNET_4_5 }}
+            --system-prompt "${{ env.custom_instructions }}"
+            --allowedTools "${{ env.allowed_tools }}"
+            --disallowedTools "${{ env.disallowed_tools }}"
+          prompt: |
+            ## あなたの役割
+            Cloud Automator の新しいアクションを Terraform Provider に実装してください。
+
+            ## 📋 必要な情報の抽出
+            まず最初に `claude_input_tmp` ファイルを Read ツールで読み込んでください。
+
+            その後、以下の情報を抽出してください:
+            - {action_name}: アクション名（例: VPC: NAT Gatewayを削除）
+            - {provider_type}: プロバイダータイプ（例: aws/gcp）
+            - {action_type}: アクションタイプ（例: delete_nat_gateway）
+            - {ActionType}: アクションタイプ（例: DeleteNatGateway）
+            - {aws_service/gcp_service}: サービス名（ec2, s3, vpc 等）
+            - {新しいアクションのAPI仕様}: フィールド名、型、必須/任意、デフォルト値、説明
+
+            ## 1. 事前調査
+            ### 1.1 既存の実装パターンを確認する
+            `gh pr diff` コマンドで過去の Pull Request の実装パターンを確認してください。
+            類似のアクションを見つけて、その実装パターンを参考にします。
+
+            ```bash
+            # 例: 過去の実装を確認
+            gh pr diff https://github.com/CloudAutomator/terraform-provider-cloudautomator/pull/78
+            ```
+
+            ### 1.2 API仕様の確認
+            - 抽出した API 仕様から、フィールドタイプ（`string`, `int`, `bool`, `array` ...）を確認する
+            - ネストした構造（additional_tags 等）の有無を確認する
+
+            ## 2. 実装
+            ### 2.1 新しいアクションのスキーマ定義を実装する
+            #### この手順であなたが必ず守ること
+            - 既に存在するファイルを編集する場合、Edit ツールのみを使用すること
+
+            ```go
+            ファイル: internal/schemes/job/{provider_type}/{aws_service/gcp_service}.go
+
+            func {ActionType}ActionValueFields() map[string]*schema.Schema {
+                // [1. 事前調査] で確認した既存の実装パターンを完全に踏襲する形で実装する
+                // 必須フィールドは Required: true
+                // 任意フィールドは Optional: true
+            }
+            ```
+
+            ### 2.2 プロバイダ統合を実装する
+            #### この手順であなたが必ず守ること
+            - 既に存在するファイルを編集する場合、Edit ツールのみを使用すること
+
+            ```go
+            ファイル: internal/provider/resource_job.go
+            // [1. 事前調査] で確認した既存の実装パターンを完全に踏襲する形で実装する
+
+            ファイル: internal/provider/data_source_job.go
+            // [1. 事前調査] で確認した既存の実装パターンを完全に踏襲する形で実装する
+            ```
+
+            ### 2.3 受け入れテストを実装する
+            #### この手順であなたが必ず守ること
+            - 既に存在するファイルを編集する場合、Edit ツールのみを使用すること
+
+            ```go
+            ファイル: internal/provider/resource_job_test.go
+            {
+                name:    "{ActionType}Action",
+                jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+                configFunc: func(resourceName string) string {
+                    // [1. 事前調査] で確認した既存の実装パターンを完全に踏襲する形で実装する
+                },
+                checks: []resource.TestCheckFunc{
+                    // [1. 事前調査] で確認した既存の実装パターンを完全に踏襲する形で実装する
+                },
+            },
+            ```
+
+            ### 2.4 サンプルを作成
+            #### この手順であなたが必ず守ること
+            - Write ツールを使って新規ファイルを作成すること
+
+            ```hcl
+            ファイル: examples/resources/cloudautomator_job/action/{action_type}/main.tf
+
+            # ----------------------------------------------------------
+            # - アクション: {アクション名}
+            # - アクションの設定:
+            #   - {設定項目の説明}
+            # ----------------------------------------------------------
+
+            resource "cloudautomator_job" "example-{action_type}" {
+              // [1. 事前調査] で確認した既存の実装パターンを完全に踏襲する形で実装する
+            }
+            ```
+
+            ## 3. テスト
+            ### 3.1 テストを実行する
+            ```bash
+            make test
+            ```
+
+            ## 4. ドキュメント生成
+            ### 4.1 ドキュメントを生成する
+            ```bash
+            make docs-generate
+            ```
+
+            ## 5. フォーマット実行
+            ### 5.1 `make fmt` コマンドを実行する
+            ```bash
+            make fmt
+            ```
+
+            ## 6. 新しいブランチの作成
+            ### 6.1 新しいブランチを作成する
+            変更されたファイルをステージングして、新しいブランチを作成する
+
+            ```bash
+            git add .
+            git checkout -b ${{ env.branch_prefix }}{action_type}
+            ```
+
+            ## 7. コミット作成
+            ### 7.1 コミットメッセージ規約に従ってコミットする
+
+            ```bash
+            # コミットメッセージの例:
+            git commit -m "「VPC: NAT Gatewayを削除」アクションに対応した"
+            ```
+
+            ## 8. リモートにプッシュ
+            ### 8.1 作成したブランチをプッシュする
+
+            ```bash
+            git push origin ${{ env.branch_prefix }}{action_type}
+            ```
+
+            ## 必ず守る必要があること
+            - 必ず CLAUDE.md の規約を遵守すること
+            - 複数のアクションがある場合は、1アクションずつ段階的に実装すること
+            - コミット前に必ずテストが通ることを確認すること
+            - ファイルは必ず末尾に改行文字を含めること
+            - 既存ファイルの編集には必ずEditツールのみを使用すること
+            - Edit ツール使用時の重要な注意点
+              1. 必ず Edit ツールを使う前に、Read ツールで該当箇所を事前に読み込むこと（正確な文字列をコピーするため）
+              2. old_string は Read ツールの出力から直接コピーすること（タブ・スペース・改行を完全一致させる）
+              3. インデントは絶対にタブ/スペースを変更しないこと（元のファイルと完全一致が必須）
+              4. エスケープ文字（\", \\等）に注意すること
+              5. 失敗した場合は、より広い範囲（前後の行を含む）で再試行すること
+
+            ## 開始手順
+            1. 最初のステップ: Read ツールで `claude_input_tmp` ファイルを読み込む
+            2. 差分内容を解析して新しいアクションを特定する
+            3. 上記の手順に従って実装を進める
+
+            それでは作業を開始してください。
+
+      - name: Create Pull Request
+        id: create_pr
+        run: |
+          # 作成されたブランチ名を取得する
+          BRANCH_NAME=$(git branch --show-current)
+
+          # ブランチ名から claude-bedrock/ プレフィックスを削除してアクション名を取得する
+          ACTION_NAME="${BRANCH_NAME#${{ env.branch_prefix }}}"
+
+          # コミットメッセージを取得する
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+
+          # examples ファイルの内容を取得する
+          EXAMPLE_FILE="examples/resources/cloudautomator_job/action/${ACTION_NAME}/main.tf"
+
+          if [ -f "$EXAMPLE_FILE" ]; then
+            EXAMPLE_CONTENT=$(cat "$EXAMPLE_FILE")
+          else
+            EXAMPLE_CONTENT="# examples ファイルが見つかりませんでした: $EXAMPLE_FILE"
+          fi
+
+          # PRの説明文を生成する
+          cat > pr_body.md << EOF
+          ${COMMIT_MESSAGE}
+
+          # resource example
+          \`\`\`
+          ${EXAMPLE_CONTENT}
+          \`\`\`
+          EOF
+
+          # PRを作成する
+          gh pr create \
+            --title "${COMMIT_MESSAGE}" \
+            --body-file pr_body.md \
+            --base main \
+            --head "${BRANCH_NAME}"
+        env:
+          GH_TOKEN: ${{ github.token }}
