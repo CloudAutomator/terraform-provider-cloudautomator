@@ -7,18 +7,76 @@ Terraform provider for Cloud Automator
 
 ## Building The Provider
 
-Clone repository to: $GOPATH/src/github.com/CloudAutomator/terraform-provider-cloudautomator
+### Prerequisites
+
+- Go 1.25 or later
+- GNU Make
+
+Clone the repository:
 
 ```sh
-$ mkdir -p $GOPATH/src/github.com/CloudAutomator; cd $GOPATH/src/github.com/CloudAutomator
-$ git clone git@github.com:CloudAutomator/terraform-provider-cloudautomator
+$ git clone git@github.com:CloudAutomator/terraform-provider-cloudautomator.git
+$ cd terraform-provider-cloudautomator
 ```
 
-Enter the provider directory and build the provider
+Build the provider binary. The build writes `terraform-provider-cloudautomator_v<VERSION>` into `./bin/`:
 
 ```sh
-$ cd $GOPATH/src/github.com/CloudAutomator/terraform-provider-cloudautomator
-$ make install VERSION=0.3.1
+$ make build VERSION=<release-version>
+```
+
+Install the built binary into the Terraform plugin directory for your OS/architecture:
+
+```sh
+$ make install VERSION=<release-version>
+```
+
+## Development Commands
+
+The project uses a `GNUmakefile` for common development tasks.
+
+### Testing
+
+Run unit tests:
+
+```sh
+$ make test
+```
+
+Run acceptance tests (requires valid Cloud Automator API credentials):
+
+```sh
+$ make testacc
+```
+
+### Code Formatting
+
+Format Terraform example files:
+
+```sh
+$ make fmt
+```
+
+### Documentation
+
+Generate provider documentation from schema definitions:
+
+```sh
+$ make docs-generate
+```
+
+Verify documentation is up to date:
+
+```sh
+$ make test-docs
+```
+
+### Cleanup
+
+Remove installed provider binaries:
+
+```sh
+$ make clean VERSION=<release-version>
 ```
 
 ## Authentication and Configuration
@@ -116,3 +174,22 @@ resource "cloudautomator_job" "example-job" {
   failed_post_process_id    = [200]
 }
 ```
+
+## Provider Documentation
+
+The provider ships with auto-generated documentation under `docs/`. Run `make docs-generate` after updating schemas to refresh the content.
+
+For detailed usage examples of specific actions, see the `examples/` directory which contains over 70 sample configurations for various Cloud Automator job actions.
+
+### Resources
+
+- `cloudautomator_job` – Manage Cloud Automator jobs. See [`docs/resources/job.md`](docs/resources/job.md) for the complete schema.
+- `cloudautomator_job_workflow` – Manage job workflows. See [`docs/resources/job_workflow.md`](docs/resources/job_workflow.md).
+- `cloudautomator_post_process` – Manage post-process definitions. See [`docs/resources/post_process.md`](docs/resources/post_process.md).
+
+### Data Sources
+
+- `cloudautomator_job` – Retrieve job details. See [`docs/data-sources/job.md`](docs/data-sources/job.md).
+- `cloudautomator_job_workflow` – Retrieve job workflow details. See [`docs/data-sources/job_workflow.md`](docs/data-sources/job_workflow.md).
+- `cloudautomator_post_process` – Retrieve post-process definitions. See [`docs/data-sources/post_process.md`](docs/data-sources/post_process.md).
+- `cloudautomator_aws_account` – Retrieve Cloud Automator AWS account metadata. See [`docs/data-sources/aws_account.md`](docs/data-sources/aws_account.md).
