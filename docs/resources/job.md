@@ -106,6 +106,7 @@ resource "cloudautomator_job" "example-create-image-job" {
 - `cron_rule_value` (Block List, Max: 1) Timer trigger value (see [below for nested schema](#nestedblock--cron_rule_value))
 - `delay_action_value` (Block List, Max: 1) "Other: Delay" action value (see [below for nested schema](#nestedblock--delay_action_value))
 - `delete_cluster_action_value` (Block List, Max: 1) "Redshift: Delete cluster" action value (see [below for nested schema](#nestedblock--delete_cluster_action_value))
+- `delete_nat_gateway_action_value` (Block List, Max: 1) "VPC: Delete NAT Gateway" action value (see [below for nested schema](#nestedblock--delete_nat_gateway_action_value))
 - `delete_rds_cluster_action_value` (Block List, Max: 1) "RDS(Aurora): Delete DB cluster" action value (see [below for nested schema](#nestedblock--delete_rds_cluster_action_value))
 - `delete_rds_instance_action_value` (Block List, Max: 1) "RDS: Delete DB instance" action value (see [below for nested schema](#nestedblock--delete_rds_instance_action_value))
 - `deregister_instances_action_value` (Block List, Max: 1) "ELB(CLB): De-register EC2 instance" action value (see [below for nested schema](#nestedblock--deregister_instances_action_value))
@@ -575,6 +576,16 @@ Required:
 Optional:
 
 - `trace_status` (String) Whether to Verify completion status of the resource
+
+
+<a id="nestedblock--delete_nat_gateway_action_value"></a>
+### Nested Schema for `delete_nat_gateway_action_value`
+
+Required:
+
+- `region` (String) AWS Region
+- `tag_key` (String) Tag key used to identify the target NAT Gateway
+- `tag_value` (String) Tag value used to identify the target NAT Gateway
 
 
 <a id="nestedblock--delete_rds_cluster_action_value"></a>

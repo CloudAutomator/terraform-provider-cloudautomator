@@ -231,6 +231,15 @@ func dataSourceJob() *schema.Resource {
 					Schema: aws.CreateNatGatewayActionValueFields(),
 				},
 			},
+			"delete_nat_gateway_action_value": {
+				Description: "\"VPC: Delete NAT Gateway\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.DeleteNatGatewayActionValueFields(),
+				},
+			},
 			"create_rds_cluster_snapshot_action_value": {
 				Description: "\"RDS(Aurora): Create DB cluster snapshot\" action value",
 				Type:        schema.TypeList,
