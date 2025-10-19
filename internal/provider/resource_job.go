@@ -154,6 +154,15 @@ func resourceJob() *schema.Resource {
 					Schema: aws.BulkStopInstancesActionValueFields(),
 				},
 			},
+			"change_elasticache_node_type_action_value": {
+				Description: "\"ElastiCache: Change node type\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.ChangeElasticacheNodeTypeActionValueFields(),
+				},
+			},
 			"change_rds_cluster_instance_class_action_value": {
 				Description: "\"RDS(Aurora): Change DB instance class\" action value",
 				Type:        schema.TypeList,
