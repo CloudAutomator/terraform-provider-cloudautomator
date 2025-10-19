@@ -1,0 +1,191 @@
+name: Add New Action with Claude Code
+
+on:
+  repository_dispatch:
+    types:
+      - add-new-action
+
+env:
+  AWS_REGION: "us-east-1"
+  BEDROCK_CLAUDE_SONNET_4_5: "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+  allowed_tools: >-
+    Edit
+    Read
+    Write
+    Bash(cat:*)
+    Bash(echo:*)
+    Bash(find:*)
+    Bash(gh pr:*)
+    Bash(git add:*)
+    Bash(git checkout:*)
+    Bash(git commit:*)
+    Bash(git push origin:*)
+    Bash(git reset:*)
+    Bash(git restore:*)
+    Bash(git rm:*)
+    Bash(git status:*)
+    Bash(go build:*)
+    Bash(go mod:*)
+    Bash(go test:*)
+    Bash(grep:*)
+    Bash(head:*)
+    Bash(ls:*)
+    Bash(make build:*)
+    Bash(make docs-generate:*)
+    Bash(make fmt:*)
+    Bash(make test:*)
+    Bash(mkdir:*)
+    Bash(sed -n:*)
+    Bash(tail:*)
+    Bash(terraform fmt:*)
+    Bash(terraform init:*)
+    Bash(terraform plan:*)
+    Bash(terraform validate:*)
+    mcp__github_file_ops__commit_files
+  disallowed_tools: >-
+    Bash(chmod:*)
+    Bash(chown:*)
+    Bash(cp:*)
+    Bash(curl:*)
+    Bash(docker:*)
+    Bash(git push -f:*)
+    Bash(git push --force:*)
+    Bash(git push --force-with-lease:*)
+    Bash(kubectl:*)
+    Bash(mv:*)
+    Bash(nc:*)
+    Bash(nmap:*)
+    Bash(rm:*)
+    Bash(rm -rf:*)
+    Bash(scp:*)
+    Bash(ssh:*)
+    Bash(sudo:*)
+    Bash(wget:*)
+    Read(.env.*)
+    Read(**/*key*)
+    Read(**/*password*)
+    Read(**/*secret*)
+    Read(**/*token*)
+    Read(id_ed25519)
+    Read(id_rsa)
+    Write(.env*)
+    Write(**/*key*)
+    Write(**/*token*)
+    Write(**/secrets/**)
+
+jobs:
+  add-new-action:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - name: Validate webhook secret
+        run: |
+          if [ "${{ github.event.client_payload.secret }}" != "${{ secrets.WEBHOOK_SECRET }}" ]; then
+            echo "Error: Invalid secret"
+            exit 1
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Save diff content to file
+        run: |
+          DIFF_CONTENT=$(jq -r '.client_payload.diff_content' $GITHUB_EVENT_PATH)
+
+          if [ -z "$DIFF_CONTENT" ]; then
+            echo "Error: No diff_content provided in payload"
+            exit 1
+          fi
+
+          if ! echo "$DIFF_CONTENT" | base64 -d > claude_input_tmp 2>/dev/null; then
+            echo "Error: Failed to decode base64 content"
+            exit 1
+          fi
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@00943011d9042930efac3dcd3a170e4273319bc8 # v5.1.0
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Upload diff as artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: api-diff
+          path: claude_input_tmp
+          retention-days: 30
+
+      - name: Setup Go
+        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
+        with:
+          go-version-file: "go.mod"
+          cache: true
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: latest
+
+      - name: Load Claude prompt
+        id: load_prompt
+        run: |
+          PROMPT=$(cat .github/prompts/claude_prompt.md)
+          echo "prompt<<EOF" >> $GITHUB_OUTPUT
+          echo "$PROMPT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Implement new actions with Claude Code
+        uses: anthropics/claude-code-action@90d189f3abd48655ec3e2c67c552cc23e92d6028 # v1.0.10
+        with:
+          use_bedrock: "true"
+          branch_prefix: "claude-bedrock/"
+          github_token: ${{ github.token }}
+          claude_args: >-
+            --model ${{ env.BEDROCK_CLAUDE_SONNET_4_5 }}
+            --allowedTools "${{ env.allowed_tools }}"
+            --disallowedTools "${{ env.disallowed_tools }}"
+          prompt: ${{ steps.load_prompt.outputs.prompt }}
+
+      - name: Create Pull Request
+        run: |
+          # 作成されたブランチ名を取得
+          BRANCH_NAME=$(git branch --show-current)
+
+          # ブランチ名から claude-bedrock/ プレフィックスを削除してアクション名を取得
+          ACTION_NAME="${BRANCH_NAME#claude-bedrock/}"
+
+          # コミットメッセージを取得
+          COMMIT_MESSAGE=$(git log -1 --pretty=%s)
+
+          # examples ファイルの内容を取得
+          EXAMPLE_FILE="examples/resources/cloudautomator_job/action/${ACTION_NAME}/main.tf"
+
+          if [ -f "$EXAMPLE_FILE" ]; then
+            EXAMPLE_CONTENT=$(cat "$EXAMPLE_FILE")
+          else
+            EXAMPLE_CONTENT="# examples ファイルが見つかりませんでした: $EXAMPLE_FILE"
+          fi
+
+          # PRの説明文を生成
+          cat > pr_body.md << EOF
+          ${COMMIT_MESSAGE}
+
+          # resource example
+          \`\`\`tf
+          ${EXAMPLE_CONTENT}
+          \`\`\`
+          EOF
+
+          # PRを作成
+          gh pr create \
+            --title "${COMMIT_MESSAGE}" \
+            --body-file pr_body.md \
+            --base main \
+            --head "${BRANCH_NAME}"
+        env:
+          GH_TOKEN: ${{ github.token }}
