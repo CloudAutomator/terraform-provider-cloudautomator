@@ -33,6 +33,7 @@ data "cloudautomator_job" "example-job" {
 - `bulk_delete_images_action_value` (Block List, Max: 1) "EC2: Delete old AMIs and Snapshots" action value (see [below for nested schema](#nestedblock--bulk_delete_images_action_value))
 - `bulk_delete_rds_cluster_snapshots_action_value` (Block List, Max: 1) "RDS(Aurora): Delete old DB cluster snapshots" action value (see [below for nested schema](#nestedblock--bulk_delete_rds_cluster_snapshots_action_value))
 - `bulk_stop_instances_action_value` (Block List, Max: 1) "EC2: Stop ALL instances" action value (see [below for nested schema](#nestedblock--bulk_stop_instances_action_value))
+- `change_elasticache_node_type_action_value` (Block List, Max: 1) "ElastiCache: Change node type" action value (see [below for nested schema](#nestedblock--change_elasticache_node_type_action_value))
 - `change_instance_type_action_value` (Block List, Max: 1) "EC2: Change instance type" action value (see [below for nested schema](#nestedblock--change_instance_type_action_value))
 - `change_rds_cluster_instance_class_action_value` (Block List, Max: 1) "RDS(Aurora): Change DB instance class" action value (see [below for nested schema](#nestedblock--change_rds_cluster_instance_class_action_value))
 - `change_rds_instance_class_action_value` (Block List, Max: 1) "RDS: Change DB instance class" action value (see [below for nested schema](#nestedblock--change_rds_instance_class_action_value))
@@ -189,6 +190,17 @@ Optional:
 
 - `exclude_by_tag_key` (String) Tag key used to exclude instances from the target
 - `exclude_by_tag_value` (String) Tag value used to exclude instances from the target
+
+
+<a id="nestedblock--change_elasticache_node_type_action_value"></a>
+### Nested Schema for `change_elasticache_node_type_action_value`
+
+Required:
+
+- `node_type` (String) Node type after modification
+- `region` (String) AWS Region in which the target ElastiCache cluster resides
+- `tag_key` (String) Tag key used to identify the ElastiCache cluster
+- `tag_value` (String) Tag value used to identify the ElastiCache cluster
 
 
 <a id="nestedblock--change_instance_type_action_value"></a>
