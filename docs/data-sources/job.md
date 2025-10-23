@@ -62,6 +62,7 @@ data "cloudautomator_job" "example-job" {
 - `ec2_start_backup_job_action_value` (Block List, Max: 1) "EC2: Backup instance" action value (see [below for nested schema](#nestedblock--ec2_start_backup_job_action_value))
 - `efs_start_backup_job_action_value` (Block List, Max: 1) "EFS: Backup file system" action value (see [below for nested schema](#nestedblock--efs_start_backup_job_action_value))
 - `google_compute_insert_machine_image_action_value` (Block List, Max: 1) "Compute Engine: create machine image" action value (see [below for nested schema](#nestedblock--google_compute_insert_machine_image_action_value))
+- `no_action_action_value` (Block List, Max: 1) "Other: No Action" action value (see [below for nested schema](#nestedblock--no_action_action_value))
 - `reboot_rds_instances_action_value` (Block List, Max: 1) "RDS: Reboot DB instance" action value (see [below for nested schema](#nestedblock--reboot_rds_instances_action_value))
 - `reboot_workspaces_action_value` (Block List, Max: 1) "WorkSpaces: Reboot WorkSpace" action value (see [below for nested schema](#nestedblock--reboot_workspaces_action_value))
 - `rebuild_workspaces_action_value` (Block List, Max: 1) "WorkSpaces: Rebuild WorkSpace" action value (see [below for nested schema](#nestedblock--rebuild_workspaces_action_value))
@@ -697,6 +698,10 @@ Optional:
 - `vm_instance_id` (String) VM Instance ID
 - `vm_instance_label_key` (String) label key used to identify the target resource
 - `vm_instance_label_value` (String) label value used to identify the target resource
+
+
+<a id="nestedblock--no_action_action_value"></a>
+### Nested Schema for `no_action_action_value`
 
 
 <a id="nestedblock--reboot_rds_instances_action_value"></a>

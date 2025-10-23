@@ -285,6 +285,15 @@ func dataSourceJob() *schema.Resource {
 					Schema: other.DelayActionValueFields(),
 				},
 			},
+			"no_action_action_value": {
+				Description: "\"Other: No Action\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: other.NoActionActionValueFields(),
+				},
+			},
 			"delete_cluster_action_value": {
 				Description: "\"Redshift: Delete cluster\" action value",
 				Type:        schema.TypeList,
