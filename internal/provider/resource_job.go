@@ -145,6 +145,15 @@ func resourceJob() *schema.Resource {
 					Schema: aws.BulkDeleteRdsClusterSnapshotsActionValueFields(),
 				},
 			},
+			"bulk_delete_rds_snapshots_action_value": {
+				Description: "\"RDS: Delete old DB snapshots\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.BulkDeleteRdsSnapshotsActionValueFields(),
+				},
+			},
 			"bulk_stop_instances_action_value": {
 				Description: "\"EC2: Stop ALL instances\" action value",
 				Type:        schema.TypeList,

@@ -39,6 +39,41 @@ func BulkDeleteRdsClusterSnapshotsActionValueFields() map[string]*schema.Schema 
 	}
 }
 
+func BulkDeleteRdsSnapshotsActionValueFields() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"exclude_by_tag_bulk_delete_rds_snapshots": {
+			Description: "Specifies whether to exclude DB snapshots with certain tags from deletion",
+			Type:        schema.TypeBool,
+			Required:    true,
+		},
+		"exclude_by_tag_key_bulk_delete_rds_snapshots": {
+			Description: "The tag key used to identify DB snapshots to exclude from deletion",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"exclude_by_tag_value_bulk_delete_rds_snapshots": {
+			Description: "The tag value used to identify DB snapshots to exclude from deletion",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"specify_base_date": {
+			Description: "Specifies the method for determining which DB snapshots to delete",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"before_days": {
+			Description: "The number of days used to identify DB snapshots to be deleted",
+			Type:        schema.TypeInt,
+			Optional:    true,
+		},
+		"before_date": {
+			Description: "The date used to identify DB snapshots for deletion",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+	}
+}
+
 func ChangeRdsInstanceClassActionValueFields() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"region": {

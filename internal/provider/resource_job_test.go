@@ -438,6 +438,40 @@ func TestAccCloudAutomatorJob(t *testing.T) {
 			},
 		},
 		{
+			name:    "BulkDeleteRdsSnapshotsAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_ids = [%s]
+
+				rule_type = "webhook"
+
+				action_type = "bulk_delete_rds_snapshots"
+				bulk_delete_rds_snapshots_action_value {
+					exclude_by_tag_bulk_delete_rds_snapshots = true
+					exclude_by_tag_key_bulk_delete_rds_snapshots = "env"
+					exclude_by_tag_value_bulk_delete_rds_snapshots = "production"
+					specify_base_date = "before_days"
+					before_days = 365
+				}
+
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "bulk_delete_rds_snapshots"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_rds_snapshots_action_value.0.exclude_by_tag_bulk_delete_rds_snapshots", "true"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_rds_snapshots_action_value.0.exclude_by_tag_key_bulk_delete_rds_snapshots", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_rds_snapshots_action_value.0.exclude_by_tag_value_bulk_delete_rds_snapshots", "production"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_rds_snapshots_action_value.0.specify_base_date", "before_days"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_rds_snapshots_action_value.0.before_days", "365"),
+			},
+		},
+		{
 			name:    "BulkStopInstancesAction",
 			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
 			configFunc: func(resourceName string) string {
