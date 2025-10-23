@@ -285,9 +285,7 @@ func TestAccCloudAutomatorJob(t *testing.T) {
 				rule_type = "webhook"
 
 				action_type = "no_action"
-				completed_post_process_id = [%s]
-				failed_post_process_id = [%s]
-			}`, resourceName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			}`, resourceName, acctest.TestGroupId())
 			},
 			checks: []resource.TestCheckFunc{
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "no_action"),
