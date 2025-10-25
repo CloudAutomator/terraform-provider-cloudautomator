@@ -393,7 +393,7 @@ func TestAccCloudAutomatorJob_Rds(t *testing.T) {
 			resource "cloudautomator_job" "test" {
 				name = "%s"
 				group_id = "%s"
-				aws_account_id = "%s"
+				aws_account_ids = [%s]
 
 				rule_type = "webhook"
 
