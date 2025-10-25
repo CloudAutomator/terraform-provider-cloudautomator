@@ -115,7 +115,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: aws.AuthorizeSecurityGroupIngressyActionValueFields(),
+					Schema: aws.AuthorizeSecurityGroupIngressActionValueFields(),
 				},
 			},
 			"bulk_delete_ebs_snapshots_action_value": {
