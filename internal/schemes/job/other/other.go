@@ -12,3 +12,7 @@ func DelayActionValueFields() map[string]*schema.Schema {
 		},
 	}
 }
+
+func NoActionActionValueFields() map[string]*schema.Schema {
+	return map[string]*schema.Schema{}
+}

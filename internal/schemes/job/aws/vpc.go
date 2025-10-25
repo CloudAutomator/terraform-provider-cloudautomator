@@ -70,4 +70,3 @@ func DeleteNatGatewayActionValueFields() map[string]*schema.Schema {
 		},
 	}
 }
-

@@ -127,6 +127,7 @@ resource "cloudautomator_job" "example-create-image-job" {
 - `google_compute_start_vm_instances_action_value` (Block List, Max: 1) "Compute Engine: start vm instances" action value (see [below for nested schema](#nestedblock--google_compute_start_vm_instances_action_value))
 - `google_compute_stop_vm_instances_action_value` (Block List, Max: 1) "Compute Engine: stop vm instances" action value (see [below for nested schema](#nestedblock--google_compute_stop_vm_instances_action_value))
 - `invoke_lambda_function_action_value` (Block List, Max: 1) "Lambda: Invoke lambda function" action value (see [below for nested schema](#nestedblock--invoke_lambda_function_action_value))
+- `no_action_action_value` (Block List, Max: 1) "Other: No Action" action value (see [below for nested schema](#nestedblock--no_action_action_value))
 - `reboot_rds_instances_action_value` (Block List, Max: 1) "RDS: Reboot DB instance" action value (see [below for nested schema](#nestedblock--reboot_rds_instances_action_value))
 - `reboot_workspaces_action_value` (Block List, Max: 1) "WorkSpaces: Reboot WorkSpace" action value (see [below for nested schema](#nestedblock--reboot_workspaces_action_value))
 - `rebuild_workspaces_action_value` (Block List, Max: 1) "WorkSpaces: Rebuild WorkSpace" action value (see [below for nested schema](#nestedblock--rebuild_workspaces_action_value))
@@ -827,6 +828,10 @@ Required:
 - `function_name` (String) Function name
 - `payload` (String) Event JSON
 - `region` (String) AWS Region in which the target resource resides
+
+
+<a id="nestedblock--no_action_action_value"></a>
+### Nested Schema for `no_action_action_value`
 
 
 <a id="nestedblock--reboot_rds_instances_action_value"></a>

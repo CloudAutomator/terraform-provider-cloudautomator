@@ -115,7 +115,7 @@ func resourceJob() *schema.Resource {
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: aws.AuthorizeSecurityGroupIngressyActionValueFields(),
+					Schema: aws.AuthorizeSecurityGroupIngressActionValueFields(),
 				},
 			},
 			"bulk_delete_ebs_snapshots_action_value": {
@@ -305,6 +305,15 @@ func resourceJob() *schema.Resource {
 				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: other.DelayActionValueFields(),
+				},
+			},
+			"no_action_action_value": {
+				Description: "\"Other: No Action\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: other.NoActionActionValueFields(),
 				},
 			},
 			"delete_cluster_action_value": {
