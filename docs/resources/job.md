@@ -87,6 +87,7 @@ resource "cloudautomator_job" "example-create-image-job" {
 - `bulk_delete_ebs_snapshots_action_value` (Block List, Max: 1) "EC2: Delete old EBS Snapshots" action value (see [below for nested schema](#nestedblock--bulk_delete_ebs_snapshots_action_value))
 - `bulk_delete_images_action_value` (Block List, Max: 1) "EC2: Delete old AMIs and Snapshots" action value (see [below for nested schema](#nestedblock--bulk_delete_images_action_value))
 - `bulk_delete_rds_cluster_snapshots_action_value` (Block List, Max: 1) "RDS(Aurora): Delete old DB cluster snapshots" action value (see [below for nested schema](#nestedblock--bulk_delete_rds_cluster_snapshots_action_value))
+- `bulk_delete_rds_snapshots_action_value` (Block List, Max: 1) "RDS: Delete old DB snapshots" action value (see [below for nested schema](#nestedblock--bulk_delete_rds_snapshots_action_value))
 - `bulk_stop_instances_action_value` (Block List, Max: 1) "EC2: Stop ALL instances" action value (see [below for nested schema](#nestedblock--bulk_stop_instances_action_value))
 - `change_elasticache_node_type_action_value` (Block List, Max: 1) "ElastiCache: Change node type" action value (see [below for nested schema](#nestedblock--change_elasticache_node_type_action_value))
 - `change_instance_type_action_value` (Block List, Max: 1) "EC2: Change instance type" action value (see [below for nested schema](#nestedblock--change_instance_type_action_value))
@@ -234,6 +235,22 @@ Optional:
 - `before_days` (Number) The number of days used to identify DB cluster snapshots to be deleted
 - `exclude_by_tag_key_bulk_delete_rds_cluster_snapshots` (String) The tag key used to identify DB cluster snapshots to exclude from deletion
 - `exclude_by_tag_value_bulk_delete_rds_cluster_snapshots` (String) The tag value used to identify DB cluster snapshots to exclude from deletion
+
+
+<a id="nestedblock--bulk_delete_rds_snapshots_action_value"></a>
+### Nested Schema for `bulk_delete_rds_snapshots_action_value`
+
+Required:
+
+- `exclude_by_tag_bulk_delete_rds_snapshots` (Boolean) Specifies whether to exclude DB snapshots with certain tags from deletion
+- `specify_base_date` (String) Specifies the method for determining which DB snapshots to delete
+
+Optional:
+
+- `before_date` (String) The date used to identify DB snapshots for deletion
+- `before_days` (Number) The number of days used to identify DB snapshots to be deleted
+- `exclude_by_tag_key_bulk_delete_rds_snapshots` (String) The tag key used to identify DB snapshots to exclude from deletion
+- `exclude_by_tag_value_bulk_delete_rds_snapshots` (String) The tag value used to identify DB snapshots to exclude from deletion
 
 
 <a id="nestedblock--bulk_stop_instances_action_value"></a>
