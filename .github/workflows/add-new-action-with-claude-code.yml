@@ -140,7 +140,7 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Implement new actions with Claude Code
-        uses: anthropics/claude-code-action@f4d737af0b61a79741d8246c5207da5887746212 # v1.0.15
+        uses: anthropics/claude-code-action@906bd89c74d21481682b0d428064c01578ae29d7 # v1.0.17
         with:
           use_bedrock: "true"
           branch_prefix: "claude-bedrock/"
