@@ -981,17 +981,38 @@ func buildRuleValue(d *schema.ResourceData, job *client.Job) map[string]interfac
 func buildActionValue(d *schema.ResourceData, job *client.Job) map[string]interface{} {
 	blockName := fmt.Sprintf("%s_action_value", job.ActionType)
 
+	var actionValue map[string]interface{}
+
+	// Terraform stateから取得を試みる（Update時など）
 	v, ok := d.GetOk(blockName)
-	if !ok {
-		return nil
+	if ok {
+		// スライスが空でないことを確認
+		actionValueList := v.([]interface{})
+		if len(actionValueList) > 0 && actionValueList[0] != nil {
+			actionValue = actionValueList[0].(map[string]interface{})
+		}
 	}
 
-	actionValue := v.([]interface{})[0].(map[string]interface{})
+	// stateに値がない場合（Read時など）、APIレスポンスから取得
+	if actionValue == nil {
+		if job.ActionValue != nil {
+			// job.ActionValueをコピーして使用（元のデータを変更しないように）
+			actionValue = make(map[string]interface{})
+			for k, v := range job.ActionValue {
+				actionValue[k] = v
+			}
+		} else {
+			return nil
+		}
+	}
 
 	schemaFields := resourceJob().Schema[blockName].Elem.(*schema.Resource).Schema
-	for key := range job.ActionValue {
-		if _, exists := schemaFields[key]; !exists {
-			delete(actionValue, key)
+	// job.ActionValueに含まれるキーのうち、スキーマに存在しないものをactionValueから削除
+	if job.ActionValue != nil {
+		for key := range job.ActionValue {
+			if _, exists := schemaFields[key]; !exists {
+				delete(actionValue, key)
+			}
 		}
 	}
 
