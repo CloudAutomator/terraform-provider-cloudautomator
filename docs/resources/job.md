@@ -153,6 +153,7 @@ resource "cloudautomator_job" "example-create-image-job" {
 - `stop_rds_instances_action_value` (Block List, Max: 1) "RDS: Stop DB instance" action value (see [below for nested schema](#nestedblock--stop_rds_instances_action_value))
 - `terminate_workspaces_action_value` (Block List, Max: 1) "WorkSpaces: Remove WorkSpace" action value (see [below for nested schema](#nestedblock--terminate_workspaces_action_value))
 - `update_record_set_action_value` (Block List, Max: 1) "Route 53: Update Resource Record Set" action value (see [below for nested schema](#nestedblock--update_record_set_action_value))
+- `vault_recovery_point_start_copy_job_action_value` (Block List, Max: 1) "Backup: Copy vault recovery point" action value (see [below for nested schema](#nestedblock--vault_recovery_point_start_copy_job_action_value))
 - `windows_update_action_value` (Block List, Max: 1) "EC2: Windows Update to instance (Old version)" action value (see [below for nested schema](#nestedblock--windows_update_action_value))
 - `windows_update_v2_action_value` (Block List, Max: 1) "EC2: Windows Update to instance (New version)" action value (see [below for nested schema](#nestedblock--windows_update_v2_action_value))
 
@@ -1251,6 +1252,26 @@ Required:
 - `record_set_type` (String) Resource record type
 - `record_set_value` (String) Resource Record Set Value
 - `zone_name` (String) Host zone for updating the resource record set
+
+
+<a id="nestedblock--vault_recovery_point_start_copy_job_action_value"></a>
+### Nested Schema for `vault_recovery_point_start_copy_job_action_value`
+
+Required:
+
+- `iam_role_arn` (String) IAM Role ARN to use when creating the copy
+- `resource_id` (String) ID of resource to copy recovery point
+- `resource_type` (String) Type of resource to copy recovery point
+- `source_backup_vault_name` (String) Source backup vault name
+- `source_region` (String) Region where the source backup vault is located
+- `specify_destination_aws_account` (String) How to specify the destination AWS account
+
+Optional:
+
+- `destination_backup_vault_arn` (String) ARN of the destination backup vault
+- `destination_backup_vault_name` (String) Destination backup vault name
+- `destination_region` (String) Region where the destination backup vault is located
+- `lifecycle_delete_after_days` (Number) Copy retention period (days)
 
 
 <a id="nestedblock--windows_update_action_value"></a>
