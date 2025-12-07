@@ -48,7 +48,6 @@ func TestAccCloudAutomatorJob_Ami(t *testing.T) {
 						value = "value-2"
 					}
 					add_same_tag_to_snapshot = "true"
-					trace_status = "true"
 					recreate_image_if_ami_status_failed	 = "true"
 				}
 				completed_post_process_id = [%s]
@@ -70,7 +69,6 @@ func TestAccCloudAutomatorJob_Ami(t *testing.T) {
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.additional_tags.1.key", "key-2"),
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.additional_tags.1.value", "value-2"),
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.add_same_tag_to_snapshot", "true"),
-				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.trace_status", "true"),
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "create_image_action_value.0.recreate_image_if_ami_status_failed", "true"),
 			},
 		},
