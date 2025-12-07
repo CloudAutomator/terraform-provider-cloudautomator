@@ -1026,7 +1026,7 @@ func buildActionValue(d *schema.ResourceData, job *client.Job) map[string]interf
 	}
 
 	switch job.ActionType {
-	case "dynamodb_start_backup_job", "ec2_start_backup_job", "s3_start_backup_job", "efs_start_backup_job", "vault_recovery_point_start_copy_job":
+	case "dynamodb_start_backup_job", "ec2_start_backup_job", "s3_start_backup_job", "efs_start_backup_job":
 		if actionValue["lifecycle_delete_after_days"] == 0 {
 			actionValue["lifecycle_delete_after_days"] = nil
 		}
@@ -1036,6 +1036,10 @@ func buildActionValue(d *schema.ResourceData, job *client.Job) map[string]interf
 			actionValue["additional_tags"] = tagsSet.List()
 		} else {
 			actionValue["additional_tags"] = []string{}
+		}
+	case "vault_recovery_point_start_copy_job":
+		if actionValue["lifecycle_delete_after_days"] == 0 {
+			actionValue["lifecycle_delete_after_days"] = nil
 		}
 	default:
 		// additional_tags が存在する場合はリストに変換して、空の場合は削除する
