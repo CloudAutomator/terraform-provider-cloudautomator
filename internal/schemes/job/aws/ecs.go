@@ -100,3 +100,58 @@ func StopEcsTasksActionValueFields() map[string]*schema.Schema {
 		},
 	}
 }
+
+func EcsChangeServiceTaskCountActionValueFields() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"region": {
+			Description: "AWS Region",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"ecs_cluster": {
+			Description: "Target ECS cluster name",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"specify_ecs_service": {
+			Description: "How to identify target ECS service",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"ecs_service": {
+			Description: "Target ECS service name",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"tag_key": {
+			Description: "Tag key used to identify the target service",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"tag_value": {
+			Description: "Tag value used to identify the target service",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"specify_task_change": {
+			Description: "Task count change method",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"desired_count": {
+			Description: "ECS service desired count",
+			Type:        schema.TypeInt,
+			Optional:    true,
+		},
+		"min_capacity": {
+			Description: "AutoScaling minimum capacity",
+			Type:        schema.TypeInt,
+			Optional:    true,
+		},
+		"max_capacity": {
+			Description: "AutoScaling maximum capacity",
+			Type:        schema.TypeInt,
+			Optional:    true,
+		},
+	}
+}
