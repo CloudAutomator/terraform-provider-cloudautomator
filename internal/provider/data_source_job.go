@@ -402,6 +402,15 @@ func dataSourceJob() *schema.Resource {
 					Schema: aws.EfsStartBackupJobActionValueFields(),
 				},
 			},
+			"vault_recovery_point_start_copy_job_action_value": {
+				Description: "\"Backup: Copy vault recovery point\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.VaultRecoveryPointStartCopyJobActionValueFields(),
+				},
+			},
 			"google_compute_insert_machine_image_action_value": {
 				Description: "\"Compute Engine: create machine image\" action value",
 				Type:        schema.TypeList,

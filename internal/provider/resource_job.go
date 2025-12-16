@@ -424,6 +424,15 @@ func resourceJob() *schema.Resource {
 					Schema: aws.EfsStartBackupJobActionValueFields(),
 				},
 			},
+			"vault_recovery_point_start_copy_job_action_value": {
+				Description: "\"Backup: Copy vault recovery point\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.VaultRecoveryPointStartCopyJobActionValueFields(),
+				},
+			},
 			"google_compute_insert_machine_image_action_value": {
 				Description: "\"Compute Engine: create machine image\" action value",
 				Type:        schema.TypeList,
@@ -1027,6 +1036,10 @@ func buildActionValue(d *schema.ResourceData, job *client.Job) map[string]interf
 			actionValue["additional_tags"] = tagsSet.List()
 		} else {
 			actionValue["additional_tags"] = []string{}
+		}
+	case "vault_recovery_point_start_copy_job":
+		if actionValue["lifecycle_delete_after_days"] == 0 {
+			actionValue["lifecycle_delete_after_days"] = nil
 		}
 	default:
 		// additional_tags が存在する場合はリストに変換して、空の場合は削除する
