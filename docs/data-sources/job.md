@@ -407,7 +407,6 @@ Optional:
 - `recreate_image_if_ami_status_failed` (String) Whether or not to retry when a job fails
 - `tag_key` (String) Tag key used to identify the target resource
 - `tag_value` (String) Tag value used to identify the target resource
-- `trace_status` (String) Whether to Verify completion status of the resource
 
 <a id="nestedblock--create_image_action_value--additional_tags"></a>
 ### Nested Schema for `create_image_action_value.additional_tags`

@@ -30,8 +30,6 @@
 #         - value-2
 #   - AMIに割り当てたタグをEBSスナップショットにも追加する
 #     - true
-#   - AMIの作成完了をジョブ完了の判定にする
-#     - true
 #   - ジョブ失敗時にリトライを行うか
 #     - true
 # ----------------------------------------------------------
@@ -62,7 +60,6 @@ resource "cloudautomator_job" "example-create-image-job" {
       value = "value-2"
     }
     add_same_tag_to_snapshot            = "true"
-    trace_status                        = "true"
     recreate_image_if_ami_status_failed = "true"
   }
 }
