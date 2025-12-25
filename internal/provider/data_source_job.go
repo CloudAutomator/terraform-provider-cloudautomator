@@ -393,6 +393,15 @@ func dataSourceJob() *schema.Resource {
 					Schema: aws.Ec2StartBackupJobActionValueFields(),
 				},
 			},
+			"ecs_change_service_task_count_action_value": {
+				Description: "\"ECS: Change service task count\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.EcsChangeServiceTaskCountActionValueFields(),
+				},
+			},
 			"efs_start_backup_job_action_value": {
 				Description: "\"EFS: Backup file system\" action value",
 				Type:        schema.TypeList,

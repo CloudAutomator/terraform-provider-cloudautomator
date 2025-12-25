@@ -118,6 +118,7 @@ resource "cloudautomator_job" "example-create-image-job" {
 - `disaster_recovery_action_value` (Block List, Max: 1) "DR: Launch EC2 instance" action value (see [below for nested schema](#nestedblock--disaster_recovery_action_value))
 - `dynamodb_start_backup_job_action_value` (Block List, Max: 1) "DynamoDB: Backup table" action value (see [below for nested schema](#nestedblock--dynamodb_start_backup_job_action_value))
 - `ec2_start_backup_job_action_value` (Block List, Max: 1) "EC2: Backup instance" action value (see [below for nested schema](#nestedblock--ec2_start_backup_job_action_value))
+- `ecs_change_service_task_count_action_value` (Block List, Max: 1) "ECS: Change service task count" action value (see [below for nested schema](#nestedblock--ecs_change_service_task_count_action_value))
 - `effective_date` (String) Effective date
 - `efs_start_backup_job_action_value` (Block List, Max: 1) "EFS: Backup file system" action value (see [below for nested schema](#nestedblock--efs_start_backup_job_action_value))
 - `expiration_date` (String) Expiration date
@@ -759,6 +760,26 @@ Required:
 - `key` (String)
 - `value` (String)
 
+
+
+<a id="nestedblock--ecs_change_service_task_count_action_value"></a>
+### Nested Schema for `ecs_change_service_task_count_action_value`
+
+Required:
+
+- `ecs_cluster` (String) Target ECS cluster name
+- `region` (String) AWS Region
+- `specify_ecs_service` (String) How to identify target ECS service
+- `specify_task_change` (String) Task count change method
+
+Optional:
+
+- `desired_count` (Number) ECS service desired count
+- `ecs_service` (String) Target ECS service name
+- `max_capacity` (Number) AutoScaling maximum capacity
+- `min_capacity` (Number) AutoScaling minimum capacity
+- `tag_key` (String) Tag key used to identify the target service
+- `tag_value` (String) Tag value used to identify the target service
 
 
 <a id="nestedblock--efs_start_backup_job_action_value"></a>
