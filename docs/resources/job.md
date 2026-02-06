@@ -130,6 +130,7 @@ resource "cloudautomator_job" "example-create-image-job" {
 - `google_compute_stop_vm_instances_action_value` (Block List, Max: 1) "Compute Engine: stop vm instances" action value (see [below for nested schema](#nestedblock--google_compute_stop_vm_instances_action_value))
 - `invoke_lambda_function_action_value` (Block List, Max: 1) "Lambda: Invoke lambda function" action value (see [below for nested schema](#nestedblock--invoke_lambda_function_action_value))
 - `no_action_action_value` (Block List, Max: 1) "Other: No Action" action value (see [below for nested schema](#nestedblock--no_action_action_value))
+- `rds_cluster_change_capacity_action_value` (Block List, Max: 1) "RDS(Aurora): Change DB cluster ACU" action value (see [below for nested schema](#nestedblock--rds_cluster_change_capacity_action_value))
 - `reboot_rds_instances_action_value` (Block List, Max: 1) "RDS: Reboot DB instance" action value (see [below for nested schema](#nestedblock--reboot_rds_instances_action_value))
 - `reboot_workspaces_action_value` (Block List, Max: 1) "WorkSpaces: Reboot WorkSpace" action value (see [below for nested schema](#nestedblock--reboot_workspaces_action_value))
 - `rebuild_workspaces_action_value` (Block List, Max: 1) "WorkSpaces: Rebuild WorkSpace" action value (see [below for nested schema](#nestedblock--rebuild_workspaces_action_value))
@@ -871,6 +872,24 @@ Required:
 
 <a id="nestedblock--no_action_action_value"></a>
 ### Nested Schema for `no_action_action_value`
+
+
+<a id="nestedblock--rds_cluster_change_capacity_action_value"></a>
+### Nested Schema for `rds_cluster_change_capacity_action_value`
+
+Required:
+
+- `acu_max_capacity` (Number) Maximum capacity
+- `acu_min_capacity` (Number) Minimum capacity
+- `region` (String) AWS Region in which the target resource resides
+- `specify_rds_cluster` (String) How to identify target resources
+
+Optional:
+
+- `db_cluster_identifier` (String) Target DB Cluster ID
+- `seconds_until_auto_pause` (Number) Seconds until auto pause
+- `tag_key` (String) Tag key used to identify the target resource
+- `tag_value` (String) Tag value used to identify the target resource
 
 
 <a id="nestedblock--reboot_rds_instances_action_value"></a>
