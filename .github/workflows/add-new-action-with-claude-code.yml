@@ -108,7 +108,7 @@ jobs:
           fi
 
       - name: Configure AWS Credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708 # v5.1.1
+        uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7 # v6.0.0
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ env.AWS_REGION }}
@@ -140,7 +140,7 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Implement new actions with Claude Code
-        uses: anthropics/claude-code-action@7145c3e0510bcdbdd29f67cc4a8c1958f1acfa2f # v1.0.27
+        uses: anthropics/claude-code-action@edd85d61533cbba7b57ed0ca4af1750b1fdfd3c4 # v1.0.55
         with:
           use_bedrock: "true"
           branch_prefix: "claude-bedrock/"
