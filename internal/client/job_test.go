@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 	"net/http"
+	"reflect"
 	"testing"
 )
 
@@ -404,6 +405,41 @@ func TestJob_Update(t *testing.T) {
 		t.Fatal(err)
 	}
 	testEqual(t, expect, updatedJob)
+}
+
+func TestReadRuleValues_Cron_Weekly(t *testing.T) {
+	raw := &JobAttributes{
+		RuleType: "cron",
+		RuleValue: map[string]interface{}{
+			"schedule_type":   "weekly",
+			"weekly_schedule": `["", "monday"]`,
+			"dates_to_skip":   `[]`,
+			"next_occurrence": "2100-01-01 00:00:00 UTC",
+		},
+	}
+	rv := readRuleValues(raw)
+	got := rv["weekly_schedule"].([]string)
+	want := []string{"monday"}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("weekly_schedule: want %v, got %v", want, got)
+	}
+}
+
+func TestReadRuleValues_Cron_Monthly(t *testing.T) {
+	raw := &JobAttributes{
+		RuleType: "cron",
+		RuleValue: map[string]interface{}{
+			"schedule_type":   "monthly",
+			"dates_to_skip":   `["2024-01-01"]`,
+			"next_occurrence": "2100-01-01 00:00:00 UTC",
+		},
+	}
+	rv := readRuleValues(raw)
+	got := rv["dates_to_skip"].([]string)
+	want := []string{"2024-01-01"}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("dates_to_skip: want %v, got %v", want, got)
+	}
 }
 
 func TestJob_Delete(t *testing.T) {

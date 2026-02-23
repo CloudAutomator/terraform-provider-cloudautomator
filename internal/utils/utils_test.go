@@ -2,6 +2,7 @@ package utils
 
 import (
 	"log"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -248,15 +249,16 @@ func TestStringToSlice(t *testing.T) {
 		str     string
 		strList []string
 	}{
-		"basic": {"[\"monday\", \"sunday\"]", []string{"monday", "sunday"}},
+		"basic":                         {`["monday", "sunday"]`, []string{"monday", "sunday"}},
+		"single_day_with_leading_empty": {`["", "monday"]`, []string{"monday"}},
+		"no_space_separator":            {`["","monday"]`, []string{"monday"}},
+		"empty_array":                   {`[]`, []string{}},
+		"invalid_json":                  {`not-json`, []string{}},
 	}
 	for name, tc := range cases {
 		strList := StringToSlice(tc.str)
-
-		for i, v := range strList {
-			if v != tc.strList[i] {
-				t.Errorf("testing %s: failed want: %s, got: %s", name, tc.strList[i], v)
-			}
+		if !reflect.DeepEqual(strList, tc.strList) {
+			t.Errorf("testing %s: failed want: %v, got: %v", name, tc.strList, strList)
 		}
 	}
 }

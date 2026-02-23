@@ -1,10 +1,9 @@
 package utils
 
 import (
+	"encoding/json"
 	"math/rand"
 	"reflect"
-	"regexp"
-	"strings"
 )
 
 func Contains(list interface{}, elem interface{}) bool {
@@ -57,12 +56,16 @@ func RandomString(n int) string {
 }
 
 func StringToSlice(str string) []string {
-	r := regexp.MustCompile(`[\[\]"]`)
-	replacedStr := r.ReplaceAllString(str, "")
-
-	if replacedStr == "" {
+	var parsed []string
+	if err := json.Unmarshal([]byte(str), &parsed); err != nil {
 		return []string{}
-	} else {
-		return strings.Split(replacedStr, ", ")
 	}
+
+	result := make([]string, 0, len(parsed))
+	for _, p := range parsed {
+		if p != "" {
+			result = append(result, p)
+		}
+	}
+	return result
 }
