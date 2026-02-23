@@ -326,3 +326,48 @@ func StopRdsClustersActionValueFields() map[string]*schema.Schema {
 		},
 	}
 }
+
+func RdsClusterChangeCapacityActionValueFields() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"region": {
+			Description: "AWS Region in which the target resource resides",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"specify_rds_cluster": {
+			Description: "How to identify target resources",
+			Type:        schema.TypeString,
+			Required:    true,
+		},
+		"db_cluster_identifier": {
+			Description: "Target DB Cluster ID",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"tag_key": {
+			Description: "Tag key used to identify the target resource",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"tag_value": {
+			Description: "Tag value used to identify the target resource",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"acu_min_capacity": {
+			Description: "Minimum capacity",
+			Type:        schema.TypeFloat,
+			Required:    true,
+		},
+		"acu_max_capacity": {
+			Description: "Maximum capacity",
+			Type:        schema.TypeFloat,
+			Required:    true,
+		},
+		"seconds_until_auto_pause": {
+			Description: "Seconds until auto pause",
+			Type:        schema.TypeInt,
+			Optional:    true,
+		},
+	}
+}

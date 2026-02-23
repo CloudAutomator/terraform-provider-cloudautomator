@@ -546,6 +546,15 @@ func dataSourceJob() *schema.Resource {
 					Schema: aws.StartInstancesActionValueFields(),
 				},
 			},
+			"rds_cluster_change_capacity_action_value": {
+				Description: "\"RDS(Aurora): Change DB cluster ACU\" action value",
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: aws.RdsClusterChangeCapacityActionValueFields(),
+				},
+			},
 			"start_rds_clusters_action_value": {
 				Description: "\"RDS(Aurora): Start DB cluster\" action value",
 				Type:        schema.TypeList,

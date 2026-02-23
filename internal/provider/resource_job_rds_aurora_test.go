@@ -368,6 +368,43 @@ func TestAccCloudAutomatorJob_RdsAurora(t *testing.T) {
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "bulk_delete_rds_cluster_snapshots_action_value.0.before_days", "365"),
 			},
 		},
+		{
+			name:    "RdsClusterChangeCapacityAction",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				aws_account_id = "%s"
+
+				rule_type = "webhook"
+
+				action_type = "rds_cluster_change_capacity"
+				rds_cluster_change_capacity_action_value {
+					region = "ap-northeast-1"
+					specify_rds_cluster = "tag"
+					tag_key = "env"
+					tag_value = "develop"
+					acu_min_capacity = 0.5
+					acu_max_capacity = 1
+					seconds_until_auto_pause = 300
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestAwsAccountId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "action_type", "rds_cluster_change_capacity"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rds_cluster_change_capacity_action_value.0.region", "ap-northeast-1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rds_cluster_change_capacity_action_value.0.specify_rds_cluster", "tag"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rds_cluster_change_capacity_action_value.0.tag_key", "env"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rds_cluster_change_capacity_action_value.0.tag_value", "develop"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rds_cluster_change_capacity_action_value.0.acu_min_capacity", "0.5"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rds_cluster_change_capacity_action_value.0.acu_max_capacity", "1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rds_cluster_change_capacity_action_value.0.seconds_until_auto_pause", "300"),
+			},
+		},
 	}
 
 	for _, tc := range cases {
