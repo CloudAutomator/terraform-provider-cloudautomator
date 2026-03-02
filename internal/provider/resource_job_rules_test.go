@@ -53,7 +53,49 @@ func TestAccCloudAutomatorJob_Rules(t *testing.T) {
 			},
 		},
 		{
-			name:    "CronRuleWeekly",
+			name:    "CronRuleWeeklySingleDay",
+			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
+			configFunc: func(resourceName string) string {
+				return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+
+				rule_type = "cron"
+				cron_rule_value {
+					hour = "3"
+					minutes = "30"
+					schedule_type = "weekly"
+					weekly_schedule = [
+						"monday"
+					]
+					time_zone = "Tokyo"
+					dates_to_skip = ["2099-12-31"]
+					national_holiday_schedule = "true"
+				}
+
+				action_type = "delay"
+				delay_action_value {
+					delay_minutes = 1
+				}
+				completed_post_process_id = [%s]
+				failed_post_process_id = [%s]
+			}`, resourceName, acctest.TestGroupId(), acctest.TestPostProcessId(), acctest.TestPostProcessId())
+			},
+			checks: []resource.TestCheckFunc{
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "rule_type", "cron"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.hour", "3"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.minutes", "30"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.schedule_type", "weekly"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.weekly_schedule.#", "1"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.weekly_schedule.0", "monday"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.time_zone", "Tokyo"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.dates_to_skip.0", "2099-12-31"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.national_holiday_schedule", "true"),
+			},
+		},
+		{
+			name:    "CronRuleWeeklyAllDays",
 			jobName: fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12)),
 			configFunc: func(resourceName string) string {
 				return fmt.Sprintf(`
@@ -68,6 +110,11 @@ func TestAccCloudAutomatorJob_Rules(t *testing.T) {
 					schedule_type = "weekly"
 					weekly_schedule = [
 						"monday",
+						"tuesday",
+						"wednesday",
+						"thursday",
+						"friday",
+						"saturday",
 						"sunday"
 					]
 					time_zone = "Tokyo"
@@ -88,9 +135,14 @@ func TestAccCloudAutomatorJob_Rules(t *testing.T) {
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.hour", "3"),
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.minutes", "30"),
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.schedule_type", "weekly"),
-				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.weekly_schedule.#", "2"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.weekly_schedule.#", "7"),
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.weekly_schedule.0", "monday"),
-				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.weekly_schedule.1", "sunday"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.weekly_schedule.1", "tuesday"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.weekly_schedule.2", "wednesday"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.weekly_schedule.3", "thursday"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.weekly_schedule.4", "friday"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.weekly_schedule.5", "saturday"),
+				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.weekly_schedule.6", "sunday"),
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.time_zone", "Tokyo"),
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.dates_to_skip.0", "2099-12-31"),
 				resource.TestCheckResourceAttr("cloudautomator_job.test", "cron_rule_value.0.national_holiday_schedule", "true"),
