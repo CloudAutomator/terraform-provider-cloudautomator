@@ -46,6 +46,53 @@ func TestAccCloudAutomatorJob_DelayAction(t *testing.T) {
 	})
 }
 
+func TestAccCloudAutomatorJob_Active(t *testing.T) {
+	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
+
+	configFunc := func(active bool) string {
+		return fmt.Sprintf(`
+			resource "cloudautomator_job" "test" {
+				name = "%s"
+				group_id = "%s"
+				active = %t
+
+				rule_type = "webhook"
+
+				action_type = "delay"
+				delay_action_value {
+					delay_minutes = 30
+				}
+			}`, jobName, acctest.TestGroupId(), active)
+	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckCloudAutomatorJobDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: configFunc(false),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], "cloudautomator_job.test"),
+					resource.TestCheckResourceAttr("cloudautomator_job.test", "active", "false"),
+				),
+			},
+			{
+				ResourceName:      "cloudautomator_job.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
+				Config: configFunc(true),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccCheckCloudAutomatorJobExists(testAccProviders["cloudautomator"], "cloudautomator_job.test"),
+					resource.TestCheckResourceAttr("cloudautomator_job.test", "active", "true"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccCloudAutomatorJob_NoActionAction(t *testing.T) {
 	jobName := fmt.Sprintf("tf-testacc-job-%s", utils.RandomString(12))
 
