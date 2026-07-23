@@ -164,6 +164,7 @@ func readParameters(rawPostProcess *PostProcessAttributes) map[string]interface{
 		delete(parameters, "region")
 	case "slack":
 		parameters["slack_channel_name"] = parameters["channel_name"]
+		parameters["slack_channel_id"] = parameters["channel_id"]
 		parameters["slack_language"] = parameters["language"]
 		parameters["slack_time_zone"] = parameters["time_zone"]
 

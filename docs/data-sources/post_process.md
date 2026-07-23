@@ -49,6 +49,7 @@ Read-Only:
 
 Read-Only:
 
+- `slack_channel_id` (String)
 - `slack_channel_name` (String)
 - `slack_language` (String)
 - `slack_time_zone` (String)
