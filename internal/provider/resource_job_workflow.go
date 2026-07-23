@@ -111,6 +111,8 @@ func resourceJobWorkflowRead(ctx context.Context, d *schema.ResourceData, m inte
 	d.Set("active", jobWorkflow.Active)
 	d.Set("name", jobWorkflow.Name)
 	d.Set("group_id", jobWorkflow.GroupId)
+	d.Set("first_job_id", jobWorkflow.FirstJobId)
+	d.Set("following_job_ids", jobWorkflow.FollowingJobIds)
 
 	return diags
 }
