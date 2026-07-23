@@ -1049,21 +1049,18 @@ func buildActionValue(d *schema.ResourceData, job *client.Job) map[string]interf
 			actionValue["lifecycle_delete_after_days"] = nil
 		}
 
-		// additional_tags が存在する場合はリストに変換して、空の場合は空のリストに変換する
-		if tagsSet, ok := actionValue["additional_tags"].(*schema.Set); ok && tagsSet.Len() > 0 {
-			actionValue["additional_tags"] = tagsSet.List()
-		} else {
-			actionValue["additional_tags"] = []string{}
-		}
+		// additional_tags をリストに正規化する（空の場合は空のリスト）
+		actionValue["additional_tags"] = normalizeAdditionalTags(actionValue["additional_tags"])
 	case "vault_recovery_point_start_copy_job":
 		if actionValue["lifecycle_delete_after_days"] == 0 {
 			actionValue["lifecycle_delete_after_days"] = nil
 		}
 	default:
-		// additional_tags が存在する場合はリストに変換して、空の場合は削除する
-		if tags, ok := actionValue["additional_tags"]; ok {
-			if tagsSet, ok := tags.(*schema.Set); ok && tagsSet.Len() > 0 {
-				actionValue["additional_tags"] = tagsSet.List()
+		// additional_tags をリストに正規化し、空の場合は削除する
+		if _, ok := actionValue["additional_tags"]; ok {
+			tags := normalizeAdditionalTags(actionValue["additional_tags"])
+			if len(tags) > 0 {
+				actionValue["additional_tags"] = tags
 			} else {
 				delete(actionValue, "additional_tags")
 			}
@@ -1071,4 +1068,18 @@ func buildActionValue(d *schema.ResourceData, job *client.Job) map[string]interf
 	}
 
 	return actionValue
+}
+
+// normalizeAdditionalTags は additional_tags を、Terraform 設定由来の
+// *schema.Set と API レスポンス由来の []interface{} のどちらの形式からでも
+// リスト（[]interface{}）に変換する。いずれでもない場合は空のリストを返す。
+func normalizeAdditionalTags(tags interface{}) []interface{} {
+	switch t := tags.(type) {
+	case *schema.Set:
+		return t.List()
+	case []interface{}:
+		return t
+	default:
+		return []interface{}{}
+	}
 }
