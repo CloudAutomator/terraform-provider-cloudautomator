@@ -797,7 +797,7 @@ func resourceJobCreate(ctx context.Context, d *schema.ResourceData, m interface{
 		job.ActionType = v.(string)
 	}
 
-	job.ActionValue = buildActionValue(d, &job)
+	job.ActionValue = buildActionValue(d, &job, false)
 
 	//lint:ignore SA1019 https://github.com/hashicorp/terraform-plugin-sdk/pull/350#issuecomment-597888969
 	if v, ok := d.GetOkExists("allow_runtime_action_values"); ok {
@@ -865,7 +865,7 @@ func resourceJobRead(ctx context.Context, d *schema.ResourceData, m interface{})
 	d.Set("action_type", job.ActionType)
 	if job.ActionType != "no_action" {
 		actionValueBlockName := fmt.Sprintf("%s_action_value", job.ActionType)
-		if err := d.Set(actionValueBlockName, []interface{}{buildActionValue(d, job)}); err != nil {
+		if err := d.Set(actionValueBlockName, []interface{}{buildActionValue(d, job, true)}); err != nil {
 			return append(diags, diag.FromErr(err)...)
 		}
 	}
@@ -923,7 +923,7 @@ func resourceJobUpdate(ctx context.Context, d *schema.ResourceData, m interface{
 
 	actionValueBlockName := fmt.Sprintf("%s_action_value", job.ActionType)
 	if d.HasChange(actionValueBlockName) {
-		job.ActionValue = buildActionValue(d, job)
+		job.ActionValue = buildActionValue(d, job, false)
 	}
 
 	if d.HasChange("allow_runtime_action_values") {
@@ -1005,22 +1005,29 @@ func buildRuleValue(d *schema.ResourceData, job *client.Job) map[string]interfac
 	return nil
 }
 
-func buildActionValue(d *schema.ResourceData, job *client.Job) map[string]interface{} {
+// buildActionValue はジョブの action_value ブロックを組み立てる。
+// fromAPI が true の場合（Read時）は API レスポンスの値を、false の場合
+// （Create / Update 時）は Terraform 設定（state）の値を土台にする。Read で
+// 設定を土台にすると Terraform 外での変更が state に反映されず、ドリフトを
+// 検出できないため、経路を明示的に切り替える。
+func buildActionValue(d *schema.ResourceData, job *client.Job, fromAPI bool) map[string]interface{} {
 	blockName := fmt.Sprintf("%s_action_value", job.ActionType)
 
 	var actionValue map[string]interface{}
 
-	// Terraform stateから取得を試みる（Update時など）
-	v, ok := d.GetOk(blockName)
-	if ok {
-		// スライスが空でないことを確認
-		actionValueList := v.([]interface{})
-		if len(actionValueList) > 0 && actionValueList[0] != nil {
-			actionValue = actionValueList[0].(map[string]interface{})
+	// Create / Update 時は Terraform 設定（state）の値を土台にする
+	if !fromAPI {
+		v, ok := d.GetOk(blockName)
+		if ok {
+			// スライスが空でないことを確認
+			actionValueList := v.([]interface{})
+			if len(actionValueList) > 0 && actionValueList[0] != nil {
+				actionValue = actionValueList[0].(map[string]interface{})
+			}
 		}
 	}
 
-	// stateに値がない場合（Read時など）、APIレスポンスから取得
+	// Read時、または設定に値がない場合は API レスポンスから取得する
 	if actionValue == nil {
 		if job.ActionValue != nil {
 			// job.ActionValueをコピーして使用（元のデータを変更しないように）
@@ -1045,14 +1052,16 @@ func buildActionValue(d *schema.ResourceData, job *client.Job) map[string]interf
 
 	switch job.ActionType {
 	case "dynamodb_start_backup_job", "ec2_start_backup_job", "s3_start_backup_job", "efs_start_backup_job":
-		if actionValue["lifecycle_delete_after_days"] == 0 {
+		// API レスポンス由来では float64、設定由来では int のため両方を 0 とみなす
+		if v := actionValue["lifecycle_delete_after_days"]; v == 0 || v == float64(0) {
 			actionValue["lifecycle_delete_after_days"] = nil
 		}
 
 		// additional_tags をリストに正規化する（空の場合は空のリスト）
 		actionValue["additional_tags"] = normalizeAdditionalTags(actionValue["additional_tags"])
 	case "vault_recovery_point_start_copy_job":
-		if actionValue["lifecycle_delete_after_days"] == 0 {
+		// API レスポンス由来では float64、設定由来では int のため両方を 0 とみなす
+		if v := actionValue["lifecycle_delete_after_days"]; v == 0 || v == float64(0) {
 			actionValue["lifecycle_delete_after_days"] = nil
 		}
 	default:

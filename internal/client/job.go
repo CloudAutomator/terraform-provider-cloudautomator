@@ -216,7 +216,11 @@ func readRuleValues(rawJob *JobAttributes) map[string]interface{} {
 
 func readActionValues(rawJob *JobAttributes) map[string]interface{} {
 	switch rawJob.ActionType {
-	case "create_ebs_snapshot", "create_image":
+	case "create_ebs_snapshot", "create_image", "copy_image",
+		"create_rds_snapshot", "create_rds_cluster_snapshot",
+		"create_redshift_snapshot", "create_fsx_backup",
+		"google_compute_insert_machine_image":
+		// generation はスキーマ上 TypeInt だが API は文字列で返すため変換する
 		switch rawJob.ActionValue["generation"].(type) {
 		case string:
 			generation, _ := strconv.Atoi(rawJob.ActionValue["generation"].(string))
