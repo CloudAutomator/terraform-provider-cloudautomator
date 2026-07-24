@@ -168,6 +168,11 @@ func TestAccCloudAutomatorJob_Ami(t *testing.T) {
 							append(baseChecks, tc.checks...)...,
 						),
 					},
+					{
+						ResourceName:      "cloudautomator_job.test",
+						ImportState:       true,
+						ImportStateVerify: true,
+					},
 				},
 			})
 		})
