@@ -62,6 +62,10 @@ Required:
 - `slack_language` (String) Language of notification content
 - `slack_time_zone` (String) Time zone
 
+Read-Only:
+
+- `slack_channel_id` (String) Slack Channel ID
+
 
 <a id="nestedblock--sqs_parameters"></a>
 ### Nested Schema for `sqs_parameters`

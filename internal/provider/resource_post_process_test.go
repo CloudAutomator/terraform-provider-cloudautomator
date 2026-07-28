@@ -60,6 +60,7 @@ func TestAccCloudAutomatorPostProcess(t *testing.T) {
 			checks: []resource.TestCheckFunc{
 				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "service", "slack"),
 				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "slack_parameters.0.slack_channel_name", "ca-test-info-notification"),
+				resource.TestCheckResourceAttrSet("cloudautomator_post_process.test", "slack_parameters.0.slack_channel_id"),
 				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "slack_parameters.0.slack_language", "ja"),
 				resource.TestCheckResourceAttr("cloudautomator_post_process.test", "slack_parameters.0.slack_time_zone", "Tokyo"),
 			},
