@@ -21,6 +21,11 @@ func SlackParametersFields() map[string]*schema.Schema {
 			Type:        schema.TypeString,
 			Required:    true,
 		},
+		"slack_channel_id": {
+			Description: "Slack Channel ID",
+			Type:        schema.TypeString,
+			Computed:    true,
+		},
 		"slack_language": {
 			Description: "Language of notification content",
 			Type:        schema.TypeString,

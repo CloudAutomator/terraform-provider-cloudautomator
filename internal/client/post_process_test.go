@@ -56,6 +56,60 @@ func TestPostProcess_Get(t *testing.T) {
 	testEqual(t, expect, postProcess)
 }
 
+func TestPostProcess_GetSlack(t *testing.T) {
+	setup()
+	defer server.Close()
+
+	mux.HandleFunc("/post_processes/1000", func(w http.ResponseWriter, r *http.Request) {
+		testHttpMethod(t, r, "GET")
+		_, _ = w.Write([]byte(`
+		{
+			"data": {
+				"id": "1000",
+				"type": "post_processes",
+				"attributes": {
+					"name": "test-post-process",
+					"group_id": 1,
+					"service": "slack",
+					"shared_by_group": false,
+					"parameters": {
+						"channel_name": "test-channel",
+						"channel_id": "C00000000",
+						"language": "ja",
+						"time_zone": "Tokyo"
+					},
+					"created_at": "2000-01-01T00:00:00.000+09:00",
+					"updated_at": "2000-01-01T00:00:00.000+09:00"
+				}
+			}
+		}`))
+	})
+
+	c, _ := New("example-token", WithAPIEndpoint(server.URL))
+
+	postProcess, _, err := c.GetPostProcess("1000")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	sharedByGroup := false
+	expect := &PostProcess{
+		Id:            "1000",
+		Name:          "test-post-process",
+		Service:       "slack",
+		SharedByGroup: &sharedByGroup,
+		GroupId:       1,
+		Parameters: map[string]interface{}{
+			"slack_channel_name": "test-channel",
+			"slack_channel_id":   "C00000000",
+			"slack_language":     "ja",
+			"slack_time_zone":    "Tokyo",
+		},
+	}
+
+	testEqual(t, expect, postProcess)
+}
+
 func TestPostProcess_List(t *testing.T) {
 	setup()
 	defer server.Close()
