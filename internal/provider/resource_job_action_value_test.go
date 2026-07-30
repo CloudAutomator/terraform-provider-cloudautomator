@@ -27,7 +27,7 @@ func TestBuildActionValue_ImportKeepsAdditionalTags(t *testing.T) {
 		},
 	}
 
-	actionValue := buildActionValue(d, job)
+	actionValue := buildActionValue(d, job, true)
 
 	tags, ok := actionValue["additional_tags"]
 	if !ok {
@@ -41,5 +41,43 @@ func TestBuildActionValue_ImportKeepsAdditionalTags(t *testing.T) {
 
 	if len(list) != 1 {
 		t.Fatalf("additional_tags の要素数が想定と異なる: want 1, got %d", len(list))
+	}
+}
+
+// Read（fromAPI=true）で、state に古い値が残っていても API レスポンスの値が
+// 使われることを確認する。Terraform 外での変更をドリフトとして検出するために
+// 必要な挙動である。
+func TestBuildActionValue_ReadUsesAPIValueOverState(t *testing.T) {
+	d := resourceJob().TestResourceData()
+
+	// state に古い値（example-before）を入れておく
+	if err := d.Set("stop_instances_action_value", []interface{}{
+		map[string]interface{}{
+			"region":           "ap-northeast-1",
+			"specify_instance": "tag",
+			"tag_key":          "Name",
+			"tag_value":        "example-before",
+			"trace_status":     "false",
+		},
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	// API は新しい値（example-after）を返している
+	job := &client.Job{
+		ActionType: "stop_instances",
+		ActionValue: map[string]interface{}{
+			"region":           "ap-northeast-1",
+			"specify_instance": "tag",
+			"tag_key":          "Name",
+			"tag_value":        "example-after",
+			"trace_status":     "false",
+		},
+	}
+
+	actionValue := buildActionValue(d, job, true)
+
+	if actionValue["tag_value"] != "example-after" {
+		t.Errorf("Read で API の値が使われていない: want example-after, got %v", actionValue["tag_value"])
 	}
 }
