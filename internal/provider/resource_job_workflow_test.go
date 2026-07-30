@@ -85,6 +85,11 @@ func TestAccCloudAutomatorJobWorkflow(t *testing.T) {
 							}, tc.checks...)...,
 						),
 					},
+					{
+						ResourceName:      "cloudautomator_job_workflow.test",
+						ImportState:       true,
+						ImportStateVerify: true,
+					},
 				},
 			})
 		})
