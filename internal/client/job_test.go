@@ -61,6 +61,7 @@ func TestJob_Get(t *testing.T) {
 	expect := &Job{
 		Id:           "1000",
 		Name:         "test-job",
+		Active:       true,
 		GroupId:      1,
 		AwsAccountId: 1,
 		RuleType:     "cron",
@@ -201,6 +202,7 @@ func TestJob_List(t *testing.T) {
 		{
 			Id:           "1000",
 			Name:         "test-job",
+			Active:       true,
 			GroupId:      1,
 			AwsAccountId: 1,
 			RuleType:     "cron",
@@ -224,6 +226,7 @@ func TestJob_List(t *testing.T) {
 		{
 			Id:           "2000",
 			Name:         "test-job",
+			Active:       true,
 			GroupId:      1,
 			AwsAccountId: 1,
 			RuleType:     "cron",
@@ -300,6 +303,7 @@ func TestJob_Create(t *testing.T) {
 	expect := &Job{
 		Id:           "1000",
 		Name:         "test-job",
+		Active:       true,
 		GroupId:      1,
 		AwsAccountId: 1,
 		RuleType:     "cron",
@@ -380,6 +384,7 @@ func TestJob_Update(t *testing.T) {
 	expect := &Job{
 		Id:           "1000",
 		Name:         "test-job",
+		Active:       true,
 		GroupId:      1,
 		AwsAccountId: 1,
 		RuleType:     "cron",
@@ -453,6 +458,69 @@ func TestJob_Delete(t *testing.T) {
 	c, _ := New("example-token", WithAPIEndpoint(server.URL))
 
 	_, err := c.DeleteJob("1")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestJob_Activate(t *testing.T) {
+	setup()
+	defer server.Close()
+
+	mux.HandleFunc("/jobs/1000/activate", func(w http.ResponseWriter, r *http.Request) {
+		testHttpMethod(t, r, "POST")
+		_, _ = w.Write([]byte(`
+		{
+			"data": {
+				"id": "1000",
+				"type": "trigger_jobs",
+				"attributes": {
+					"name": "test-job",
+					"active": true,
+					"group_id": 1,
+					"rule_type": "cron",
+					"rule_value": {
+						"hour": "9",
+						"minutes": "0",
+						"time_zone": "Tokyo",
+						"schedule_type": "one_time",
+						"one_time_schedule": "2100/01/01"
+					},
+					"action_type": "delay",
+					"action_value": {
+						"delay_minutes": 60
+					},
+					"created_at": "2000-01-01T00:00:00.000+09:00",
+					"updated_at": "2000-01-01T00:00:00.000+09:00"
+				}
+			}
+		}`))
+	})
+
+	c, _ := New("example-token", WithAPIEndpoint(server.URL))
+
+	job, _, err := c.ActivateJob("1000")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !job.Active {
+		t.Errorf("expected job.Active to be true, got false")
+	}
+}
+
+func TestJob_Deactivate(t *testing.T) {
+	setup()
+	defer server.Close()
+
+	mux.HandleFunc("/jobs/1000/deactivate", func(w http.ResponseWriter, r *http.Request) {
+		testHttpMethod(t, r, "DELETE")
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	c, _ := New("example-token", WithAPIEndpoint(server.URL))
+
+	_, err := c.DeactivateJob("1000")
 	if err != nil {
 		t.Fatal(err)
 	}

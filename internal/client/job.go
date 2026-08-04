@@ -15,6 +15,7 @@ import (
 type Job struct {
 	Id                       string                 `json:"id,omitempty"`
 	Name                     string                 `json:"name"`
+	Active                   bool                   `json:"-"`
 	GroupId                  int                    `json:"group_id"`
 	ForWorkflow              *bool                  `json:"for_workflow,omitempty"`
 	AwsAccountId             int                    `json:"aws_account_id,omitempty"`
@@ -178,6 +179,32 @@ func (c *Client) DeleteJob(jobId string) (*http.Response, error) {
 	return resp, nil
 }
 
+func (c *Client) ActivateJob(jobId string) (*Job, *http.Response, error) {
+	requestUrl := fmt.Sprintf("jobs/%s/activate", jobId)
+	postResponse := new(JobPostResponse)
+	resp, err := c.requestWithRetry("POST", requestUrl, nil, postResponse, defaultRetryCount)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	j := new(Job)
+	if err := json.Unmarshal(postResponse.Data, &j); err != nil {
+		return nil, resp, errors.New("unmarshal failed")
+	}
+
+	return j, resp, nil
+}
+
+func (c *Client) DeactivateJob(jobId string) (*http.Response, error) {
+	requestUrl := fmt.Sprintf("jobs/%s/deactivate", jobId)
+	resp, err := c.requestWithRetry("DELETE", requestUrl, nil, nil, defaultRetryCount)
+	if err != nil {
+		return resp, err
+	}
+
+	return resp, nil
+}
+
 func readRuleValues(rawJob *JobAttributes) map[string]interface{} {
 	ruleValue := rawJob.RuleValue
 
@@ -246,6 +273,7 @@ func (j *Job) UnmarshalJSON(data []byte) error {
 
 	j.Id = rj.Id
 	j.Name = rj.Attributes.Name
+	j.Active = rj.Attributes.Active
 	j.GroupId = rj.Attributes.GroupID
 	j.ForWorkflow = rj.Attributes.ForWorkflow
 	j.AwsAccountId = rj.Attributes.AwsAccountId

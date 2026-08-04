@@ -79,6 +79,7 @@ resource "cloudautomator_job" "example-create-image-job" {
 
 ### Optional
 
+- `active` (Boolean) Whether the job is enabled
 - `allow_runtime_action_values` (Boolean) Whether the value of the action setting is specified at runtime or not
 - `attach_user_policy_action_value` (Block List, Max: 1) "IAM: Attach Policy to IAM User" action value (see [below for nested schema](#nestedblock--attach_user_policy_action_value))
 - `authorize_security_group_ingress_action_value` (Block List, Max: 1) "EC2: Authorize security group ingress" action value (see [below for nested schema](#nestedblock--authorize_security_group_ingress_action_value))

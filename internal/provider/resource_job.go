@@ -33,6 +33,12 @@ func resourceJob() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 			},
+			"active": {
+				Description: "Whether the job is enabled",
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Computed:    true,
+			},
 			"for_workflow": {
 				Description: "for workflow",
 				Type:        schema.TypeBool,
@@ -829,6 +835,15 @@ func resourceJobCreate(ctx context.Context, d *schema.ResourceData, m interface{
 
 	d.SetId(j.Id)
 
+	// ジョブは作成直後は有効状態のため、active = false が指定された場合のみ無効化する
+	//lint:ignore SA1019 https://github.com/hashicorp/terraform-plugin-sdk/pull/350#issuecomment-597888969
+	if v, ok := d.GetOkExists("active"); ok && !v.(bool) {
+		if _, err := c.DeactivateJob(j.Id); err != nil {
+			diags = append(diags, diag.FromErr(err)...)
+			return diags
+		}
+	}
+
 	return resourceJobRead(ctx, d, m)
 }
 
@@ -846,6 +861,7 @@ func resourceJobRead(ctx context.Context, d *schema.ResourceData, m interface{})
 
 	d.Set("id", job.Id)
 	d.Set("name", job.Name)
+	d.Set("active", job.Active)
 	d.Set("group_id", job.GroupId)
 	d.Set("aws_account_id", job.AwsAccountId)
 	d.Set("aws_account_ids", utils.FlattenIntList(job.AwsAccountIds))
@@ -950,6 +966,21 @@ func resourceJobUpdate(ctx context.Context, d *schema.ResourceData, m interface{
 	if _, _, err := c.UpdateJob(job); err != nil {
 		diags = append(diags, diag.FromErr(err)...)
 		return diags
+	}
+
+	// 有効/無効は専用のエンドポイントで切り替える
+	if d.HasChange("active") {
+		if d.Get("active").(bool) {
+			if _, _, err := c.ActivateJob(id); err != nil {
+				diags = append(diags, diag.FromErr(err)...)
+				return diags
+			}
+		} else {
+			if _, err := c.DeactivateJob(id); err != nil {
+				diags = append(diags, diag.FromErr(err)...)
+				return diags
+			}
+		}
 	}
 
 	return resourceJobRead(ctx, d, m)
