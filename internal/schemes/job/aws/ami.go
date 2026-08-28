@@ -163,11 +163,6 @@ func CreateImageActionValueFields() map[string]*schema.Schema {
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
-		"trace_status": {
-			Description: "Whether to Verify completion status of the resource",
-			Type:        schema.TypeString,
-			Optional:    true,
-		},
 		"recreate_image_if_ami_status_failed": {
 			Description: "Whether or not to retry when a job fails",
 			Type:        schema.TypeString,
