@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: "us-east-1"
-  BEDROCK_CLAUDE_SONNET_4_5: "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+  BEDROCK_MODEL_ID: "global.anthropic.claude-opus-4-5-20251101-v1:0"
   allowed_tools: >-
     Edit
     Read
@@ -146,7 +146,7 @@ jobs:
           branch_prefix: "claude-bedrock/"
           github_token: ${{ github.token }}
           claude_args: >-
-            --model ${{ env.BEDROCK_CLAUDE_SONNET_4_5 }}
+            --model ${{ env.BEDROCK_MODEL_ID }}
             --allowedTools "${{ env.allowed_tools }}"
             --disallowedTools "${{ env.disallowed_tools }}"
           prompt: ${{ steps.load_prompt.outputs.prompt }}
